@@ -12,7 +12,8 @@ class MARL(TrainableAgent):
             
     def update_model(self):
         for ag in self.agents:
-            ag.update_model()
+            if isinstance(ag, TrainableAgent):
+                ag.update_model()
         
     def action(self, observation):
         return [ag.action(obs) for ag, obs in zip(self.agents, observation)]

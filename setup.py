@@ -7,5 +7,5 @@ setup(name='marl',
       author='David Albert',
       author_email='david.albert@insa-rouen.fr',
       packages=find_packages(),
-      install_requires=['gym', 'numpy']
+      install_requires=['gym', 'numpy','torch', 'torchvision']
 )
