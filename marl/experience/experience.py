@@ -1,15 +1,15 @@
 from marl.tools import ClassSpec, _std_repr
 
-class Policy(object):
-    policy = {}
+class Experience(object):
+    experience = {}
     
-    def __call__(self, state):
+    def push(self, *args):
         raise NotImplementedError
     
-    def load(self, filename):
+    def sample(self, batch_siz=1):
         raise NotImplementedError
-
-    def save(self, filename):
+    
+    def __len__(self):
         raise NotImplementedError
     
     def __repr__(self):
@@ -20,23 +20,24 @@ class Policy(object):
         if isinstance(id, cls):
             return id
         else:
-            return Policy.policy[id].make(**kwargs)
+            return Experience.experience[id].make(**kwargs)
     
     @classmethod
     def register(cls, id, entry_point, **kwargs):
-        if id in Policy.policy.keys():
+        if id in Experience.experience.keys():
             raise Exception('Cannot re-register id: {}'.format(id))
-        Policy.policy[id] = ClassSpec(id, entry_point, **kwargs)
+        Experience.experience[id] = ClassSpec(id, entry_point, **kwargs)
         
     @classmethod
     def available(cls):
-        return Policy.policy.keys()
+        return Experience.experience.keys()
+    
 
 def register(id, entry_point, **kwargs):
-    Policy.register(id, entry_point, **kwargs)
+    Experience.register(id, entry_point, **kwargs)
     
 def make(id, **kwargs):
-    return Policy.make(id, **kwargs)
+    return Experience.make(id, **kwargs)
     
 def available():
-    return Policy.available()
+    return Experience.available()

@@ -1,51 +1,18 @@
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.distributions import Categorical
 
 from .policy import Policy
-import numpy as np
-
-class QValue(object):        
-    def __call__(self, state, action):
-        raise NotImplementedError
-
-class QTable(QValue):
-    def __init__(self, n_action, n_state):
-        self.n_action = n_action
-        self.n_state = n_state
-        self.q_table = np.zeros((self.n_state, self.n_action))
-    
-    def __call__(self, state=None, action=None):
-        if action is None and state is None:
-            return self.q_table
-        if action is None:
-            return self.q_table[state, :]
-        if state is None:
-            return self.q_table[:, action]
-        else:
-            return self.q_table[state, action]
-
-class QApprox(QValue, nn.Module):
-    def __init__(self, net):
-        super(QApprox, self).__init__()
-        self.net = net
-    
-    def forward(self, x):
-        x = self.net(x)
-        return x
-
-    def load_policy(self, save_name):
-        self.load(save_name)
-    
-    def __call__(self, state, action=None):
-        if action is None:
-            return self.forward(state)
-        else:
-           return self.forward(state)[action]
+from marl.model import QApprox, QTable
 
 class QPolicy(Policy):
-    def __init__(self, q_value):
-        self.q_value = q_value
+    def __init__(self, model, observation_space=None, action_space=None):
+        self.observation_space = observation_space
+        self.action_space = action_space
+            
+        self.q_value = marl.model.make(model, self.observation_space, self.action_space)
        
     @property 
     def Q(self):
@@ -61,16 +28,21 @@ class QPolicy(Policy):
         self.Q.save(filename)
 
 class PolicyApprox(nn.Module, Policy):
-    def __init__(self, net):
+    def __init__(self, model, observation_space=None, action_space=None):
         super(PolicyApprox, self).__init__()
-        self.net = net
+        self.observation_space = observation_space
+        self.action_space = action_space
+        
+        self.model = marl.model.make(model, self.observation_space, self.action_space)
         
     def forward(self, x):
-        x = self.net(x)
+        x = self.model(x)
+        x = Categorical(F.softmax(x, dim=-1))
         return x
 
     def __call__(self, state):
-        return self.forward(state)
+        pd = self.forward(state)
+        return pd.sample()
     
     def load(self, filename):
         nn.Module.load(self, filename)

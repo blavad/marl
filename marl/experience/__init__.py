@@ -1,24 +1,31 @@
-import random
-from collections import namedtuple
+from .experience import Experience, make, available, register
+from .replay_buffer import ReplayMemory, ExpReplayBuffer
 
-Transition = namedtuple('Transition',
-                        ('state', 'action', 'next_state', 'reward'))
+register(
+    id='ReplayMemory',
+    entry_point='marl.experience.replay_buffer:ReplayMemory'
+)
 
-class ReplayMemory(object):
-    def __init__(self, capacity):
-        self.capacity = capacity
-        self.memory = []
-        self.position = 0
+register(
+    id='ReplayMemory-1',
+    entry_point='marl.experience.replay_buffer:ReplayMemory',
+    capacity=1
+)
 
-    def push(self, *args):
-        if len(self.memory) < self.capacity:
-            self.memory.append(None)
-        self.memory[self.position] = Transition(*args)
-        self.position = (self.position + 1) % self.capacity
+register(
+    id='ReplayMemory-1000',
+    entry_point='marl.experience.replay_buffer:ReplayMemory',
+    capacity=1000
+)
 
-    def sample(self, batch_size):
-        return random.sample(self.memory, batch_size)
+register(
+    id='ReplayMemory-10000',
+    entry_point='marl.experience.replay_buffer:ReplayMemory',
+    capacity=10000
+)
 
-    def __len__(self):
-        return len(self.memory)
-    
+register(
+    id='ReplayMemory-30000',
+    entry_point='marl.experience.replay_buffer:ReplayMemory',
+    capacity=30000
+)
