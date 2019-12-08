@@ -1,12 +1,19 @@
 from marl.policy.policy import Policy, make, available, register
-import marl.nn as nn 
+from .policies import *
 
-# Policy.register(
-#     id='QTablePolicy',
-#     entry_point='marl.policy.policies:QTable'
-# )
+register(
+    id='QPolicy',
+    entry_point='marl.policy.policies:QPolicy',
 
-# Policy.register(
-#     id='QMlpPolicy',
-#     entry_point='marl.policy.policies:QTable'
-# )
+)
+
+register(
+    id='QTable',
+    entry_point='marl.policy.policies:QPolicy',
+    q_value="marl.model.qvalue:QTable"
+)
+
+register(
+    id='PolicyApprox',
+    entry_point='marl.policy.policies:PolicyApprox'
+)

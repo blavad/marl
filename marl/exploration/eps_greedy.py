@@ -29,8 +29,8 @@ class EpsGreedy(ExplorationProcess):
         if t > self.init_expl_step:
             self.eps = max(self.eps_fin, self.eps - (self.eps_deb-self.eps_fin)/(self.final_expl_step-self.init_expl_step))
         
-    def __call__(self, policy, observation):
+    def __call__(self, agent, observation):
         if random.random() < self.eps:
-            return policy.action_space.sample()
+            return agent.action_space.sample()
         else :
-            return policy(observation)
+            return agent.policy(observation)

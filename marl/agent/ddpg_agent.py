@@ -1,25 +1,25 @@
-from . import TrainableAgent
-from marl.experience import ReplayMemory 
-
 import torch.optim as optim
-from . import *
+
+from marl import MARL
 from marl.experience import ReplayMemory
 
-class DDPGAgent(TrainableAgent):
+from . import DQNAgent, PGAgent
+from . import TrainableAgent
+
+class DDPGAgent(MARL):
     
-    def __init__(self, critic_policy, actor_policy, lr_critic = 0.01, lr_actor = 0.01, tau = 0.01, gamma = 0.95, num_sub_policy=2, capacity_replay_buff = 1.e6, seed=None):
-        # super(DDPGAgent, self).__init__()
+    def __init__(self, critic_policy, actor_policy, env, experience_buffer, lr_critic = 0.01, lr_actor = 0.01, tau = 0.01, gamma = 0.95, num_sub_policy=2, capacity_buff = 1.e6, seed=None):
         self.lr_critic = lr_critic
         self.lr_actor = lr_actor
         self.momentum = 0.95
         self.tau = tau
         self.num_sub_policy = num_sub_policy
+        self.env = env
         
-        self.critic = OffPolicyAgent(critic_policy, ReplayMemory(capacity_replay_buff), "EpsGreedy")
-        self.actor = OffPolicyAgent(actor_policy, ReplayMemory(capacity_replay_buff), "EpsGreedy")
+        self.critic = DQNAgent(critic_policy, self.env, ReplayMemory(capacity_buff), "EpsGreedy")
+        self.actor = PGAgent(actor_policy, self.env, ReplayMemory(capacity_buff), "EpsGreedy")
         
-    def store_experience(self, *args, **kwargs):
-        raise NotImplementedError
+        self.agents = [self.critic, self.actor]
         
     def soft_update(self, local_model, target_model, tau):
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
