@@ -1,18 +1,25 @@
 from . import TrainableAgent
+from marl.policy import PolicyApprox
+
+import torch
+import torch.optim as optim
 
 class PGAgent(TrainableAgent):
-    def __init__(self, policy, gae, env, experience_buffer, exploration_process, gamma=0.99, lr=0.1, dueling=True, off_policy=True, name="QAgent"):
-        super(PGAgent, self).__init__(policy=policy, env=env, experience_buffer=experience_buffer, exploration_process=exploration_process, gamme=gamma, lr=lr, dueling=dueling, off_policy=True, name=name)
-        self.gae = gae # general advantage estimation --> value function
+    def __init__(self, model, experience="ReplayMemory-1000", exploration="EpsGreedy", gamma=0.99, lr=0.1, dueling=True, off_policy=True, name="QAgent"):
+        super(PGAgent, self).__init__(policy=PolicyApprox(model), experience=experience, exploration=exploration, gamme=gamma, lr=lr, off_policy=True, name=name)
+        # self.gae = gae # general advantage estimation --> value function
+        self.optimizer = optim.Adam(self.policy.model.parameters(), lr=self.lr)
     
-    def process_experience(self, obs, act, rew, new_obs, done, terminal):
-        raise NotImplementedError
+    def update_model(self, t, gae):
+        batch = self.experience.sample(self.batch_size)
+        self.optimizer.zero_grad()
         
-    def update_model(self):
-        raise NotImplementedError
+        pd = self.policy.forward(batch.observation)
+        log_prob = pd.log_prob(batch.action) #.unsqueeze(0)
+        loss = -(log_prob * gae).mean()
         
-    def action(self, observation):
-        raise NotImplementedError
+        loss.backward()
+        self.optimizer.step()
         
     def save_model(self, save_name):
         raise NotImplementedError

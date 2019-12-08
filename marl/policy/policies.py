@@ -25,7 +25,7 @@ class QPolicy(Policy):
     def save(self, filename):
         self.Q.save(filename)
 
-class PolicyApprox(nn.Module, Policy):
+class PolicyApprox(Policy):
     def __init__(self, model, observation_space=None, action_space=None):
         super(PolicyApprox, self).__init__()
         self.observation_space = observation_space
@@ -35,20 +35,38 @@ class PolicyApprox(nn.Module, Policy):
         
     def forward(self, x):
         x = self.model(x)
-        x = Categorical(F.softmax(x, dim=-1))
-        return x
+        return Categorical(F.softmax(x, dim=-1))
 
-    def __call__(self, state):
-        state = torch.tensor(state).float()
-        pd = self.forward(state)
-        return pd.sample().item()
+    def __call__(self, observation):
+        observation = torch.tensor(observation).float()
+        with torch.no_grad():
+            pd = self.forward(observation)
+            return pd.sample()
     
     def load(self, filename):
         nn.Module.load(self, filename)
 
     def save(self, filename):
         nn.Module.save(self, filename)
+        
+class DeterministicPolicyApprox(Policy):
+    def __init__(self, model, observation_space=None, action_space=None):
+        super(DeterministicPolicyApprox, self).__init__()
+        self.observation_space = observation_space
+        self.action_space = action_space
+        
+        self.model = marl.model.make(model, self.observation_space, self.action_space)
 
+    def __call__(self, observation):
+        observation = torch.tensor(observation).float()
+        with torch.no_grad():
+            return self.model(observation)
+    
+    def load(self, filename):
+        nn.Module.load(self, filename)
+
+    def save(self, filename):
+        nn.Module.save(self, filename)
     
 ############# En Cours ##############
 def hidden_init(layer):
