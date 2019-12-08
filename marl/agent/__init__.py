@@ -1,6 +1,7 @@
 from .agent import Agent, TrainableAgent, register, make, available
 from .q_agent import *
 from .pg_agent import *
+from .maac_agent import *
 from ..marl import MARL
 
 register(

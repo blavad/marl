@@ -40,22 +40,22 @@ class Agent(object):
         return Agent.agents.keys()
         
 class TrainableAgent(Agent):    
-    def __init__(self, policy, observation_space, action_space, experience="ReplayMemory-10000", exploration_process="EpsGreedy", gamma=0.99, lr=0.001, name="TrainableAgent"):
+    def __init__(self, policy, observation_space, action_space, experience="ReplayMemory-10000", exploration="EpsGreedy", gamma=0.99, lr=0.001, batch_size=32, name="TrainableAgent"):
         self.name = name
         
         self.observation_space = observation_space
         self.action_space = action_space
         
+        self.lr = lr
+        self.batch_size = batch_size
+        self.gamma = gamma
+        
         # Create policy, exploration and experience
         self.policy = marl.policy.make(policy, observation_space=self.observation_space, action_space=self.action_space)
         self.experience = marl.experience.make(experience)
-        self.exploration_process = marl.exploration.make(exploration_process)
+        self.exploration = marl.exploration.make(exploration)
         
-        self.gamma = gamma
-        self.lr = lr
-        
-        # self.optimizer = optimizer(self.policy.parameters(), lr=self.lr)
-        # self.loss = loss
+        assert self.experience.capacity > self.batch_size
     
     def store_experience(self, *args):
         self.experience.push(*args)
@@ -64,10 +64,10 @@ class TrainableAgent(Agent):
         raise NotImplementedError
     
     def update_exploration(self, t):
-        self.exploration_process.update(t)
+        self.exploration.update(t)
         
     def action(self, observation):
-        return self.exploration_process(self, observation)
+        return self.exploration(self, observation)
         
     def greedy_action(self, observation):
         return Agent.action(self, observation)
@@ -81,7 +81,7 @@ class TrainableAgent(Agent):
     def learn(self, env, nb_timesteps, test_freq=1000, freq_save=1000):
         timestep = 0
         episode = 0
-        self.exploration_process.reset(nb_timesteps)
+        self.exploration.reset(nb_timesteps)
         while timestep < nb_timesteps:
             episode +=1
             obs = env.reset()
