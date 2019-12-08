@@ -4,22 +4,20 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.distributions import Categorical
 
+import marl
 from .policy import Policy
-from marl.model import QApprox, QTable
 
 class QPolicy(Policy):
     def __init__(self, model, observation_space=None, action_space=None):
         self.observation_space = observation_space
         self.action_space = action_space
             
-        self.q_value = marl.model.make(model, self.observation_space, self.action_space)
-       
-    @property 
-    def Q(self):
-        return self.q_value
+        self.Q = marl.model.make(model, observation_space=self.observation_space, action_space=self.action_space)
         
     def __call__(self, state):
-        return torch.max(self.Q(state), 1)[1]
+        state = torch.tensor(state).float().unsqueeze(0)
+        with torch.no_grad():
+            return self.Q(state).max(1).indices.item()
     
     def load(self, filename):
         self.Q.load(filename)
@@ -41,8 +39,9 @@ class PolicyApprox(nn.Module, Policy):
         return x
 
     def __call__(self, state):
+        state = torch.tensor(state).float()
         pd = self.forward(state)
-        return pd.sample()
+        return pd.sample().item()
     
     def load(self, filename):
         nn.Module.load(self, filename)

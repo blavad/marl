@@ -1,5 +1,5 @@
 from .experience import Experience, make, available, register
-from .replay_buffer import ReplayMemory, ExpReplayBuffer
+from .replay_buffer import ReplayMemory
 
 register(
     id='ReplayMemory',
