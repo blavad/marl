@@ -3,11 +3,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class MlpNet(nn.Module):
-    def __init__(self, input_size, output_size, hidden_size=[64,64], hidden_activ=nn.ReLU):
+    def __init__(self, input_size, output_size, hidden_size=[64,64], hidden_activ=nn.ReLU, last_activ=None):
         super(MlpNet, self).__init__()
         self.input_size = input_size
         self.output_size = output_size
         self.h_activ = hidden_activ
+        self.last_activ = last_activ
         
         in_size = hidden_size[-1] if len(hidden_size) > 0 else self.input_size
         
@@ -26,8 +27,20 @@ class MlpNet(nn.Module):
     def forward(self, x):
         x = self.feature_extractor(x)
         x = self.output_layer(x)
+        if self.last_activ is not None:
+            x = self.last_activ(x)
         return x
     
+class GumbelMlpNet(MlpNet):
+    def __init__(self, input_size, output_size, hidden_size=[64,64], hidden_activ=nn.ReLU, tau=10.):
+        super(GumbelMlpNet, self).__init__(input_size=input_size, output_size=output_size, hidden_size=[64,64], hidden_activ=nn.ReLU)
+        self.tau = tau
+        
+    def forward(self, x):
+        x = super().forward(x)
+        x = F.gumbel_softmax(x, tau=self.tau, hard=False)
+        return x
+
 
 class MlpNet2(nn.Module):
     def __init__(self, input_size, output_size, hidden_layer_1=64, hidden_layer_2=64, hidden_activ=nn.ReLU):

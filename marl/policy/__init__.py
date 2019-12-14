@@ -14,6 +14,11 @@ register(
 )
 
 register(
-    id='PolicyApprox',
-    entry_point='marl.policy.policies:PolicyApprox'
+    id='StochasticPolicy',
+    entry_point='marl.policy.policies:StochasticPolicy'
+)
+
+register(
+    id='DeterministicPolicy',
+    entry_point='marl.policy.policies:DeterministicPolicy'
 )

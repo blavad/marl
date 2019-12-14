@@ -8,5 +8,7 @@ register(
     entry_point='marl.model.qvalue:QTable',
 )
 
-
-
+register(
+    id='MlpNet',
+    entry_point='marl.model.nn.mlpnet:MlpNet',
+)

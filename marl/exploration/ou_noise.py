@@ -1,7 +1,9 @@
 from . import ExplorationProcess
 import random
+import numpy as np
+import copy
 
-class EpsGreedy(ExplorationProcess):
+class OUNoise(ExplorationProcess):
     """
     The epsilon-greedy exploration class
     
@@ -11,19 +13,17 @@ class EpsGreedy(ExplorationProcess):
     :param deb_expl: (flaot) The percentage of time before starting exploration (default: 0.1)
     """
     
-    def __init__(self, eps_deb=1.0, eps_fin=0.1, deb_expl=0.1, fin_expl=0.9):
-        self.eps_deb = eps_deb
-        self.eps_fin = eps_fin
-        self.eps = self.eps_deb
-        if fin_expl < deb_expl:
-            raise ValueError("'deb_expl' must be bigger than 'fin_expl'")
-        self.deb_expl = deb_expl
-        self.fin_expl = fin_expl
-    
-    def reset(self, training_duration):
-        self.eps = self.eps_deb
-        self.init_expl_step = int(self.deb_expl * training_duration)
-        self.final_expl_step = int(self.fin_expl * training_duration)
+    def __init__(self, size, seed, mu=0., theta=0.15, sigma=0.2):
+        """Initialize parameters and noise process."""
+        self.mu = mu * np.ones(size)
+        self.theta = theta
+        self.sigma = sigma
+        self.seed = random.seed(seed)
+        self.reset()
+
+    def reset(self):
+        """Reset the internal state (= noise) to mean (mu)."""
+        self.state = copy.copy(self.mu)
     
     def update(self, t):
         if t > self.init_expl_step:
@@ -34,3 +34,10 @@ class EpsGreedy(ExplorationProcess):
             return policy.action_space.sample()
         else :
             return policy(observation)
+
+    def sample(self):
+        """Update internal state and return it as a noise sample."""
+        x = self.state
+        dx = self.theta * (self.mu - x) + self.sigma * np.array([random.random() for i in range(len(x))])
+        self.state = x + dx
+        return self.state

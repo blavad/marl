@@ -1,10 +1,6 @@
 import importlib
-
-def load(name):
-    mod_name, attr_name = name.split(":")
-    mod = importlib.import_module(mod_name)
-    fn = getattr(mod, attr_name)
-    return fn
+import gym
+import numpy as np
 
 def _addindent(s_, numSpaces):
     s = s_.split('\n')
@@ -28,6 +24,32 @@ def _std_repr(obj):
         main_str += '\n  ' + '\n  '.join(lines) + '\n'
     main_str += ')'
     return main_str
+
+def gymSpace2dim(gym_space):
+    if isinstance(gym_space, gym.spaces.Discrete):
+        return gym_space.n
+    if isinstance(gym_space, gym.spaces.Box):
+        return list(gym_space.shape)
+    
+def super_cat(obs, act):
+    if type(obs[0]) is not np.ndarray and type(obs[0]) is not list and len(obs.shape) <=1 and len(act.shape) <=1:
+        concat = [obs, act]
+    else:
+        concat = [super_cat(o, a) for o, a in zip(obs,act)]
+    return np.concatenate(concat)
+
+def is_done(done):
+    if type(done) is bool:
+        return done
+    elif type(done) is  list:
+        done = [is_done(d) for d in done]
+        return all(done)
+
+def load(name):
+    mod_name, attr_name = name.split(":")
+    mod = importlib.import_module(mod_name)
+    fn = getattr(mod, attr_name)
+    return fn
 
 class ClassSpec(object):
     def __init__(self, id, entry_point, **kwargs):
