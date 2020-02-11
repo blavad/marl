@@ -15,7 +15,7 @@ class ReplayMemory(Experience):
         self.transition = namedtuple('Transition', field_names=self.field_names)
 
     def push(self, *args):
-        if len(self.memory) <= self.capacity:
+        if len(self.memory) < self.capacity:
             self.memory.append(None)
         self.memory[self.position] = self.transition(*args)
         self.position = (self.position + 1) % self.capacity

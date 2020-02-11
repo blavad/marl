@@ -1,12 +1,17 @@
 import marl
 from .agent import TrainableAgent, Agent
 
+class MAS():
+    def __init__(self, agents_list=[], name="mas"):
+        self.name = name
+        self.agents = agents_list
+
 class MARL(TrainableAgent):
     
     def __init__(self, agents_list=[], name='marl'):
         self.name = name
+        self.experience = marl.experience.make("ReplayMemory", capacity=10000)
         self.agents = agents_list
-        self.experience = marl.experience.make("ReplayMemory", capacity=20000)
         
     def store_experience(self, *args):
         TrainableAgent.store_experience(self, *args)

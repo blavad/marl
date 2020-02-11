@@ -1,13 +1,27 @@
 from marl.tools import ClassSpec, _std_repr
         
 class ExplorationProcess(object):
+    """
+    The generic exploration class
+    """
+    
     process = {}
     
     def reset(self, training_duration):
+        """ 
+        Intialize some additional values and reset the others 
+        
+        :param training_duration: (int) Number of timesteps while training
+        """    
         raise NotImplementedError
         
     def update(self, t):
-        raise NotImplementedError
+        """ 
+        If required update exploration parameters
+        
+        :param t: (int) The current timestep
+        """
+        pass
     
     def __call__(self):
         raise NotImplementedError

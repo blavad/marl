@@ -1,6 +1,8 @@
 from marl.exploration.expl_process import ExplorationProcess, make, available, register
 from marl.exploration.greedy import Greedy
 from marl.exploration.eps_greedy import EpsGreedy
+from marl.exploration.ou_noise import OUNoise
+
     
 register(
     id='Greedy',
@@ -57,4 +59,9 @@ register(
 register(
     id='EpsGreedy-lin',
     entry_point='marl.exploration.eps_greedy:EpsGreedy',   
+)
+
+register(
+    id='OUNoise',
+    entry_point='marl.exploration.ou_noise:OUNoise'
 )

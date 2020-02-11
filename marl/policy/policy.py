@@ -1,3 +1,6 @@
+import torch
+import torch.nn as nn
+
 from marl.tools import ClassSpec, _std_repr
 
 class Policy(object):
@@ -7,11 +10,17 @@ class Policy(object):
         raise NotImplementedError
     
     def load(self, filename):
-        raise NotImplementedError
+        if isinstance(self.model, nn.Module):
+            self.model.load_state_dict(torch.load(filename))
+        else:
+            self.model.load()
 
     def save(self, filename):
-        raise NotImplementedError
-    
+        if isinstance(self.model, nn.Module):
+            torch.save(self.model.state_dict(), filename)
+        else:
+            self.model.save()
+            
     def __repr__(self):
         return _std_repr(self)
     
