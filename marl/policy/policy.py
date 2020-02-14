@@ -13,13 +13,13 @@ class Policy(object):
         if isinstance(self.model, nn.Module):
             self.model.load_state_dict(torch.load(filename))
         else:
-            self.model.load()
+            self.model.load(filename=filename)
 
     def save(self, filename):
         if isinstance(self.model, nn.Module):
             torch.save(self.model.state_dict(), filename)
         else:
-            self.model.save()
+            self.model.save(filename=filename)
             
     def __repr__(self):
         return _std_repr(self)

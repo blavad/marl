@@ -4,6 +4,8 @@ from marl.tools import ClassSpec, _std_repr, is_done
 from marl.policy.policy import Policy
 from marl.exploration import ExplorationProcess
 
+import os
+import time
 import torch
 import torch.optim as optim
 import numpy as np
@@ -18,7 +20,13 @@ class Agent(object):
     
     agents = {}
     
+    counter = 0
+    
     def __init__(self, policy, name="UnknownAgent"):
+        Agent.counter +=1
+        
+        self.id = Agent.counter
+        
         self.name = name
         self.policy = Policy.make(policy)
         
@@ -49,7 +57,7 @@ class Agent(object):
     def available(cls):
         return Agent.agents.keys()
         
-class TrainableAgent(Agent):   
+class TrainableAgent(Agent):
     """
     The class of trainable agent.
     
@@ -62,13 +70,8 @@ class TrainableAgent(Agent):
     :param gamma, batch_size: (float) The training parameters
     :param name: (str) The name of the agent      
     """
-    
-    counter = 0
-     
+         
     def __init__(self, policy, observation_space=None, action_space=None, model=None, experience="ReplayMemory-10000", exploration="EpsGreedy", gamma=0.99, lr=0.001, batch_size=32, name="TrainableAgent"):
-        TrainableAgent.counter +=1
-        
-        self.id = TrainableAgent.counter
         self.name = name
         
         self.lr = lr
@@ -80,7 +83,7 @@ class TrainableAgent(Agent):
         self.experience = marl.experience.make(experience)
         self.exploration = marl.exploration.make(exploration)
         
-        assert self.experience.capacity > self.batch_size
+        assert self.experience.capacity >= self.batch_size
     
     @property
     def observation_space(self):
@@ -130,21 +133,25 @@ class TrainableAgent(Agent):
         """
         return Agent.action(self, observation)
         
-    def save_policy(self, filename='', timestep=None):
+    def save_policy(self, folder='.',filename='', timestep=None):
         """
         Save the policy in a file called '<filename>-<agent_name>-<timestep>'.
         
         :param filename: (str) A specific name for the file (ex: 'test2')
         :param timestep: (int) The current timestep  
         """
+        if not os.path.exists(folder):
+            os.makedirs(folder)
         filename_tmp = "{}-{}".format(filename, self.name) if filename is not '' else "{}".format(self.name)
         filename_tmp = "{}".format(filename_tmp) if timestep is None else "{}-{}".format(filename_tmp, timestep)
+        
+        filename_tmp = os.path.join(folder, filename_tmp)
         self.policy.save(filename_tmp)
         
     def save_all(self):
         pass
     
-    def learn(self, env, nb_timesteps, max_num_step=100, test_freq=1000, save_freq=1000):
+    def learn(self, env, nb_timesteps, max_num_step=100, test_freq=1000, save_freq=1000, save_folder="models", render=False, time_laps=0.):
         """
         Start the learning part.
         
@@ -162,6 +169,9 @@ class TrainableAgent(Agent):
             episode +=1
             obs = env.reset()
             done = False
+            if render:
+                env.render()
+                time.sleep(time_laps)
             for _ in range(timestep, timestep + max_num_step):
                 action = self.action(obs)
                 obs2, rew, done, _ = env.step(action)
@@ -170,11 +180,14 @@ class TrainableAgent(Agent):
                 obs = obs2
                 timestep+=1
                 self.update_exploration(timestep)
-                
+                if render:
+                    env.render()
+                    time.sleep(time_laps)
+            
                 # Save the model
                 if timestep % save_freq == 0:
                     print("Step {}/{} --- Save Model".format(timestep, nb_timesteps))
-                    self.save_policy(timestep=timestep)
+                    self.save_policy(timestep=timestep, folder=save_folder)
                     
                 # Test the model
                 if timestep % test_freq == 0:
@@ -187,7 +200,7 @@ class TrainableAgent(Agent):
         print("#> End of learning process !")
         
                 
-    def test(self, env, nb_episodes=1, max_num_step=200, render=True):
+    def test(self, env, nb_episodes=1, max_num_step=200, render=True, time_laps=0.):
         """
         Test a model.
         
@@ -200,12 +213,16 @@ class TrainableAgent(Agent):
         for episode in range(nb_episodes):
             observation = env.reset()
             done = False
+            if render:
+                env.render()
+                time.sleep(time_laps)
             for step in range(max_num_step):
-                if render:
-                    env.render()
                 action = self.greedy_action(observation)
                 observation, reward, done, _ = env.step(action)
                 sum_r = np.array(reward) if step==0 else np.add(sum_r, reward)
+                if render:
+                    env.render()
+                    time.sleep(time_laps)
                 if is_done(done):
                     break
             rewards = np.array([sum_r/step]) if episode==0 else np.append(rewards, [sum_r/step], axis=0)
@@ -213,6 +230,18 @@ class TrainableAgent(Agent):
             env.close()
         return rewards, rewards.mean(axis=0), rewards.std(axis=0)
     
+
+class MATrainable(object):
+    def __init__(self, mas, index):    
+        self.mas = mas
+        self.index = index
+    
+    def set_mas(self, mas):
+        self.mas = mas
+        for ind, ag in enumerate(self.mas.agents):
+            if ag.counter == self.counter:
+                self.index = ind
+
         
 def register(id, entry_point, **kwargs):
     Agent.register(id, entry_point, **kwargs)
@@ -222,3 +251,4 @@ def make(id, **kwargs):
     
 def available():
     return Agent.available()
+

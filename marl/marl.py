@@ -1,3 +1,4 @@
+import os
 import marl
 from .agent import TrainableAgent, Agent
 
@@ -5,13 +6,17 @@ class MAS():
     def __init__(self, agents_list=[], name="mas"):
         self.name = name
         self.agents = agents_list
+        
+        
+    def __len__(self):
+        return len(self.agents)
 
 class MARL(TrainableAgent):
     
     def __init__(self, agents_list=[], name='marl'):
         self.name = name
-        self.experience = marl.experience.make("ReplayMemory", capacity=10000)
         self.agents = agents_list
+        self.experience = marl.experience.make("ReplayMemory", capacity=10000)
         
     def store_experience(self, *args):
         TrainableAgent.store_experience(self, *args)
@@ -44,12 +49,21 @@ class MARL(TrainableAgent):
     def greedy_action(self, observation):
         return [Agent.action(ag, obs) for ag, obs in zip(self.agents, observation)]
     
-    def save_policy(self, filename='', timestep=None):
+    def save_policy(self, folder='.', filename='', timestep=None):
+        """
+        Save the policy in a file called '<filename>-<agent_name>-<timestep>'.
+        
+        :param folder: (str) The path to the directory where to save the model(s)
+        :param filename: (str) A specific name for the file (ex: 'test2')
+        :param timestep: (int) The current timestep  
+        """
+        if not os.path.exists(folder):
+            os.makedirs(folder)
         filename_tmp = "{}-{}".format(filename, self.name) if filename is not '' else "{}".format(self.name)
         for ag in self.agents:
             if isinstance(ag, TrainableAgent):
-                ag.save_policy(filename=filename_tmp, timestep=timestep)
-        
+                ag.save_policy(folder=folder, filename=filename_tmp, timestep=timestep)
+                
     def load_model(self, filename):
         for ag in self.agents:
             if isinstance(ag, TrainableAgent):
@@ -71,4 +85,4 @@ class MARL(TrainableAgent):
         return None
     
     def __len__(self):
-        return len(self.agents)
+        return len(self.agents)     

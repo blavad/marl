@@ -54,6 +54,7 @@ class GumbelMlpNet(MlpNet):
         x = F.gumbel_softmax(x, tau=self.tau, hard=False)
         return x
     
+
     
 ############# En Cours ##############
 def hidden_init(layer):

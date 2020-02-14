@@ -1,8 +1,8 @@
-from .agent import Agent, TrainableAgent, register, make, available
+from .agent import Agent, TrainableAgent, MATrainable, register, make, available
 from .q_agent import *
 from .pg_agent import *
 from .maac_agent import *
-from ..marl import MARL
+from ..marl import *
 
 register(
     id='TrainalbleAgent',
@@ -10,11 +10,16 @@ register(
 )
 
 register(
-    id='QAgent',
-    entry_point='marl.agent.q_agent:QAgent'
+    id='QTableAgent',
+    entry_point='marl.agent.q_agent:QTableAgent'
 )
 
 register(
     id='DQNAgent',
     entry_point='marl.agent.q_agent:DQNAgent'
+)
+
+register(
+    id='MinimaxQAgent',
+    entry_point='marl.agent.q_agent:MinimaxQAgent'
 )
