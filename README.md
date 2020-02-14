@@ -8,6 +8,21 @@ git clone https://github.com/blavad/marl.git
 pip intall -e marl
 ```
 
+## Implemented algorithms
+
+### Single-agent algorithms
+
+| **TD-learning** | **Q-learning** | **DQN** | **DDPG** |
+| -------------- | -------------- | ------------ | ------------ | 
+|  :heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark:   | :heavy_check_mark:  |
+
+
+### Multi-agent algorithms
+
+| **minimaxQ-learning** | **minimaxDQN** | **JAL** | **PHC-WoLF** | **MAAC** | **MADDPG** | 
+| -------------- | ------------ | ------------ | ------------ | ------------ |  ------------ | 
+ |  :heavy_check_mark: | :heavy_check_mark:   |  :x:   |  :x:    | :heavy_check_mark:   | :heavy_check_mark:   |
+
 ## Examples
 
 ### Examples of training a single agent with DQN algorithm
