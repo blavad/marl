@@ -7,7 +7,7 @@ Project doc : <a href="https://blavad.github.io/marl/html/index.html"> [DOC]</a>
 ## Installation
 ```bash
 git clone https://github.com/blavad/marl.git
-pip intall -e marl
+pip install -e marl
 ```
 
 ## Implemented algorithms
