@@ -1,5 +1,5 @@
 import marl
-from marl.agent import QAgent, TrainableAgent
+from marl.agent import QAgent, TrainableAgent, MATrainable
 from marl.policy import StochasticPolicy, DeterministicPolicy
 from marl.tools import super_cat
 
@@ -10,7 +10,7 @@ import copy
 import numpy as np
 
 
-class MAPGAgent(TrainableAgent):
+class MAPGAgent(TrainableAgent, MATrainable):
     """
     The class of trainable agent using multi-agent policy gradient methods.
     
@@ -31,11 +31,10 @@ class MAPGAgent(TrainableAgent):
     :param name: (str) The name of the agent      
     """
     def __init__(self, critic_model, actor_policy, actor_model, observation_space, action_space, index=None, mas=None, experience="ReplayMemory-1000", exploration="EpsGreedy", lr_actor=0.001, lr_critic=0.001, gamma=0.95, batch_size=32, tau=0.01, use_target_net=False, name="MAACAgent"):
-        super(MAPGAgent, self).__init__(policy=actor_policy, model=actor_model, observation_space=observation_space, action_space=action_space, experience=experience, exploration=exploration, lr=lr_actor, gamma=gamma, batch_size=batch_size, name=name)
+        TrainableAgent.__init__(self,policy=actor_policy, model=actor_model, observation_space=observation_space, action_space=action_space, experience=experience, exploration=exploration, lr=lr_actor, gamma=gamma, batch_size=batch_size, name=name)
+        MATrainable.__init__(self, mas, index)        
         
         self.tau = tau
-        self.index = index
-        self.mas = mas
         
         # Actor model
         self.actor_optimizer = optim.Adam(self.policy.model.parameters(), lr=self.lr)
@@ -55,9 +54,6 @@ class MAPGAgent(TrainableAgent):
             self.target_policy = copy.deepcopy(self.policy)
             self.target_policy.model.eval()
 
-            
-    def set_mas(self, mas):
-        self.mas = mas
     
     def soft_update(self, local_model, target_model, tau):
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
