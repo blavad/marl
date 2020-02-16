@@ -2,6 +2,8 @@
 
 MARL is a high-level multi-agent reinforcement learning API, written in Python.
 
+Project doc : <a href="https://blavad.github.io/marl/html/index.html"> [DOC]</a>
+
 ## Installation
 ```bash
 git clone https://github.com/blavad/marl.git
