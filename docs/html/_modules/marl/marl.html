@@ -1,0 +1,307 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>marl.marl &mdash; MARL-API 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> MARL-API
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Quick start:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/example.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../content/modules.html">Multi-agent RL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../content/modules.html#agent">Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../content/modules.html#experience">Experience</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../content/modules.html#exploration">Exploration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../content/modules.html#policies">Policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../content/modules.html#models">Models</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MARL-API</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>marl.marl</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for marl.marl</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">marl</span>
+<span class="kn">from</span> <span class="nn">.agent</span> <span class="kn">import</span> <span class="n">TrainableAgent</span><span class="p">,</span> <span class="n">Agent</span>
+
+<div class="viewcode-block" id="MAS"><a class="viewcode-back" href="../../content/modules.html#marl.marl.MAS">[docs]</a><span class="k">class</span> <span class="nc">MAS</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The class of multi-agent &quot;system&quot;.</span>
+<span class="sd">    </span>
+<span class="sd">    :param agents_list: (list) The list of agents in the MAS</span>
+<span class="sd">    :param name: (str) The name of the system</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agents_list</span><span class="o">=</span><span class="p">[],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mas&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agents</span> <span class="o">=</span> <span class="n">agents_list</span>
+        
+<div class="viewcode-block" id="MAS.append"><a class="viewcode-back" href="../../content/modules.html#marl.marl.MAS.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an agent to the system.</span>
+
+<span class="sd">        :param agent: (Agent) The agents to be added</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>          </div>
+    
+<div class="viewcode-block" id="MAS.action"><a class="viewcode-back" href="../../content/modules.html#marl.marl.MAS.action">[docs]</a>    <span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the joint action.</span>
+
+<span class="sd">        :param observation: The joint observation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Agent</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">ag</span><span class="p">,</span> <span class="n">obs</span><span class="p">)</span> <span class="k">for</span> <span class="n">ag</span><span class="p">,</span> <span class="n">obs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">,</span> <span class="n">observation</span><span class="p">)]</span>    </div>
+    
+<div class="viewcode-block" id="MAS.get_by_name"><a class="viewcode-back" href="../../content/modules.html#marl.marl.MAS.get_by_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">ag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ag</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">ag</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+    
+<div class="viewcode-block" id="MAS.get_by_id"><a class="viewcode-back" href="../../content/modules.html#marl.marl.MAS.get_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">ag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ag</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">ag</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+        
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MARL"><a class="viewcode-back" href="../../content/modules.html#marl.marl.MARL">[docs]</a><span class="k">class</span> <span class="nc">MARL</span><span class="p">(</span><span class="n">TrainableAgent</span><span class="p">,</span> <span class="n">MAS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The class for a multi-agent reinforcement learning.</span>
+<span class="sd">    </span>
+<span class="sd">    :param agents_list: (list) The list of agents in the MARL model</span>
+<span class="sd">    :param name: (str) The name of the system</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agents_list</span><span class="o">=</span><span class="p">[],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;marl&#39;</span><span class="p">):</span>
+        <span class="n">MAS</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agents_list</span><span class="o">=</span><span class="n">agents_list</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experience</span> <span class="o">=</span> <span class="n">marl</span><span class="o">.</span><span class="n">experience</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s2">&quot;ReplayMemory&quot;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+        
+<div class="viewcode-block" id="MARL.store_experience"><a class="viewcode-back" href="../../content/modules.html#marl.marl.MARL.store_experience">[docs]</a>    <span class="k">def</span> <span class="nf">store_experience</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="n">TrainableAgent</span><span class="o">.</span><span class="n">store_experience</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">observation</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">next_observation</span><span class="p">,</span> <span class="n">done</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ag</span><span class="p">,</span> <span class="n">TrainableAgent</span><span class="p">):</span>
+                <span class="n">ag</span><span class="o">.</span><span class="n">store_experience</span><span class="p">(</span><span class="n">observation</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">action</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">reward</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">next_observation</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">done</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></div>
+            
+<div class="viewcode-block" id="MARL.update_model"><a class="viewcode-back" href="../../content/modules.html#marl.marl.MARL.update_model">[docs]</a>    <span class="k">def</span> <span class="nf">update_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="c1"># TrainableAgent.update_model(self, t)        </span>
+        <span class="k">for</span> <span class="n">ag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ag</span><span class="p">,</span> <span class="n">TrainableAgent</span><span class="p">):</span>
+                <span class="n">ag</span><span class="o">.</span><span class="n">update_model</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="MARL.reset_exploration"><a class="viewcode-back" href="../../content/modules.html#marl.marl.MARL.reset_exploration">[docs]</a>    <span class="k">def</span> <span class="nf">reset_exploration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nb_timesteps</span><span class="p">):</span>
+        <span class="c1"># TrainableAgent.update_exploration(self, nb_timesteps)        </span>
+        <span class="k">for</span> <span class="n">ag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ag</span><span class="p">,</span> <span class="n">TrainableAgent</span><span class="p">):</span>
+                <span class="n">ag</span><span class="o">.</span><span class="n">reset_exploration</span><span class="p">(</span><span class="n">nb_timesteps</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="MARL.update_exploration"><a class="viewcode-back" href="../../content/modules.html#marl.marl.MARL.update_exploration">[docs]</a>    <span class="k">def</span> <span class="nf">update_exploration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="c1"># TrainableAgent.update_exploration(self, t)        </span>
+        <span class="k">for</span> <span class="n">ag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ag</span><span class="p">,</span> <span class="n">TrainableAgent</span><span class="p">):</span>
+                <span class="n">ag</span><span class="o">.</span><span class="n">exploration</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="MARL.action"><a class="viewcode-back" href="../../content/modules.html#marl.marl.MARL.action">[docs]</a>    <span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">ag</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span> <span class="k">for</span> <span class="n">ag</span><span class="p">,</span> <span class="n">obs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">,</span> <span class="n">observation</span><span class="p">)]</span></div>
+        
+<div class="viewcode-block" id="MARL.greedy_action"><a class="viewcode-back" href="../../content/modules.html#marl.marl.MARL.greedy_action">[docs]</a>    <span class="k">def</span> <span class="nf">greedy_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Agent</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">ag</span><span class="p">,</span> <span class="n">obs</span><span class="p">)</span> <span class="k">for</span> <span class="n">ag</span><span class="p">,</span> <span class="n">obs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">,</span> <span class="n">observation</span><span class="p">)]</span></div>
+    
+<div class="viewcode-block" id="MARL.save_policy"><a class="viewcode-back" href="../../content/modules.html#marl.marl.MARL.save_policy">[docs]</a>    <span class="k">def</span> <span class="nf">save_policy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">timestep</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the policy in a file called &#39;&lt;filename&gt;-&lt;agent_name&gt;-&lt;timestep&gt;&#39;.</span>
+<span class="sd">        </span>
+<span class="sd">        :param folder: (str) The path to the directory where to save the model(s)</span>
+<span class="sd">        :param filename: (str) A specific name for the file (ex: &#39;test2&#39;)</span>
+<span class="sd">        :param timestep: (int) The current timestep  </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+        <span class="n">filename_tmp</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;&#39;</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ag</span><span class="p">,</span> <span class="n">TrainableAgent</span><span class="p">):</span>
+                <span class="n">ag</span><span class="o">.</span><span class="n">save_policy</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filename_tmp</span><span class="p">,</span> <span class="n">timestep</span><span class="o">=</span><span class="n">timestep</span><span class="p">)</span></div>
+                
+<div class="viewcode-block" id="MARL.load_model"><a class="viewcode-back" href="../../content/modules.html#marl.marl.MARL.load_model">[docs]</a>    <span class="k">def</span> <span class="nf">load_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">ag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ag</span><span class="p">,</span> <span class="n">TrainableAgent</span><span class="p">):</span>
+                <span class="n">ag</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div></div>
+                 
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, David Albert
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

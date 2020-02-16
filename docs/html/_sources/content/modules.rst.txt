@@ -1,8 +1,11 @@
 
+Multi-agent RL
+==============
+
+.. automodule:: marl.marl
+
 Agent
 =====
-
-
 
 Agent
 -----
@@ -71,5 +74,19 @@ Several Policies
 ----------------
 
 .. automodule:: marl.policy.policies
+
+
+Models
+======
+
+Value and Q-Value array
+-----------------------
+
+.. automodule:: marl.model.qvalue
+
+Neural network model
+--------------------
+
+.. automodule:: marl.model.nn.mlpnet
 
 

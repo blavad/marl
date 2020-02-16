@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Agent &mdash; MARL-API 0.0.1 documentation</title>
+  <title>Multi-agent RL &mdash; MARL-API 0.0.1 documentation</title>
   
 
   
@@ -86,7 +86,8 @@
 </ul>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Agent</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Multi-agent RL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#agent">Agent</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#id1">Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-marl.agent.q_agent">QAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-marl.agent.maac_agent">MAACAgent</a></li>
@@ -106,6 +107,11 @@
 <li class="toctree-l1"><a class="reference internal" href="#policies">Policies</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-marl.policy.policy">Generic Policy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-marl.policy.policies">Several Policies</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#models">Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-marl.model.qvalue">Value and Q-Value array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-marl.model.nn.mlpnet">Neural network model</a></li>
 </ul>
 </li>
 </ul>
@@ -153,7 +159,7 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-      <li>Agent</li>
+      <li>Multi-agent RL</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -172,7 +178,138 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="agent">
+  <div class="section" id="module-marl.marl">
+<span id="multi-agent-rl"></span><h1>Multi-agent RL<a class="headerlink" href="#module-marl.marl" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="marl.marl.MAS">
+<em class="property">class </em><code class="sig-prename descclassname">marl.marl.</code><code class="sig-name descname">MAS</code><span class="sig-paren">(</span><em class="sig-param">agents_list=[]</em>, <em class="sig-param">name='mas'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/marl.html#MAS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.marl.MAS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The class of multi-agent “system”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>agents_list</strong> – (list) The list of agents in the MAS</p></li>
+<li><p><strong>name</strong> – (str) The name of the system</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="marl.marl.MAS.append">
+<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param">agent</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/marl.html#MAS.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.marl.MAS.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an agent to the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>agent</strong> – (Agent) The agents to be added</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="marl.marl.MAS.action">
+<code class="sig-name descname">action</code><span class="sig-paren">(</span><em class="sig-param">observation</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/marl.html#MAS.action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.marl.MAS.action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the joint action.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>observation</strong> – The joint observation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="marl.marl.MAS.get_by_name">
+<code class="sig-name descname">get_by_name</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/marl.html#MAS.get_by_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.marl.MAS.get_by_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.marl.MAS.get_by_id">
+<code class="sig-name descname">get_by_id</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/marl.html#MAS.get_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.marl.MAS.get_by_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="marl.marl.MARL">
+<em class="property">class </em><code class="sig-prename descclassname">marl.marl.</code><code class="sig-name descname">MARL</code><span class="sig-paren">(</span><em class="sig-param">agents_list=[]</em>, <em class="sig-param">name='marl'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/marl.html#MARL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.marl.MARL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#marl.agent.agent.TrainableAgent" title="marl.agent.agent.TrainableAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.agent.agent.TrainableAgent</span></code></a>, <a class="reference internal" href="#marl.marl.MAS" title="marl.marl.MAS"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.marl.MAS</span></code></a></p>
+<p>The class for a multi-agent reinforcement learning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>agents_list</strong> – (list) The list of agents in the MARL model</p></li>
+<li><p><strong>name</strong> – (str) The name of the system</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="marl.marl.MARL.store_experience">
+<code class="sig-name descname">store_experience</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/marl.html#MARL.store_experience"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.marl.MARL.store_experience" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store a transition in the experience buffer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="marl.marl.MARL.update_model">
+<code class="sig-name descname">update_model</code><span class="sig-paren">(</span><em class="sig-param">t</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/marl.html#MARL.update_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.marl.MARL.update_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the model.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="marl.marl.MARL.reset_exploration">
+<code class="sig-name descname">reset_exploration</code><span class="sig-paren">(</span><em class="sig-param">nb_timesteps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/marl.html#MARL.reset_exploration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.marl.MARL.reset_exploration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the exploration process.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="marl.marl.MARL.update_exploration">
+<code class="sig-name descname">update_exploration</code><span class="sig-paren">(</span><em class="sig-param">t</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/marl.html#MARL.update_exploration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.marl.MARL.update_exploration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the exploration process.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="marl.marl.MARL.action">
+<code class="sig-name descname">action</code><span class="sig-paren">(</span><em class="sig-param">observation</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/marl.html#MARL.action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.marl.MARL.action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an action given an observation (action in selected according to the exploration process).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>observation</strong> – The observation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="marl.marl.MARL.greedy_action">
+<code class="sig-name descname">greedy_action</code><span class="sig-paren">(</span><em class="sig-param">observation</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/marl.html#MARL.greedy_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.marl.MARL.greedy_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the greedy action given an observation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>observation</strong> – The observation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="marl.marl.MARL.save_policy">
+<code class="sig-name descname">save_policy</code><span class="sig-paren">(</span><em class="sig-param">folder='.'</em>, <em class="sig-param">filename=''</em>, <em class="sig-param">timestep=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/marl.html#MARL.save_policy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.marl.MARL.save_policy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the policy in a file called ‘&lt;filename&gt;-&lt;agent_name&gt;-&lt;timestep&gt;’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>folder</strong> – (str) The path to the directory where to save the model(s)</p></li>
+<li><p><strong>filename</strong> – (str) A specific name for the file (ex: ‘test2’)</p></li>
+<li><p><strong>timestep</strong> – (int) The current timestep</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="marl.marl.MARL.load_model">
+<code class="sig-name descname">load_model</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/marl.html#MARL.load_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.marl.MARL.load_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="agent">
 <h1>Agent<a class="headerlink" href="#agent" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
 <h2>Agent<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
@@ -606,78 +743,6 @@
 </dd></dl>
 
 <dl class="class">
-<dt id="marl.agent.q_agent.MinimaxDQNAgent">
-<em class="property">class </em><code class="sig-prename descclassname">marl.agent.q_agent.</code><code class="sig-name descname">MinimaxDQNAgent</code><span class="sig-paren">(</span><em class="sig-param">qmodel</em>, <em class="sig-param">observation_space</em>, <em class="sig-param">my_action_space</em>, <em class="sig-param">other_action_space</em>, <em class="sig-param">index=None</em>, <em class="sig-param">mas=None</em>, <em class="sig-param">exploration='EpsGreedy'</em>, <em class="sig-param">experience='ReplayMemory-10000'</em>, <em class="sig-param">gamma=0.99</em>, <em class="sig-param">lr=0.001</em>, <em class="sig-param">batch_size=32</em>, <em class="sig-param">target_update_freq=None</em>, <em class="sig-param">name='MinimaxDQNAgent'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/q_agent.html#MinimaxDQNAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.q_agent.MinimaxDQNAgent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#marl.agent.q_agent.QAgent" title="marl.agent.q_agent.QAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.agent.q_agent.QAgent</span></code></a>, <a class="reference internal" href="#marl.agent.agent.MATrainable" title="marl.agent.agent.MATrainable"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.agent.agent.MATrainable</span></code></a></p>
-<p>The class of trainable agent using  minimax-DQN algorithm</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>observation_space</strong> – (gym.Spaces) The observation space</p></li>
-<li><p><strong>my_action_space</strong> – (gym.Spaces) My action space</p></li>
-<li><p><strong>other_action_space</strong> – (gym.Spaces) The action space of the other agent</p></li>
-<li><p><strong>index</strong> – (int) The position of the agent in the list of agent</p></li>
-<li><p><strong>mas</strong> – (marl.agent.MAS) The multi-agent system corresponding to the agent</p></li>
-<li><p><strong>exploration</strong> – (Exploration) The exploration process</p></li>
-<li><p><strong>gamma</strong> – (float) The training parameters</p></li>
-<li><p><strong>lr</strong> – (float) The learning rate</p></li>
-<li><p><strong>target_update_freq</strong> – (int) The update frequency of the target model</p></li>
-<li><p><strong>name</strong> – (str) The name of the agent</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="method">
-<dt id="marl.agent.q_agent.MinimaxDQNAgent.update_q">
-<code class="sig-name descname">update_q</code><span class="sig-paren">(</span><em class="sig-param">curr_value</em>, <em class="sig-param">target_value</em>, <em class="sig-param">batch</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/q_agent.html#MinimaxDQNAgent.update_q"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.q_agent.MinimaxDQNAgent.update_q" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the Q value.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>curr_value</strong> – (torch.Tensor) The current value</p></li>
-<li><p><strong>target_value</strong> – (torch.Tensor) The target value</p></li>
-<li><p><strong>batch</strong> – (list) A list composed of the different information about the batch required</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="marl.agent.q_agent.MinimaxDQNAgent.update_target_model">
-<code class="sig-name descname">update_target_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/q_agent.html#MinimaxDQNAgent.update_target_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.q_agent.MinimaxDQNAgent.update_target_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the target model.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="marl.agent.q_agent.MinimaxDQNAgent.target">
-<code class="sig-name descname">target</code><span class="sig-paren">(</span><em class="sig-param">Q</em>, <em class="sig-param">joint_batch</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/q_agent.html#MinimaxDQNAgent.target"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.q_agent.MinimaxDQNAgent.target" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the target value.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>Q</strong> – (Model or torch.nn.Module) The model of the Q-value</p></li>
-<li><p><strong>batch</strong> – (list) A list composed of the different information about the batch required</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="marl.agent.q_agent.MinimaxDQNAgent.value">
-<code class="sig-name descname">value</code><span class="sig-paren">(</span><em class="sig-param">observation</em>, <em class="sig-param">action</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/q_agent.html#MinimaxDQNAgent.value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.q_agent.MinimaxDQNAgent.value" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the value.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>observation</strong> – The observation</p></li>
-<li><p><strong>action</strong> – The action</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="marl.agent.q_agent.DQNAgent">
 <em class="property">class </em><code class="sig-prename descclassname">marl.agent.q_agent.</code><code class="sig-name descname">DQNAgent</code><span class="sig-paren">(</span><em class="sig-param">qmodel</em>, <em class="sig-param">observation_space</em>, <em class="sig-param">action_space</em>, <em class="sig-param">experience='ReplayMemory-10000'</em>, <em class="sig-param">exploration='EpsGreedy'</em>, <em class="sig-param">gamma=0.99</em>, <em class="sig-param">lr=0.0005</em>, <em class="sig-param">batch_size=32</em>, <em class="sig-param">target_update_freq=1000</em>, <em class="sig-param">name='DQNAgent'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/q_agent.html#DQNAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.q_agent.DQNAgent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#marl.agent.q_agent.QAgent" title="marl.agent.q_agent.QAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.agent.q_agent.QAgent</span></code></a></p>
@@ -736,6 +801,78 @@
 <dl class="method">
 <dt id="marl.agent.q_agent.DQNAgent.value">
 <code class="sig-name descname">value</code><span class="sig-paren">(</span><em class="sig-param">observation</em>, <em class="sig-param">action</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/q_agent.html#DQNAgent.value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.q_agent.DQNAgent.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation</strong> – The observation</p></li>
+<li><p><strong>action</strong> – The action</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="marl.agent.q_agent.MinimaxDQNAgent">
+<em class="property">class </em><code class="sig-prename descclassname">marl.agent.q_agent.</code><code class="sig-name descname">MinimaxDQNAgent</code><span class="sig-paren">(</span><em class="sig-param">qmodel</em>, <em class="sig-param">observation_space</em>, <em class="sig-param">my_action_space</em>, <em class="sig-param">other_action_space</em>, <em class="sig-param">index=None</em>, <em class="sig-param">mas=None</em>, <em class="sig-param">exploration='EpsGreedy'</em>, <em class="sig-param">experience='ReplayMemory-10000'</em>, <em class="sig-param">gamma=0.99</em>, <em class="sig-param">lr=0.001</em>, <em class="sig-param">batch_size=32</em>, <em class="sig-param">target_update_freq=None</em>, <em class="sig-param">name='MinimaxDQNAgent'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/q_agent.html#MinimaxDQNAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.q_agent.MinimaxDQNAgent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#marl.agent.q_agent.QAgent" title="marl.agent.q_agent.QAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.agent.q_agent.QAgent</span></code></a>, <a class="reference internal" href="#marl.agent.agent.MATrainable" title="marl.agent.agent.MATrainable"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.agent.agent.MATrainable</span></code></a></p>
+<p>The class of trainable agent using  minimax-DQN algorithm</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_space</strong> – (gym.Spaces) The observation space</p></li>
+<li><p><strong>my_action_space</strong> – (gym.Spaces) My action space</p></li>
+<li><p><strong>other_action_space</strong> – (gym.Spaces) The action space of the other agent</p></li>
+<li><p><strong>index</strong> – (int) The position of the agent in the list of agent</p></li>
+<li><p><strong>mas</strong> – (marl.agent.MAS) The multi-agent system corresponding to the agent</p></li>
+<li><p><strong>exploration</strong> – (Exploration) The exploration process</p></li>
+<li><p><strong>gamma</strong> – (float) The training parameters</p></li>
+<li><p><strong>lr</strong> – (float) The learning rate</p></li>
+<li><p><strong>target_update_freq</strong> – (int) The update frequency of the target model</p></li>
+<li><p><strong>name</strong> – (str) The name of the agent</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="marl.agent.q_agent.MinimaxDQNAgent.update_q">
+<code class="sig-name descname">update_q</code><span class="sig-paren">(</span><em class="sig-param">curr_value</em>, <em class="sig-param">target_value</em>, <em class="sig-param">batch</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/q_agent.html#MinimaxDQNAgent.update_q"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.q_agent.MinimaxDQNAgent.update_q" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the Q value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>curr_value</strong> – (torch.Tensor) The current value</p></li>
+<li><p><strong>target_value</strong> – (torch.Tensor) The target value</p></li>
+<li><p><strong>batch</strong> – (list) A list composed of the different information about the batch required</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="marl.agent.q_agent.MinimaxDQNAgent.update_target_model">
+<code class="sig-name descname">update_target_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/q_agent.html#MinimaxDQNAgent.update_target_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.q_agent.MinimaxDQNAgent.update_target_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the target model.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="marl.agent.q_agent.MinimaxDQNAgent.target">
+<code class="sig-name descname">target</code><span class="sig-paren">(</span><em class="sig-param">Q</em>, <em class="sig-param">joint_batch</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/q_agent.html#MinimaxDQNAgent.target"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.q_agent.MinimaxDQNAgent.target" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the target value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Q</strong> – (Model or torch.nn.Module) The model of the Q-value</p></li>
+<li><p><strong>batch</strong> – (list) A list composed of the different information about the batch required</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="marl.agent.q_agent.MinimaxDQNAgent.value">
+<code class="sig-name descname">value</code><span class="sig-paren">(</span><em class="sig-param">observation</em>, <em class="sig-param">action</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/q_agent.html#MinimaxDQNAgent.value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.q_agent.MinimaxDQNAgent.value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1201,7 +1338,7 @@
 <span id="several-policies"></span><h2>Several Policies<a class="headerlink" href="#module-marl.policy.policies" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="marl.policy.policies.RandomPolicy">
-<em class="property">class </em><code class="sig-prename descclassname">marl.policy.policies.</code><code class="sig-name descname">RandomPolicy</code><span class="sig-paren">(</span><em class="sig-param">action_space=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/policy/policies.html#RandomPolicy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.policy.policies.RandomPolicy" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">marl.policy.policies.</code><code class="sig-name descname">RandomPolicy</code><span class="sig-paren">(</span><em class="sig-param">action_space</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/policy/policies.html#RandomPolicy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.policy.policies.RandomPolicy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#marl.policy.policy.Policy" title="marl.policy.policy.Policy"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.policy.policy.Policy</span></code></a></p>
 <p>The class of random policies</p>
 <dl class="field-list simple">
@@ -1303,6 +1440,171 @@
 <dt id="marl.policy.policies.DeterministicPolicy.__call__">
 <code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">observation</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/policy/policies.html#DeterministicPolicy.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.policy.policies.DeterministicPolicy.__call__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call self as a function.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="models">
+<h1>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-marl.model.qvalue">
+<span id="value-and-q-value-array"></span><h2>Value and Q-Value array<a class="headerlink" href="#module-marl.model.qvalue" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="marl.model.qvalue.VTable">
+<em class="property">class </em><code class="sig-prename descclassname">marl.model.qvalue.</code><code class="sig-name descname">VTable</code><span class="sig-paren">(</span><em class="sig-param">n_observations</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/qvalue.html#VTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.qvalue.VTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">marl.model.model.Model</span></code></p>
+<p>The class of state value function for discret state space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n_observations</strong> – (int) The number of possible observations</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="marl.model.qvalue.VTable.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/qvalue.html#VTable.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.qvalue.VTable.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.model.qvalue.VTable.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/qvalue.html#VTable.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.qvalue.VTable.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.model.qvalue.VTable.__call__">
+<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/qvalue.html#VTable.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.qvalue.VTable.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call self as a function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="marl.model.qvalue.VTable.shape">
+<em class="property">property </em><code class="sig-name descname">shape</code><a class="headerlink" href="#marl.model.qvalue.VTable.shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="marl.model.qvalue.QTable">
+<em class="property">class </em><code class="sig-prename descclassname">marl.model.qvalue.</code><code class="sig-name descname">QTable</code><span class="sig-paren">(</span><em class="sig-param">n_observations</em>, <em class="sig-param">n_actions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/qvalue.html#QTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.qvalue.QTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">marl.model.model.Model</span></code></p>
+<p>The class of action value function for discret state and action space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_observations</strong> – (int) The number of possible observations</p></li>
+<li><p><strong>n_actions</strong> – (int) The number of possible actions</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="marl.model.qvalue.QTable.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/qvalue.html#QTable.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.qvalue.QTable.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.model.qvalue.QTable.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/qvalue.html#QTable.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.qvalue.QTable.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.model.qvalue.QTable.__call__">
+<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">state=None</em>, <em class="sig-param">action=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/qvalue.html#QTable.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.qvalue.QTable.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call self as a function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="marl.model.qvalue.QTable.shape">
+<em class="property">property </em><code class="sig-name descname">shape</code><a class="headerlink" href="#marl.model.qvalue.QTable.shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="marl.model.qvalue.MultiQTable">
+<em class="property">class </em><code class="sig-prename descclassname">marl.model.qvalue.</code><code class="sig-name descname">MultiQTable</code><span class="sig-paren">(</span><em class="sig-param">n_observations</em>, <em class="sig-param">n_actions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/qvalue.html#MultiQTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.qvalue.MultiQTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">marl.model.model.Model</span></code></p>
+<p>The class of actions value function for multi-agent with discret state and action space.
+This kind of value function is used in minimax-Q algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_observations</strong> – (int) The number of possible observations</p></li>
+<li><p><strong>n_actions</strong> – (int) The number of possible actions</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="marl.model.qvalue.MultiQTable.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/qvalue.html#MultiQTable.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.qvalue.MultiQTable.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.model.qvalue.MultiQTable.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/qvalue.html#MultiQTable.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.qvalue.MultiQTable.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.model.qvalue.MultiQTable.shape">
+<em class="property">property </em><code class="sig-name descname">shape</code><a class="headerlink" href="#marl.model.qvalue.MultiQTable.shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.model.qvalue.MultiQTable.__call__">
+<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">state=None</em>, <em class="sig-param">action=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/qvalue.html#MultiQTable.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.qvalue.MultiQTable.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call self as a function.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-marl.model.nn.mlpnet">
+<span id="neural-network-model"></span><h2>Neural network model<a class="headerlink" href="#module-marl.model.nn.mlpnet" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="marl.model.nn.mlpnet.hidden_init">
+<code class="sig-prename descclassname">marl.model.nn.mlpnet.</code><code class="sig-name descname">hidden_init</code><span class="sig-paren">(</span><em class="sig-param">layer</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/nn/mlpnet.html#hidden_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.nn.mlpnet.hidden_init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="marl.model.nn.mlpnet.MlpNet">
+<em class="property">class </em><code class="sig-prename descclassname">marl.model.nn.mlpnet.</code><code class="sig-name descname">MlpNet</code><span class="sig-paren">(</span><em class="sig-param">input_size, output_size, hidden_size=[64, 64], hidden_activ=&lt;class 'torch.nn.modules.activation.ReLU'&gt;, last_activ=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/nn/mlpnet.html#MlpNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.nn.mlpnet.MlpNet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="method">
+<dt id="marl.model.nn.mlpnet.MlpNet.reset_parameters">
+<code class="sig-name descname">reset_parameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/nn/mlpnet.html#MlpNet.reset_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.nn.mlpnet.MlpNet.reset_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.model.nn.mlpnet.MlpNet.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/nn/mlpnet.html#MlpNet.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.nn.mlpnet.MlpNet.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="marl.model.nn.mlpnet.GumbelMlpNet">
+<em class="property">class </em><code class="sig-prename descclassname">marl.model.nn.mlpnet.</code><code class="sig-name descname">GumbelMlpNet</code><span class="sig-paren">(</span><em class="sig-param">input_size, output_size, hidden_size=[64, 64], hidden_activ=&lt;class 'torch.nn.modules.activation.ReLU'&gt;, tau=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/nn/mlpnet.html#GumbelMlpNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.nn.mlpnet.GumbelMlpNet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#marl.model.nn.mlpnet.MlpNet" title="marl.model.nn.mlpnet.MlpNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.model.nn.mlpnet.MlpNet</span></code></a></p>
+<dl class="method">
+<dt id="marl.model.nn.mlpnet.GumbelMlpNet.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/nn/mlpnet.html#GumbelMlpNet.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.nn.mlpnet.GumbelMlpNet.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
 </dd></dl>
 
 </dd></dl>

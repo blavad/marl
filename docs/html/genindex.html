@@ -86,10 +86,12 @@
 </ul>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="content/modules.html">Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/modules.html">Multi-agent RL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/modules.html#agent">Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="content/modules.html#experience">Experience</a></li>
 <li class="toctree-l1"><a class="reference internal" href="content/modules.html#exploration">Exploration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="content/modules.html#policies">Policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/modules.html#models">Models</a></li>
 </ul>
 
             
@@ -164,6 +166,7 @@
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#O"><strong>O</strong></a>
@@ -188,6 +191,12 @@
 </li>
         <li><a href="content/modules.html#marl.exploration.ou_noise.OUNoise.__call__">(marl.exploration.ou_noise.OUNoise method)</a>
 </li>
+        <li><a href="content/modules.html#marl.model.qvalue.MultiQTable.__call__">(marl.model.qvalue.MultiQTable method)</a>
+</li>
+        <li><a href="content/modules.html#marl.model.qvalue.QTable.__call__">(marl.model.qvalue.QTable method)</a>
+</li>
+        <li><a href="content/modules.html#marl.model.qvalue.VTable.__call__">(marl.model.qvalue.VTable method)</a>
+</li>
         <li><a href="content/modules.html#marl.policy.policies.DeterministicPolicy.__call__">(marl.policy.policies.DeterministicPolicy method)</a>
 </li>
         <li><a href="content/modules.html#marl.policy.policies.QPolicy.__call__">(marl.policy.policies.QPolicy method)</a>
@@ -210,6 +219,10 @@
       <ul>
         <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.action">(marl.agent.agent.TrainableAgent method)</a>
 </li>
+        <li><a href="content/modules.html#marl.marl.MARL.action">(marl.marl.MARL method)</a>
+</li>
+        <li><a href="content/modules.html#marl.marl.MAS.action">(marl.marl.MAS method)</a>
+</li>
       </ul></li>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.action_space">action_space() (marl.agent.agent.TrainableAgent property)</a>
 </li>
@@ -217,6 +230,10 @@
 </li>
       <li><a href="content/modules.html#marl.agent.agent.Agent.agents">agents (marl.agent.agent.Agent attribute)</a>
 </li>
+      <li><a href="content/modules.html#marl.marl.MAS.append">append() (marl.marl.MAS method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#marl.agent.agent.available">available() (in module marl.agent.agent)</a>
 
       <ul>
@@ -287,14 +304,24 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="content/modules.html#marl.policy.policies.StochasticPolicy.forward">forward() (marl.policy.policies.StochasticPolicy method)</a>
+      <li><a href="content/modules.html#marl.model.nn.mlpnet.GumbelMlpNet.forward">forward() (marl.model.nn.mlpnet.GumbelMlpNet method)</a>
+
+      <ul>
+        <li><a href="content/modules.html#marl.model.nn.mlpnet.MlpNet.forward">(marl.model.nn.mlpnet.MlpNet method)</a>
 </li>
+        <li><a href="content/modules.html#marl.policy.policies.StochasticPolicy.forward">(marl.policy.policies.StochasticPolicy method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/modules.html#marl.marl.MAS.get_by_id">get_by_id() (marl.marl.MAS method)</a>
+</li>
+      <li><a href="content/modules.html#marl.marl.MAS.get_by_name">get_by_name() (marl.marl.MAS method)</a>
+</li>
       <li><a href="content/modules.html#marl.experience.replay_buffer.ReplayMemory.get_transition">get_transition() (marl.experience.replay_buffer.ReplayMemory method)</a>
 </li>
   </ul></td>
@@ -302,6 +329,20 @@
       <li><a href="content/modules.html#marl.exploration.greedy.Greedy">Greedy (class in marl.exploration.greedy)</a>
 </li>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.greedy_action">greedy_action() (marl.agent.agent.TrainableAgent method)</a>
+
+      <ul>
+        <li><a href="content/modules.html#marl.marl.MARL.greedy_action">(marl.marl.MARL method)</a>
+</li>
+      </ul></li>
+      <li><a href="content/modules.html#marl.model.nn.mlpnet.GumbelMlpNet">GumbelMlpNet (class in marl.model.nn.mlpnet)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/modules.html#marl.model.nn.mlpnet.hidden_init">hidden_init() (in module marl.model.nn.mlpnet)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -311,9 +352,19 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.learn">learn() (marl.agent.agent.TrainableAgent method)</a>
 </li>
+      <li><a href="content/modules.html#marl.model.qvalue.MultiQTable.load">load() (marl.model.qvalue.MultiQTable method)</a>
+
+      <ul>
+        <li><a href="content/modules.html#marl.model.qvalue.QTable.load">(marl.model.qvalue.QTable method)</a>
+</li>
+        <li><a href="content/modules.html#marl.model.qvalue.VTable.load">(marl.model.qvalue.VTable method)</a>
+</li>
+        <li><a href="content/modules.html#marl.policy.policy.Policy.load">(marl.policy.policy.Policy method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="content/modules.html#marl.policy.policy.Policy.load">load() (marl.policy.policy.Policy method)</a>
+      <li><a href="content/modules.html#marl.marl.MARL.load_model">load_model() (marl.marl.MARL method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -345,16 +396,18 @@
       </ul></li>
       <li><a href="content/modules.html#marl.agent.maac_agent.MAPGAgent">MAPGAgent (class in marl.agent.maac_agent)</a>
 </li>
+      <li><a href="content/modules.html#marl.marl.MARL">MARL (class in marl.marl)</a>
+</li>
       <li><a href="content/modules.html#module-marl.agent.agent">marl.agent.agent (module)</a>
 </li>
       <li><a href="content/modules.html#module-marl.agent.maac_agent">marl.agent.maac_agent (module)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#module-marl.agent.q_agent">marl.agent.q_agent (module)</a>
 </li>
       <li><a href="content/modules.html#module-marl.experience.experience">marl.experience.experience (module)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#module-marl.experience.replay_buffer">marl.experience.replay_buffer (module)</a>
 </li>
       <li><a href="content/modules.html#module-marl.exploration.eps_greedy">marl.exploration.eps_greedy (module)</a>
@@ -365,9 +418,17 @@
 </li>
       <li><a href="content/modules.html#module-marl.exploration.ou_noise">marl.exploration.ou_noise (module)</a>
 </li>
+      <li><a href="content/modules.html#module-marl.marl">marl.marl (module)</a>
+</li>
+      <li><a href="content/modules.html#module-marl.model.nn.mlpnet">marl.model.nn.mlpnet (module)</a>
+</li>
+      <li><a href="content/modules.html#module-marl.model.qvalue">marl.model.qvalue (module)</a>
+</li>
       <li><a href="content/modules.html#module-marl.policy.policies">marl.policy.policies (module)</a>
 </li>
       <li><a href="content/modules.html#module-marl.policy.policy">marl.policy.policy (module)</a>
+</li>
+      <li><a href="content/modules.html#marl.marl.MAS">MAS (class in marl.marl)</a>
 </li>
       <li><a href="content/modules.html#marl.agent.agent.MATrainable">MATrainable (class in marl.agent.agent)</a>
 </li>
@@ -375,7 +436,11 @@
 </li>
       <li><a href="content/modules.html#marl.agent.q_agent.MinimaxQAgent">MinimaxQAgent (class in marl.agent.q_agent)</a>
 </li>
+      <li><a href="content/modules.html#marl.model.nn.mlpnet.MlpNet">MlpNet (class in marl.model.nn.mlpnet)</a>
+</li>
       <li><a href="content/modules.html#marl.policy.policies.QPolicy.model">model() (marl.policy.policies.QPolicy property)</a>
+</li>
+      <li><a href="content/modules.html#marl.model.qvalue.MultiQTable">MultiQTable (class in marl.model.qvalue)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -417,9 +482,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#marl.agent.q_agent.QAgent">QAgent (class in marl.agent.q_agent)</a>
 </li>
+      <li><a href="content/modules.html#marl.policy.policies.QPolicy">QPolicy (class in marl.policy.policies)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="content/modules.html#marl.policy.policies.QPolicy">QPolicy (class in marl.policy.policies)</a>
+      <li><a href="content/modules.html#marl.model.qvalue.QTable">QTable (class in marl.model.qvalue)</a>
 </li>
       <li><a href="content/modules.html#marl.agent.q_agent.QTableAgent">QTableAgent (class in marl.agent.q_agent)</a>
 </li>
@@ -462,6 +529,12 @@
 </li>
       </ul></li>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.reset_exploration">reset_exploration() (marl.agent.agent.TrainableAgent method)</a>
+
+      <ul>
+        <li><a href="content/modules.html#marl.marl.MARL.reset_exploration">(marl.marl.MARL method)</a>
+</li>
+      </ul></li>
+      <li><a href="content/modules.html#marl.model.nn.mlpnet.MlpNet.reset_parameters">reset_parameters() (marl.model.nn.mlpnet.MlpNet method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -479,22 +552,46 @@
       </ul></li>
       <li><a href="content/modules.html#marl.experience.replay_buffer.ReplayMemory.sample_index">sample_index() (marl.experience.replay_buffer.ReplayMemory method)</a>
 </li>
-      <li><a href="content/modules.html#marl.policy.policy.Policy.save">save() (marl.policy.policy.Policy method)</a>
+      <li><a href="content/modules.html#marl.model.qvalue.MultiQTable.save">save() (marl.model.qvalue.MultiQTable method)</a>
+
+      <ul>
+        <li><a href="content/modules.html#marl.model.qvalue.QTable.save">(marl.model.qvalue.QTable method)</a>
+</li>
+        <li><a href="content/modules.html#marl.model.qvalue.VTable.save">(marl.model.qvalue.VTable method)</a>
+</li>
+        <li><a href="content/modules.html#marl.policy.policy.Policy.save">(marl.policy.policy.Policy method)</a>
+</li>
+      </ul></li>
+      <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.save_all">save_all() (marl.agent.agent.TrainableAgent method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.save_all">save_all() (marl.agent.agent.TrainableAgent method)</a>
-</li>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.save_policy">save_policy() (marl.agent.agent.TrainableAgent method)</a>
+
+      <ul>
+        <li><a href="content/modules.html#marl.marl.MARL.save_policy">(marl.marl.MARL method)</a>
 </li>
+      </ul></li>
       <li><a href="content/modules.html#marl.agent.agent.MATrainable.set_mas">set_mas() (marl.agent.agent.MATrainable method)</a>
 </li>
+      <li><a href="content/modules.html#marl.model.qvalue.MultiQTable.shape">shape() (marl.model.qvalue.MultiQTable property)</a>
+
+      <ul>
+        <li><a href="content/modules.html#marl.model.qvalue.QTable.shape">(marl.model.qvalue.QTable property)</a>
+</li>
+        <li><a href="content/modules.html#marl.model.qvalue.VTable.shape">(marl.model.qvalue.VTable property)</a>
+</li>
+      </ul></li>
       <li><a href="content/modules.html#marl.agent.maac_agent.MAPGAgent.soft_update">soft_update() (marl.agent.maac_agent.MAPGAgent method)</a>
 </li>
       <li><a href="content/modules.html#marl.policy.policies.StochasticPolicy">StochasticPolicy (class in marl.policy.policies)</a>
 </li>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.store_experience">store_experience() (marl.agent.agent.TrainableAgent method)</a>
+
+      <ul>
+        <li><a href="content/modules.html#marl.marl.MARL.store_experience">(marl.marl.MARL method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -538,7 +635,11 @@
       <li><a href="content/modules.html#marl.agent.maac_agent.MAPGAgent.update_critic">update_critic() (marl.agent.maac_agent.MAPGAgent method)</a>
 </li>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.update_exploration">update_exploration() (marl.agent.agent.TrainableAgent method)</a>
+
+      <ul>
+        <li><a href="content/modules.html#marl.marl.MARL.update_exploration">(marl.marl.MARL method)</a>
 </li>
+      </ul></li>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.update_model">update_model() (marl.agent.agent.TrainableAgent method)</a>
 
       <ul>
@@ -546,7 +647,11 @@
 </li>
         <li><a href="content/modules.html#marl.agent.q_agent.QAgent.update_model">(marl.agent.q_agent.QAgent method)</a>
 </li>
+        <li><a href="content/modules.html#marl.marl.MARL.update_model">(marl.marl.MARL method)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#marl.agent.q_agent.DQNAgent.update_q">update_q() (marl.agent.q_agent.DQNAgent method)</a>
 
       <ul>
@@ -559,8 +664,6 @@
         <li><a href="content/modules.html#marl.agent.q_agent.QTableAgent.update_q">(marl.agent.q_agent.QTableAgent method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#marl.agent.q_agent.DQNAgent.update_target_model">update_target_model() (marl.agent.q_agent.DQNAgent method)</a>
 
       <ul>
@@ -591,6 +694,10 @@
         <li><a href="content/modules.html#marl.agent.q_agent.QTableAgent.value">(marl.agent.q_agent.QTableAgent method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/modules.html#marl.model.qvalue.VTable">VTable (class in marl.model.qvalue)</a>
+</li>
   </ul></td>
 </tr></table>
 

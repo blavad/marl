@@ -85,10 +85,12 @@
 </ul>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html">Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html">Multi-agent RL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#agent">Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#experience">Experience</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#exploration">Exploration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#policies">Policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#models">Models</a></li>
 </ul>
 
             
@@ -226,14 +228,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
          
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">policy</span><span class="p">,</span> <span class="n">observation_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="s2">&quot;ReplayMemory-10000&quot;</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="s2">&quot;EpsGreedy&quot;</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TrainableAgent&quot;</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="n">Agent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">policy</span><span class="o">=</span><span class="n">marl</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">observation_space</span><span class="o">=</span><span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="o">=</span><span class="n">action_space</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">lr</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span>
         
         <span class="c1"># Create policy, exploration and experience</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">policy</span> <span class="o">=</span> <span class="n">marl</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">observation_space</span><span class="o">=</span><span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="o">=</span><span class="n">action_space</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">experience</span> <span class="o">=</span> <span class="n">marl</span><span class="o">.</span><span class="n">experience</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="n">experience</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">exploration</span> <span class="o">=</span> <span class="n">marl</span><span class="o">.</span><span class="n">exploration</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="n">exploration</span><span class="p">)</span>
         
@@ -393,7 +394,7 @@
 <div class="viewcode-block" id="MATrainable.set_mas"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.agent.MATrainable.set_mas">[docs]</a>    <span class="k">def</span> <span class="nf">set_mas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mas</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mas</span> <span class="o">=</span> <span class="n">mas</span>
         <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">ag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mas</span><span class="o">.</span><span class="n">agents</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">ag</span><span class="o">.</span><span class="n">counter</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ag</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">ind</span></div></div>
 
         
