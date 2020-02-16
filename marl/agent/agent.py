@@ -72,14 +72,13 @@ class TrainableAgent(Agent):
     """
          
     def __init__(self, policy, observation_space=None, action_space=None, model=None, experience="ReplayMemory-10000", exploration="EpsGreedy", gamma=0.99, lr=0.001, batch_size=32, name="TrainableAgent"):
-        self.name = name
+        Agent.__init__(self, policy=marl.policy.make(policy, model=model, observation_space=observation_space, action_space=action_space), name=name)
         
         self.lr = lr
         self.batch_size = batch_size
         self.gamma = gamma
         
         # Create policy, exploration and experience
-        self.policy = marl.policy.make(policy, model=model, observation_space=observation_space, action_space=action_space)
         self.experience = marl.experience.make(experience)
         self.exploration = marl.exploration.make(exploration)
         
@@ -239,7 +238,7 @@ class MATrainable(object):
     def set_mas(self, mas):
         self.mas = mas
         for ind, ag in enumerate(self.mas.agents):
-            if ag.counter == self.counter:
+            if ag.id == self.id:
                 self.index = ind
 
         

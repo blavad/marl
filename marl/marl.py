@@ -2,20 +2,58 @@ import os
 import marl
 from .agent import TrainableAgent, Agent
 
-class MAS():
+class MAS(object):
+    """
+    The class of multi-agent "system".
+    
+    :param agents_list: (list) The list of agents in the MAS
+    :param name: (str) The name of the system
+    """
+    
     def __init__(self, agents_list=[], name="mas"):
         self.name = name
         self.agents = agents_list
         
+    def append(self, agent):
+        """
+        Add an agent to the system.
+
+        :param agent: (Agent) The agents to be added
+        """
+        self.agents.append(agent)          
+    
+    def action(self, observation):
+        """
+        Return the joint action.
+
+        :param observation: The joint observation
+        """
+        return [Agent.action(ag, obs) for ag, obs in zip(self.agents, observation)]    
+    
+    def get_by_name(self, name):
+        for ag in self.agents:
+            if ag.name == name:
+                return ag
+        return None
+    
+    def get_by_id(self, id):
+        for ag in self.agents:
+            if ag.id == id:
+                return ag
+        return None
         
     def __len__(self):
         return len(self.agents)
 
-class MARL(TrainableAgent):
+class MARL(TrainableAgent, MAS):
+    """
+    The class for a multi-agent reinforcement learning.
     
+    :param agents_list: (list) The list of agents in the MARL model
+    :param name: (str) The name of the system
+    """
     def __init__(self, agents_list=[], name='marl'):
-        self.name = name
-        self.agents = agents_list
+        MAS.__init__(self, agents_list=agents_list, name=name)
         self.experience = marl.experience.make("ReplayMemory", capacity=10000)
         
     def store_experience(self, *args):
@@ -68,21 +106,4 @@ class MARL(TrainableAgent):
         for ag in self.agents:
             if isinstance(ag, TrainableAgent):
                 ag.load_model(filename)
-                
-    def append(self, agent):
-        self.agents.append(agent)          
-        
-    def get_by_name(self, name):
-        for ag in self.agents:
-            if ag.name == name:
-                return ag
-        return None
-    
-    def get_by_id(self, id):
-        for ag in self.agents:
-            if ag.id == id:
-                return ag
-        return None
-    
-    def __len__(self):
-        return len(self.agents)     
+                 

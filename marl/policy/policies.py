@@ -17,7 +17,7 @@ class RandomPolicy(Policy):
     :param observation_space: (gym.Spaces) The observation space
     :param action_space: (gym.Spaces) The action space
     """
-    def __init__(self, action_space=None):
+    def __init__(self, action_space):
         self.action_space = action_space
         
     def __call__(self, state):
