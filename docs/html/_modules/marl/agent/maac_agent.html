@@ -1,0 +1,398 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>marl.agent.maac_agent &mdash; MARL-API 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> MARL-API
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Quick start:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart/install.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html">Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#experience">Experience</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#exploration">Exploration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#policies">Policies</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MARL-API</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>marl.agent.maac_agent</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for marl.agent.maac_agent</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">marl</span>
+<span class="kn">from</span> <span class="nn">marl.agent</span> <span class="kn">import</span> <span class="n">QAgent</span><span class="p">,</span> <span class="n">TrainableAgent</span><span class="p">,</span> <span class="n">MATrainable</span>
+<span class="kn">from</span> <span class="nn">marl.policy</span> <span class="kn">import</span> <span class="n">StochasticPolicy</span><span class="p">,</span> <span class="n">DeterministicPolicy</span>
+<span class="kn">from</span> <span class="nn">marl.tools</span> <span class="kn">import</span> <span class="n">super_cat</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="MAPGAgent"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.maac_agent.MAPGAgent">[docs]</a><span class="k">class</span> <span class="nc">MAPGAgent</span><span class="p">(</span><span class="n">TrainableAgent</span><span class="p">,</span> <span class="n">MATrainable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The class of trainable agent using multi-agent policy gradient methods.</span>
+<span class="sd">    </span>
+<span class="sd">    :param critic_model: (Model or torch.nn.Module) The critic model </span>
+<span class="sd">    :param actor_policy: (Policy) actor policy</span>
+<span class="sd">    :param actor_model: (Model or torch.nn.Module) The actor model</span>
+<span class="sd">    :param observation_space: (gym.Spaces) The observation space</span>
+<span class="sd">    :param action_space: (gym.Spaces) The action space</span>
+<span class="sd">    :param index: (int) The index of the agent in the multi-agent system</span>
+<span class="sd">    :param mas: (MARL) The multi-agent system in which the agent is included</span>
+<span class="sd">    :param experience: (Experience) The experience memory data structure</span>
+<span class="sd">    :param exploration: (Exploration) The exploration process </span>
+<span class="sd">    :param lr_actor: (float) The learning rate for each actor</span>
+<span class="sd">    :param lr_critic: (float) The learning rate for each critic </span>
+<span class="sd">    :param gamma: (float) The discount factor</span>
+<span class="sd">    :param batch_size: (int) The batch size</span>
+<span class="sd">    :param tau: (float) The update rate   </span>
+<span class="sd">    :param name: (str) The name of the agent      </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">critic_model</span><span class="p">,</span> <span class="n">actor_policy</span><span class="p">,</span> <span class="n">actor_model</span><span class="p">,</span> <span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="s2">&quot;ReplayMemory-1000&quot;</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="s2">&quot;EpsGreedy&quot;</span><span class="p">,</span> <span class="n">lr_actor</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">lr_critic</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">use_target_net</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MAACAgent&quot;</span><span class="p">):</span>
+        <span class="n">TrainableAgent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">policy</span><span class="o">=</span><span class="n">actor_policy</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">actor_model</span><span class="p">,</span> <span class="n">observation_space</span><span class="o">=</span><span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="o">=</span><span class="n">action_space</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="n">experience</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="n">exploration</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr_actor</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">MATrainable</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mas</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>        
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">tau</span>
+        
+        <span class="c1"># Actor model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actor_optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span>
+
+        <span class="c1"># Critic model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">critic_model</span> <span class="o">=</span> <span class="n">marl</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="n">critic_model</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">critic_criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">SmoothL1Loss</span><span class="p">()</span> <span class="c1"># Huber criterionin (or nn.MSELoss())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lr_critic</span> <span class="o">=</span> <span class="n">lr_critic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">critic_optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">critic_model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr_critic</span><span class="p">)</span>
+        
+        <span class="c1"># Init target networks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_target_net</span> <span class="o">=</span> <span class="n">use_target_net</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_target_net</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_critic</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">critic_model</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_critic</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_policy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_policy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+    
+<div class="viewcode-block" id="MAPGAgent.soft_update"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.maac_agent.MAPGAgent.soft_update">[docs]</a>    <span class="k">def</span> <span class="nf">soft_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_model</span><span class="p">,</span> <span class="n">target_model</span><span class="p">,</span> <span class="n">tau</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">target_param</span><span class="p">,</span> <span class="n">local_param</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">target_model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">local_model</span><span class="o">.</span><span class="n">parameters</span><span class="p">()):</span>
+            <span class="n">target_param</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy_</span><span class="p">(</span><span class="n">tau</span><span class="o">*</span><span class="n">local_param</span><span class="o">.</span><span class="n">data</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">tau</span><span class="p">)</span><span class="o">*</span><span class="n">target_param</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+            
+<div class="viewcode-block" id="MAPGAgent.update_model"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.maac_agent.MAPGAgent.update_model">[docs]</a>    <span class="k">def</span> <span class="nf">update_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">experience</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">:</span>
+            <span class="k">return</span>
+        
+        <span class="c1"># Get batches</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experience</span><span class="o">.</span><span class="n">sample_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+        <span class="n">global_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mas</span><span class="o">.</span><span class="n">experience</span><span class="o">.</span><span class="n">get_transition</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mas</span><span class="o">.</span><span class="n">experience</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">local_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experience</span><span class="o">.</span><span class="n">get_transition</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">experience</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1"># Get changing policy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curr_critic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_critic</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_target_net</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic_model</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_critic</span><span class="p">(</span><span class="n">local_batch</span><span class="p">,</span> <span class="n">global_batch</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_actor</span><span class="p">(</span><span class="n">local_batch</span><span class="p">,</span> <span class="n">global_batch</span><span class="p">)</span>
+        
+        <span class="c1"># Compute </span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_target_net</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">soft_update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_policy</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">soft_update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">critic_model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_critic</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span></div>
+            
+<div class="viewcode-block" id="MAPGAgent.update_critic"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.maac_agent.MAPGAgent.update_critic">[docs]</a>    <span class="k">def</span> <span class="nf">update_critic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_batch</span><span class="p">,</span> <span class="n">global_batch</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">critic_optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        
+        <span class="c1"># Calculate target r_i + gamma * Q_i(x,a1&#39;,a2&#39;,...,aN&#39;)</span>
+        <span class="n">target_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">(</span><span class="n">local_batch</span><span class="p">,</span> <span class="n">global_batch</span><span class="p">)</span>
+        
+        <span class="c1"># Calculate value Q_i(x,a1,a2,...,aN)</span>
+        <span class="n">inputs_critic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_critic_inputs</span><span class="p">(</span><span class="n">global_batch</span><span class="o">.</span><span class="n">observation</span><span class="p">,</span> <span class="n">global_batch</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
+        <span class="n">curr_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic_model</span><span class="p">(</span><span class="n">inputs_critic</span><span class="p">)</span>
+        
+        <span class="c1"># Calculate critic loss </span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic_criterion</span><span class="p">(</span><span class="n">curr_value</span><span class="p">,</span> <span class="n">target_value</span><span class="p">)</span>
+        
+        <span class="c1"># Update params</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">critic_optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span></div>
+        
+     
+<div class="viewcode-block" id="MAPGAgent.target"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.maac_agent.MAPGAgent.target">[docs]</a>    <span class="k">def</span> <span class="nf">target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_batch</span><span class="p">,</span> <span class="n">global_batch</span><span class="p">):</span>
+        <span class="n">join_by_agent</span> <span class="o">=</span> <span class="k">lambda</span>  <span class="n">observation_batch</span><span class="p">,</span> <span class="n">num_ag</span> <span class="p">:</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">observation_batch</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_ag</span><span class="p">)]</span>
+        <span class="n">tensor_forme</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">observation</span><span class="p">,</span> <span class="n">i_ag</span> <span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">observation</span><span class="p">[</span><span class="n">i_ag</span><span class="p">]])</span>
+        
+        <span class="n">next_observ</span> <span class="o">=</span> <span class="p">[</span><span class="n">tensor_forme</span><span class="p">(</span><span class="n">join_by_agent</span><span class="p">(</span><span class="n">global_batch</span><span class="o">.</span><span class="n">next_observation</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mas</span><span class="p">)),</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mas</span><span class="p">))]</span>
+        <span class="n">next_actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mas</span><span class="o">.</span><span class="n">greedy_action</span><span class="p">(</span><span class="n">next_observ</span><span class="p">)</span>
+
+        <span class="n">nextact</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">bat</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">):</span>
+            <span class="n">nextact</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">next_actions</span><span class="p">[</span><span class="n">ag</span><span class="p">][</span><span class="n">bat</span><span class="p">]</span> <span class="k">for</span> <span class="n">ag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mas</span><span class="p">))])</span>
+            
+        <span class="n">inputs_critic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_critic_inputs</span><span class="p">(</span><span class="n">global_batch</span><span class="o">.</span><span class="n">observation</span><span class="p">,</span> <span class="n">nextact</span><span class="p">)</span>
+        <span class="n">next_action_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">curr_critic</span><span class="p">(</span><span class="n">inputs_critic</span><span class="p">)</span>
+        
+        <span class="n">my_reward</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">local_batch</span><span class="o">.</span><span class="n">reward</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">my_dones</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">local_batch</span><span class="o">.</span><span class="n">done_flag</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">my_reward</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">*</span> <span class="n">next_action_value</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">my_dones</span><span class="p">))</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">float</span><span class="p">()</span></div>
+     
+    <span class="k">def</span> <span class="nf">_critic_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_obs</span><span class="p">,</span> <span class="n">batch_act</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">super_cat</span><span class="p">(</span><span class="n">batch_obs</span><span class="p">[</span><span class="n">b</span><span class="p">],</span> <span class="n">batch_act</span><span class="p">[</span><span class="n">b</span><span class="p">])</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)])</span><span class="o">.</span><span class="n">float</span><span class="p">()</span></div>
+        
+<div class="viewcode-block" id="MAACAgent"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.maac_agent.MAACAgent">[docs]</a><span class="k">class</span> <span class="nc">MAACAgent</span><span class="p">(</span><span class="n">MAPGAgent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The class of trainable agent using multi-agent actor-critic methods.</span>
+<span class="sd">    </span>
+<span class="sd">    :param critic_model: (Model or torch.nn.Module) The critic model </span>
+<span class="sd">    :param actor_model: (Model or torch.nn.Module) The actor model</span>
+<span class="sd">    :param observation_space: (gym.Spaces) The observation space</span>
+<span class="sd">    :param action_space: (gym.Spaces) The action space</span>
+<span class="sd">    :param index: (int) The index of the agent in the multi-agent system</span>
+<span class="sd">    :param mas: (MARL) The multi-agent system in which the agent is included</span>
+<span class="sd">    :param experience: (Experience) The experience memory data structure</span>
+<span class="sd">    :param exploration: (Exploration) The exploration process </span>
+<span class="sd">    :param lr_actor: (float) The learning rate for each actor</span>
+<span class="sd">    :param lr_critic: (float) The learning rate for each critic </span>
+<span class="sd">    :param gamma: (float) The discount factor</span>
+<span class="sd">    :param batch_size: (int) The batch size</span>
+<span class="sd">    :param tau: (float) The update rate   </span>
+<span class="sd">    :param use_target_net: (bool) If true use a target model </span>
+<span class="sd">    :param name: (str) The name of the agent   </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">critic_model</span><span class="p">,</span> <span class="n">actor_model</span><span class="p">,</span> <span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="s2">&quot;ReplayMemory-1000&quot;</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="s2">&quot;Greedy&quot;</span><span class="p">,</span> <span class="n">lr_actor</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">lr_critic</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">use_target_net</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MAACAgent&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MAACAgent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">critic_model</span><span class="o">=</span><span class="n">critic_model</span><span class="p">,</span> <span class="n">actor_policy</span><span class="o">=</span><span class="s1">&#39;StochasticPolicy&#39;</span><span class="p">,</span> <span class="n">actor_model</span><span class="o">=</span><span class="n">actor_model</span><span class="p">,</span> <span class="n">observation_space</span><span class="o">=</span><span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="o">=</span><span class="n">action_space</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="n">experience</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="n">exploration</span><span class="p">,</span> <span class="n">lr_actor</span><span class="o">=</span><span class="n">lr_actor</span><span class="p">,</span> <span class="n">lr_critic</span><span class="o">=</span><span class="n">lr_critic</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
+
+    <span class="c1"># def update_actor(self, local_batch, global_batch):</span>
+    <span class="c1">#     self.actor_optimizer.zero_grad()</span>
+    <span class="c1">#     # Calcul actor loss</span>
+    <span class="c1">#     pd = self.policy.forward(local_batch.observation)</span>
+    <span class="c1">#     log_prob = pd.log_prob(local_batch.action) #.unsqueeze(0)</span>
+    <span class="c1">#     gae = self.critic_model(global_batch.observation, global_batch.action).detach()</span>
+    <span class="c1">#     actor_loss = -(log_prob * gae).mean()</span>
+    <span class="c1">#     actor_loss.backward()</span>
+    <span class="c1">#     self.actor_optimizer.step()</span>
+    
+<div class="viewcode-block" id="MADDPGAgent"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.maac_agent.MADDPGAgent">[docs]</a><span class="k">class</span> <span class="nc">MADDPGAgent</span><span class="p">(</span><span class="n">MAPGAgent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The class of trainable agent using multi-agent deep deterministic policy gradient methods. </span>
+<span class="sd">    </span>
+<span class="sd">    :param critic_model: (Model or torch.nn.Module) The critic model </span>
+<span class="sd">    :param actor_model: (Model or torch.nn.Module) The actor model</span>
+<span class="sd">    :param observation_space: (gym.Spaces) The observation space</span>
+<span class="sd">    :param action_space: (gym.Spaces) The action space</span>
+<span class="sd">    :param index: (int) The index of the agent in the multi-agent system</span>
+<span class="sd">    :param mas: (MARL) The multi-agent system in which the agent is included</span>
+<span class="sd">    :param experience: (Experience) The experience memory data structure</span>
+<span class="sd">    :param exploration: (Exploration) The exploration process </span>
+<span class="sd">    :param lr_actor: (float) The learning rate for each actor</span>
+<span class="sd">    :param lr_critic: (float) The learning rate for each critic </span>
+<span class="sd">    :param gamma: (float) The discount factor</span>
+<span class="sd">    :param batch_size: (int) The batch size</span>
+<span class="sd">    :param tau: (float) The update rate   </span>
+<span class="sd">    :param use_target_net: (bool) If true use a target model </span>
+<span class="sd">    :param name: (str) The name of the agent   </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">critic_model</span><span class="p">,</span> <span class="n">actor_model</span><span class="p">,</span> <span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="s2">&quot;ReplayMemory-1000&quot;</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="s2">&quot;Greedy&quot;</span><span class="p">,</span> <span class="n">lr_actor</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">lr_critic</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">use_target_net</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MADDPGAgent&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MADDPGAgent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">critic_model</span><span class="o">=</span><span class="n">critic_model</span><span class="p">,</span> <span class="n">actor_policy</span><span class="o">=</span><span class="s1">&#39;DeterministicPolicy&#39;</span><span class="p">,</span> <span class="n">actor_model</span><span class="o">=</span><span class="n">actor_model</span><span class="p">,</span> <span class="n">observation_space</span><span class="o">=</span><span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="o">=</span><span class="n">action_space</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="n">experience</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="n">exploration</span><span class="p">,</span> <span class="n">lr_actor</span><span class="o">=</span><span class="n">lr_actor</span><span class="p">,</span> <span class="n">lr_critic</span><span class="o">=</span><span class="n">lr_critic</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="n">tau</span><span class="p">,</span> <span class="n">use_target_net</span><span class="o">=</span><span class="n">use_target_net</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="MADDPGAgent.update_actor"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.maac_agent.MADDPGAgent.update_actor">[docs]</a>    <span class="k">def</span> <span class="nf">update_actor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_batch</span><span class="p">,</span> <span class="n">global_batch</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actor_optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="c1"># Calcul actor loss</span>
+        <span class="n">obs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">local_batch</span><span class="o">.</span><span class="n">observation</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="n">my_action_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+        
+        <span class="n">join_by_agent</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">batch</span><span class="p">,</span> <span class="n">num_ag</span> <span class="p">:</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">batch</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_ag</span><span class="p">)]</span>
+        <span class="n">tensor_forme</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">observation</span><span class="p">,</span> <span class="n">i_ag</span> <span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">observation</span><span class="p">[</span><span class="n">i_ag</span><span class="p">]])</span>
+        
+        <span class="c1"># Rearrange batches</span>
+        <span class="n">action_batch</span> <span class="o">=</span> <span class="p">[</span><span class="n">tensor_forme</span><span class="p">(</span><span class="n">join_by_agent</span><span class="p">(</span><span class="n">global_batch</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mas</span><span class="p">)),</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mas</span><span class="p">))]</span>
+        <span class="n">observation_batch</span> <span class="o">=</span> <span class="p">[</span><span class="n">tensor_forme</span><span class="p">(</span><span class="n">join_by_agent</span><span class="p">(</span><span class="n">global_batch</span><span class="o">.</span><span class="n">observation</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mas</span><span class="p">)),</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mas</span><span class="p">))]</span>
+        
+        <span class="n">action_batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">my_action_pred</span>
+        
+        <span class="c1"># build input for the critic</span>
+        <span class="n">inp_critic</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">):</span>
+            <span class="n">b_o</span> <span class="o">=</span> <span class="p">[</span><span class="n">observation_batch</span><span class="p">[</span><span class="n">ind_ag</span><span class="p">][</span><span class="n">b</span><span class="p">]</span> <span class="k">for</span> <span class="n">ind_ag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mas</span><span class="p">))]</span>
+            <span class="n">b_a</span> <span class="o">=</span> <span class="p">[</span><span class="n">action_batch</span><span class="p">[</span><span class="n">ind_ag</span><span class="p">][</span><span class="n">b</span><span class="p">]</span> <span class="k">for</span> <span class="n">ind_ag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mas</span><span class="p">))]</span>
+            <span class="n">inp_critic</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">b_o</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">b_a</span><span class="p">)])</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">inputs_critic</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">inp_critic</span><span class="p">)</span>
+        
+        <span class="n">actor_loss</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">critic_model</span><span class="p">(</span><span class="n">inputs_critic</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+        <span class="n">actor_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">retain_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actor_optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, David Albert
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

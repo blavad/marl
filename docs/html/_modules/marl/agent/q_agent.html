@@ -1,0 +1,475 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>marl.agent.q_agent &mdash; MARL-API 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> MARL-API
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Quick start:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart/install.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html">Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#experience">Experience</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#exploration">Exploration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#policies">Policies</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MARL-API</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>marl.agent.q_agent</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for marl.agent.q_agent</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">marl</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">TrainableAgent</span><span class="p">,</span> <span class="n">MATrainable</span>
+<span class="kn">from</span> <span class="nn">..policy</span> <span class="kn">import</span> <span class="n">QPolicy</span>
+<span class="kn">from</span> <span class="nn">..model</span> <span class="kn">import</span> <span class="n">MultiQTable</span>
+<span class="kn">from</span> <span class="nn">marl.tools</span> <span class="kn">import</span> <span class="n">gymSpace2dim</span> 
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="QAgent"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.QAgent">[docs]</a><span class="k">class</span> <span class="nc">QAgent</span><span class="p">(</span><span class="n">TrainableAgent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The class of trainable agent using Qvalue-based methods</span>
+<span class="sd">    </span>
+<span class="sd">    :param qmodel: (Model or torch.nn.Module) The q-value model </span>
+<span class="sd">    :param observation_space: (gym.Spaces) The observation space</span>
+<span class="sd">    :param action_space: (gym.Spaces) The action space</span>
+<span class="sd">    :param experience: (Experience) The experience memory data structure</span>
+<span class="sd">    :param exploration: (Exploration) The exploration process </span>
+<span class="sd">    :param gamma: (float) The training parameters</span>
+<span class="sd">    :param lr: (float) The learning rate</span>
+<span class="sd">    :param batch_size: (int) The size of a batch</span>
+<span class="sd">    :param target_update_freq: (int) The update frequency of the target model  </span>
+<span class="sd">    :param name: (str) The name of the agent      </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qmodel</span><span class="p">,</span> <span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="s2">&quot;ReplayMemory-1&quot;</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="s2">&quot;EpsGreedy&quot;</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">target_update_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;QAgent&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">QAgent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">policy</span><span class="o">=</span><span class="n">QPolicy</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">qmodel</span><span class="p">,</span> <span class="n">observation_space</span><span class="o">=</span><span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="o">=</span><span class="n">action_space</span><span class="p">),</span> <span class="n">observation_space</span><span class="o">=</span><span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="o">=</span><span class="n">action_space</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="n">experience</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="n">exploration</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">off_policy</span> <span class="o">=</span> <span class="n">target_update_freq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_update_freq</span> <span class="o">=</span> <span class="n">target_update_freq</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">off_policy</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_policy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="p">)</span>
+        
+<div class="viewcode-block" id="QAgent.update_model"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.QAgent.update_model">[docs]</a>    <span class="k">def</span> <span class="nf">update_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the model.</span>
+<span class="sd">        </span>
+<span class="sd">        :param t: (int) The current timestep</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">experience</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">:</span>
+            <span class="k">return</span>
+        
+        <span class="c1"># Get changing policy</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">off_policy</span><span class="p">:</span>
+            <span class="n">curr_policy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_policy</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">curr_policy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span>
+        
+        <span class="c1"># Get batch of experience</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">MATrainable</span><span class="p">):</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experience</span><span class="o">.</span><span class="n">sample_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+            <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mas</span><span class="o">.</span><span class="n">experience</span><span class="o">.</span><span class="n">get_transition</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mas</span><span class="o">.</span><span class="n">experience</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experience</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+        
+        <span class="c1"># print(batch)</span>
+        
+        <span class="c1"># Compute target r_t + gamma*max_a Q(s_t+1, a)</span>
+        <span class="n">target_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">(</span><span class="n">curr_policy</span><span class="o">.</span><span class="n">Q</span><span class="p">,</span> <span class="n">batch</span><span class="p">)</span>
+        
+        <span class="c1"># Compute current value Q(s_t, a_t)</span>
+        <span class="n">curr_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">observation</span><span class="p">,</span> <span class="n">batch</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
+        
+        <span class="c1"># print(&quot;Target : &quot;, target_value, &quot; - Current : &quot;, curr_value)</span>
+        
+        <span class="c1"># Update Q values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_q</span><span class="p">(</span><span class="n">curr_value</span><span class="p">,</span> <span class="n">target_value</span><span class="p">,</span> <span class="n">batch</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">off_policy</span> <span class="ow">and</span> <span class="n">t</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_update_freq</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_target_model</span><span class="p">()</span></div>
+    
+<div class="viewcode-block" id="QAgent.target"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.QAgent.target">[docs]</a>    <span class="k">def</span> <span class="nf">target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the target value.</span>
+<span class="sd">        </span>
+<span class="sd">        :param Q: (Model or torch.nn.Module) The model of the Q-value</span>
+<span class="sd">        :param batch: (list) A list composed of the different information about the batch required</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+    
+<div class="viewcode-block" id="QAgent.value"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.QAgent.value">[docs]</a>    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the value.</span>
+<span class="sd">        </span>
+<span class="sd">        :param observation: The observation</span>
+<span class="sd">        :param action: The action</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+    
+<div class="viewcode-block" id="QAgent.update_q"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.QAgent.update_q">[docs]</a>    <span class="k">def</span> <span class="nf">update_q</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">curr_value</span><span class="p">,</span> <span class="n">target_value</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the Q value.</span>
+<span class="sd">        </span>
+<span class="sd">        :param curr_value: (torch.Tensor) The current value </span>
+<span class="sd">        :param target_value: (torch.Tensor) The target value</span>
+<span class="sd">        :param batch: (list) A list composed of the different information about the batch required</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>    </div>
+    
+<div class="viewcode-block" id="QAgent.update_target_model"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.QAgent.update_target_model">[docs]</a>    <span class="k">def</span> <span class="nf">update_target_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the target model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+            
+<div class="viewcode-block" id="QTableAgent"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.QTableAgent">[docs]</a><span class="k">class</span> <span class="nc">QTableAgent</span><span class="p">(</span><span class="n">QAgent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The class of trainable agent using  Q-table to model the  function Q </span>
+<span class="sd">    </span>
+<span class="sd">    :param observation_space: (gym.Spaces) The observation space</span>
+<span class="sd">    :param action_space: (gym.Spaces) The action space</span>
+<span class="sd">    :param exploration: (Exploration) The exploration process </span>
+<span class="sd">    :param gamma: (float) The training parameters</span>
+<span class="sd">    :param lr: (float) The learning rate</span>
+<span class="sd">    :param target_update_freq: (int) The update frequency of the target model  </span>
+<span class="sd">    :param name: (str) The name of the agent      </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="s2">&quot;EpsGreedy&quot;</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">target_update_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;QTableAgent&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">QTableAgent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">qmodel</span><span class="o">=</span><span class="s2">&quot;QTable&quot;</span><span class="p">,</span> <span class="n">observation_space</span><span class="o">=</span><span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="o">=</span><span class="n">action_space</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="s2">&quot;ReplayMemory-1&quot;</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="n">exploration</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">target_update_freq</span><span class="o">=</span><span class="n">target_update_freq</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        
+<div class="viewcode-block" id="QTableAgent.update_q"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.QTableAgent.update_q">[docs]</a>    <span class="k">def</span> <span class="nf">update_q</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">curr_value</span><span class="p">,</span> <span class="n">target_value</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">q_table</span><span class="p">[</span><span class="n">batch</span><span class="o">.</span><span class="n">observation</span><span class="p">,</span> <span class="n">batch</span><span class="o">.</span><span class="n">action</span><span class="p">]</span> <span class="o">=</span> <span class="n">curr_value</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">target_value</span> <span class="o">-</span> <span class="n">curr_value</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="QTableAgent.update_target_model"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.QTableAgent.update_target_model">[docs]</a>    <span class="k">def</span> <span class="nf">update_target_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_policy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="QTableAgent.target"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.QTableAgent.target">[docs]</a>    <span class="k">def</span> <span class="nf">target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+        <span class="n">next_obs</span>  <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">next_observation</span>
+        <span class="n">next_action_value</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">next_obs</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="n">rew</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">reward</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="n">not_dones</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">batch</span><span class="o">.</span><span class="n">done_flag</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        
+        <span class="n">target_value</span> <span class="o">=</span> <span class="n">rew</span> <span class="o">+</span> <span class="n">not_dones</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">*</span> <span class="n">next_action_value</span>
+        <span class="k">return</span> <span class="n">target_value</span></div>
+        
+<div class="viewcode-block" id="QTableAgent.value"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.QTableAgent.value">[docs]</a>    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">observation</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span></div></div>
+    
+<div class="viewcode-block" id="MinimaxQAgent"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.MinimaxQAgent">[docs]</a><span class="k">class</span> <span class="nc">MinimaxQAgent</span><span class="p">(</span><span class="n">QAgent</span><span class="p">,</span> <span class="n">MATrainable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The class of trainable agent using  minimax-Q-table algorithm </span>
+<span class="sd">    </span>
+<span class="sd">    :param observation_space: (gym.Spaces) The observation space</span>
+<span class="sd">    :param my_action_space: (gym.Spaces) My action space</span>
+<span class="sd">    :param other_action_space: (gym.Spaces) The action space of the other agent</span>
+<span class="sd">    :param index: (int) The position of the agent in the list of agent</span>
+<span class="sd">    :param mas: (marl.agent.MAS) The multi-agent system corresponding to the agent</span>
+<span class="sd">    :param exploration: (Exploration) The exploration process </span>
+<span class="sd">    :param gamma: (float) The training parameters</span>
+<span class="sd">    :param lr: (float) The learning rate</span>
+<span class="sd">    :param target_update_freq: (int) The update frequency of the target model  </span>
+<span class="sd">    :param name: (str) The name of the agent      </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation_space</span><span class="p">,</span> <span class="n">my_action_space</span><span class="p">,</span> <span class="n">other_action_space</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="s2">&quot;EpsGreedy&quot;</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">target_update_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MinimaxQAgent&quot;</span><span class="p">):</span>
+        <span class="n">QAgent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qmodel</span><span class="o">=</span><span class="n">MultiQTable</span><span class="p">(</span><span class="n">gymSpace2dim</span><span class="p">(</span><span class="n">observation_space</span><span class="p">),</span> <span class="p">[</span><span class="n">gymSpace2dim</span><span class="p">(</span><span class="n">my_action_space</span><span class="p">),</span> <span class="n">gymSpace2dim</span><span class="p">(</span><span class="n">other_action_space</span><span class="p">)]),</span> <span class="n">observation_space</span><span class="o">=</span><span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="o">=</span><span class="n">my_action_space</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="s2">&quot;ReplayMemory-1&quot;</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="n">exploration</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">target_update_freq</span><span class="o">=</span><span class="n">target_update_freq</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">MATrainable</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mas</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+        
+<div class="viewcode-block" id="MinimaxQAgent.update_q"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.MinimaxQAgent.update_q">[docs]</a>    <span class="k">def</span> <span class="nf">update_q</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">curr_value</span><span class="p">,</span> <span class="n">target_value</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;The number of agents should not exceed 2.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">q_table</span><span class="p">[</span><span class="n">batch</span><span class="o">.</span><span class="n">observation</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">],</span> <span class="n">batch</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">],</span> <span class="n">batch</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]]</span>  <span class="o">=</span> <span class="n">curr_value</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">target_value</span> <span class="o">-</span> <span class="n">curr_value</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="MinimaxQAgent.update_target_model"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.MinimaxQAgent.update_target_model">[docs]</a>    <span class="k">def</span> <span class="nf">update_target_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_policy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="MinimaxQAgent.target"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.MinimaxQAgent.target">[docs]</a>    <span class="k">def</span> <span class="nf">target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">joint_batch</span><span class="p">):</span>
+        <span class="n">next_obs</span>  <span class="o">=</span> <span class="n">joint_batch</span><span class="o">.</span><span class="n">next_observation</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">next_value</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">next_obs</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">rew</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">joint_batch</span><span class="o">.</span><span class="n">reward</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="n">not_dones</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">joint_batch</span><span class="o">.</span><span class="n">done_flag</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="n">target_value</span> <span class="o">=</span> <span class="n">rew</span> <span class="o">+</span> <span class="n">not_dones</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">*</span> <span class="n">next_value</span>
+        <span class="k">return</span> <span class="n">target_value</span></div>
+        
+<div class="viewcode-block" id="MinimaxQAgent.value"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.MinimaxQAgent.value">[docs]</a>    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">q_table</span><span class="p">[</span><span class="n">observation</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">],</span> <span class="n">action</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">],</span> <span class="n">action</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]]</span></div></div>
+    
+    
+<div class="viewcode-block" id="MinimaxDQNAgent"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.MinimaxDQNAgent">[docs]</a><span class="k">class</span> <span class="nc">MinimaxDQNAgent</span><span class="p">(</span><span class="n">QAgent</span><span class="p">,</span> <span class="n">MATrainable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The class of trainable agent using  minimax-DQN algorithm </span>
+<span class="sd">    </span>
+<span class="sd">    :param observation_space: (gym.Spaces) The observation space</span>
+<span class="sd">    :param my_action_space: (gym.Spaces) My action space</span>
+<span class="sd">    :param other_action_space: (gym.Spaces) The action space of the other agent</span>
+<span class="sd">    :param index: (int) The position of the agent in the list of agent</span>
+<span class="sd">    :param mas: (marl.agent.MAS) The multi-agent system corresponding to the agent</span>
+<span class="sd">    :param exploration: (Exploration) The exploration process </span>
+<span class="sd">    :param gamma: (float) The training parameters</span>
+<span class="sd">    :param lr: (float) The learning rate</span>
+<span class="sd">    :param target_update_freq: (int) The update frequency of the target model  </span>
+<span class="sd">    :param name: (str) The name of the agent      </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qmodel</span><span class="p">,</span> <span class="n">observation_space</span><span class="p">,</span> <span class="n">my_action_space</span><span class="p">,</span> <span class="n">other_action_space</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="s2">&quot;EpsGreedy&quot;</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="s2">&quot;ReplayMemory-10000&quot;</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">target_update_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MinimaxDQNAgent&quot;</span><span class="p">):</span>
+        <span class="n">QAgent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qmodel</span><span class="o">=</span><span class="n">qmodel</span><span class="p">,</span> <span class="n">observation_space</span><span class="o">=</span><span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="o">=</span><span class="n">my_action_space</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="n">experience</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="n">exploration</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">target_update_freq</span><span class="o">=</span><span class="n">target_update_freq</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">MATrainable</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mas</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">SmoothL1Loss</span><span class="p">()</span> <span class="c1"># Huber criterion</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">off_policy</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_policy</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+        
+        
+<div class="viewcode-block" id="MinimaxDQNAgent.update_q"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.MinimaxDQNAgent.update_q">[docs]</a>    <span class="k">def</span> <span class="nf">update_q</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">curr_value</span><span class="p">,</span> <span class="n">target_value</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;The number of agents should not exceed 2.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">(</span><span class="n">curr_value</span><span class="p">,</span> <span class="n">target_value</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span></div>
+        
+<div class="viewcode-block" id="MinimaxDQNAgent.update_target_model"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.MinimaxDQNAgent.update_target_model">[docs]</a>    <span class="k">def</span> <span class="nf">update_target_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_policy</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span></div>
+        
+<div class="viewcode-block" id="MinimaxDQNAgent.target"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.MinimaxDQNAgent.target">[docs]</a>    <span class="k">def</span> <span class="nf">target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">joint_batch</span><span class="p">):</span>
+        <span class="n">next_obs</span>  <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">joint_batch</span><span class="o">.</span><span class="n">next_observation</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="n">next_value</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">next_obs</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">rew</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">joint_batch</span><span class="o">.</span><span class="n">reward</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="n">not_dones</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">joint_batch</span><span class="o">.</span><span class="n">done_flag</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="n">target_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">rew</span> <span class="o">+</span> <span class="n">not_dones</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">*</span> <span class="n">next_value</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">target_value</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span></div>
+        
+<div class="viewcode-block" id="MinimaxDQNAgent.value"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.MinimaxDQNAgent.value">[docs]</a>    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">t_action</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">action</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">t_observation</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">t_observation</span><span class="p">)</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">t_action</span><span class="p">)</span></div></div>
+        
+        <span class="c1"># return self.policy.Q.q_table[observation[0][self.index], action[0][self.index], action[0][1-self.index]]</span>
+
+
+    
+<div class="viewcode-block" id="DQNAgent"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.DQNAgent">[docs]</a><span class="k">class</span> <span class="nc">DQNAgent</span><span class="p">(</span><span class="n">QAgent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The class of trainable agent using a neural network to model the  function Q</span>
+<span class="sd">    </span>
+<span class="sd">    :param qmodel: (Model or torch.nn.Module) The q-value model </span>
+<span class="sd">    :param observation_space: (gym.Spaces) The observation space</span>
+<span class="sd">    :param action_space: (gym.Spaces) The action space</span>
+<span class="sd">    :param experience: (Experience) The experience memory data structure</span>
+<span class="sd">    :param exploration: (Exploration) The exploration process </span>
+<span class="sd">    :param gamma: (float) The training parameters</span>
+<span class="sd">    :param lr: (float) The learning rate</span>
+<span class="sd">    :param batch_size: (int) The size of a batch</span>
+<span class="sd">    :param target_update_freq: (int) The update frequency of the target model  </span>
+<span class="sd">    :param name: (str) The name of the agent      </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qmodel</span><span class="p">,</span> <span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="s2">&quot;ReplayMemory-10000&quot;</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="s2">&quot;EpsGreedy&quot;</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.0005</span><span class="p">,</span>  <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">target_update_freq</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;DQNAgent&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DQNAgent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">qmodel</span><span class="o">=</span><span class="n">qmodel</span><span class="p">,</span> <span class="n">observation_space</span><span class="o">=</span><span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="o">=</span><span class="n">action_space</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="n">experience</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="n">exploration</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">target_update_freq</span><span class="o">=</span><span class="n">target_update_freq</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">SmoothL1Loss</span><span class="p">()</span> <span class="c1"># Huber criterion</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">off_policy</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_policy</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+            
+<div class="viewcode-block" id="DQNAgent.update_q"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.DQNAgent.update_q">[docs]</a>    <span class="k">def</span> <span class="nf">update_q</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">curr_value</span><span class="p">,</span> <span class="n">target_value</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">(</span><span class="n">curr_value</span><span class="p">,</span> <span class="n">target_value</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span></div>
+        
+<div class="viewcode-block" id="DQNAgent.update_target_model"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.DQNAgent.update_target_model">[docs]</a>    <span class="k">def</span> <span class="nf">update_target_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_policy</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span></div>
+    
+<div class="viewcode-block" id="DQNAgent.target"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.DQNAgent.target">[docs]</a>    <span class="k">def</span> <span class="nf">target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+        <span class="n">next_obs</span>  <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">next_observation</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="n">next_action_values</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">next_obs</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="n">rew</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">reward</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="n">not_dones</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">batch</span><span class="o">.</span><span class="n">done_flag</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="n">target_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">rew</span> <span class="o">+</span> <span class="n">not_dones</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">*</span> <span class="n">next_action_values</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">target_value</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span></div>
+        
+<div class="viewcode-block" id="DQNAgent.value"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.q_agent.DQNAgent.value">[docs]</a>    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">t_action</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">action</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">t_observation</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">t_observation</span><span class="p">)</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">t_action</span><span class="p">)</span></div></div>
+        
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, David Albert
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

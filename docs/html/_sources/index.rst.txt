@@ -1,0 +1,29 @@
+.. MARL-API documentation master file, created by
+   sphinx-quickstart on Mon Feb 10 19:50:30 2020.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+
+Welcome to MARL-API's documentation!
+====================================
+
+Github repository: https://github.com/hill-a/stable-baselines
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Quick start:
+
+   quickstart/install
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Contents:
+
+   content/modules
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
