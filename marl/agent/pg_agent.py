@@ -80,7 +80,7 @@ class ActorCriticAgent(TrainableAgent):
 
     
     
-class DDPGAgent(MARL):
+class DDPGAgent(TrainableAgent):
     
     def __init__(self, critic_policy, actor_policy, experience_buffer, lr_critic = 0.01, lr_actor = 0.01, tau = 0.01, gamma = 0.95, num_sub_policy=2, capacity_buff = 1.e6, seed=None):
         self.lr_critic = lr_critic
