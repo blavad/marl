@@ -7,7 +7,7 @@
 Welcome to MARL-API's documentation!
 ====================================
 
-Github repository: https://github.com/hill-a/stable-baselines
+Github repository: https://github.com/blavad/marl
 
 .. toctree::
    :maxdepth: 4
