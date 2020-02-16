@@ -1,4 +1,4 @@
-from marl.agent import TrainableAgent, DQNAgent
+from marl.agent import TrainableAgent, DQNAgent, MARL
 from marl.experience import ReplayMemory
 from marl.policy import StochasticPolicy
 
