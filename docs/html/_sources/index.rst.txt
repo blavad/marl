@@ -10,14 +10,14 @@ Welcome to MARL-API's documentation!
 Github repository: https://github.com/blavad/marl
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 7
    :caption: Quick start:
 
    quickstart/install
    quickstart/example
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 7
    :caption: Contents:
 
    content/modules

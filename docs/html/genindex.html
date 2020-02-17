@@ -191,6 +191,8 @@
 </li>
         <li><a href="content/modules.html#marl.exploration.ou_noise.OUNoise.__call__">(marl.exploration.ou_noise.OUNoise method)</a>
 </li>
+        <li><a href="content/modules.html#marl.model.qvalue.ActionProb.__call__">(marl.model.qvalue.ActionProb method)</a>
+</li>
         <li><a href="content/modules.html#marl.model.qvalue.MultiQTable.__call__">(marl.model.qvalue.MultiQTable method)</a>
 </li>
         <li><a href="content/modules.html#marl.model.qvalue.QTable.__call__">(marl.model.qvalue.QTable method)</a>
@@ -226,14 +228,16 @@
       </ul></li>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.action_space">action_space() (marl.agent.agent.TrainableAgent property)</a>
 </li>
+      <li><a href="content/modules.html#marl.model.qvalue.ActionProb">ActionProb (class in marl.model.qvalue)</a>
+</li>
       <li><a href="content/modules.html#marl.agent.agent.Agent">Agent (class in marl.agent.agent)</a>
 </li>
       <li><a href="content/modules.html#marl.agent.agent.Agent.agents">agents (marl.agent.agent.Agent attribute)</a>
 </li>
-      <li><a href="content/modules.html#marl.marl.MAS.append">append() (marl.marl.MAS method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/modules.html#marl.marl.MAS.append">append() (marl.marl.MAS method)</a>
+</li>
       <li><a href="content/modules.html#marl.agent.agent.available">available() (in module marl.agent.agent)</a>
 
       <ul>
@@ -352,18 +356,10 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.learn">learn() (marl.agent.agent.TrainableAgent method)</a>
 </li>
-      <li><a href="content/modules.html#marl.model.qvalue.MultiQTable.load">load() (marl.model.qvalue.MultiQTable method)</a>
-
-      <ul>
-        <li><a href="content/modules.html#marl.model.qvalue.QTable.load">(marl.model.qvalue.QTable method)</a>
-</li>
-        <li><a href="content/modules.html#marl.model.qvalue.VTable.load">(marl.model.qvalue.VTable method)</a>
-</li>
-        <li><a href="content/modules.html#marl.policy.policy.Policy.load">(marl.policy.policy.Policy method)</a>
-</li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/modules.html#marl.policy.policy.Policy.load">load() (marl.policy.policy.Policy method)</a>
+</li>
       <li><a href="content/modules.html#marl.marl.MARL.load_model">load_model() (marl.marl.MARL method)</a>
 </li>
   </ul></td>
@@ -432,8 +428,6 @@
 </li>
       <li><a href="content/modules.html#marl.agent.agent.MATrainable">MATrainable (class in marl.agent.agent)</a>
 </li>
-      <li><a href="content/modules.html#marl.agent.q_agent.MinimaxDQNAgent">MinimaxDQNAgent (class in marl.agent.q_agent)</a>
-</li>
       <li><a href="content/modules.html#marl.agent.q_agent.MinimaxQAgent">MinimaxQAgent (class in marl.agent.q_agent)</a>
 </li>
       <li><a href="content/modules.html#marl.model.nn.mlpnet.MlpNet">MlpNet (class in marl.model.nn.mlpnet)</a>
@@ -480,12 +474,18 @@
 <h2 id="Q">Q</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="content/modules.html#marl.agent.q_agent.QAgent">QAgent (class in marl.agent.q_agent)</a>
+      <li><a href="content/modules.html#marl.model.qvalue.MultiQTable.q_table">q_table() (marl.model.qvalue.MultiQTable property)</a>
+
+      <ul>
+        <li><a href="content/modules.html#marl.model.qvalue.QTable.q_table">(marl.model.qvalue.QTable property)</a>
 </li>
-      <li><a href="content/modules.html#marl.policy.policies.QPolicy">QPolicy (class in marl.policy.policies)</a>
+      </ul></li>
+      <li><a href="content/modules.html#marl.agent.q_agent.QAgent">QAgent (class in marl.agent.q_agent)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/modules.html#marl.policy.policies.QPolicy">QPolicy (class in marl.policy.policies)</a>
+</li>
       <li><a href="content/modules.html#marl.model.qvalue.QTable">QTable (class in marl.model.qvalue)</a>
 </li>
       <li><a href="content/modules.html#marl.agent.q_agent.QTableAgent">QTableAgent (class in marl.agent.q_agent)</a>
@@ -552,31 +552,25 @@
       </ul></li>
       <li><a href="content/modules.html#marl.experience.replay_buffer.ReplayMemory.sample_index">sample_index() (marl.experience.replay_buffer.ReplayMemory method)</a>
 </li>
-      <li><a href="content/modules.html#marl.model.qvalue.MultiQTable.save">save() (marl.model.qvalue.MultiQTable method)</a>
-
-      <ul>
-        <li><a href="content/modules.html#marl.model.qvalue.QTable.save">(marl.model.qvalue.QTable method)</a>
+      <li><a href="content/modules.html#marl.policy.policy.Policy.save">save() (marl.policy.policy.Policy method)</a>
 </li>
-        <li><a href="content/modules.html#marl.model.qvalue.VTable.save">(marl.model.qvalue.VTable method)</a>
-</li>
-        <li><a href="content/modules.html#marl.policy.policy.Policy.save">(marl.policy.policy.Policy method)</a>
-</li>
-      </ul></li>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.save_all">save_all() (marl.agent.agent.TrainableAgent method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.save_policy">save_policy() (marl.agent.agent.TrainableAgent method)</a>
 
       <ul>
         <li><a href="content/modules.html#marl.marl.MARL.save_policy">(marl.marl.MARL method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#marl.agent.agent.MATrainable.set_mas">set_mas() (marl.agent.agent.MATrainable method)</a>
 </li>
-      <li><a href="content/modules.html#marl.model.qvalue.MultiQTable.shape">shape() (marl.model.qvalue.MultiQTable property)</a>
+      <li><a href="content/modules.html#marl.model.qvalue.ActionProb.shape">shape() (marl.model.qvalue.ActionProb property)</a>
 
       <ul>
+        <li><a href="content/modules.html#marl.model.qvalue.MultiQTable.shape">(marl.model.qvalue.MultiQTable property)</a>
+</li>
         <li><a href="content/modules.html#marl.model.qvalue.QTable.shape">(marl.model.qvalue.QTable property)</a>
 </li>
         <li><a href="content/modules.html#marl.model.qvalue.VTable.shape">(marl.model.qvalue.VTable property)</a>
@@ -603,8 +597,6 @@
       <ul>
         <li><a href="content/modules.html#marl.agent.q_agent.DQNAgent.target">(marl.agent.q_agent.DQNAgent method)</a>
 </li>
-        <li><a href="content/modules.html#marl.agent.q_agent.MinimaxDQNAgent.target">(marl.agent.q_agent.MinimaxDQNAgent method)</a>
-</li>
         <li><a href="content/modules.html#marl.agent.q_agent.MinimaxQAgent.target">(marl.agent.q_agent.MinimaxQAgent method)</a>
 </li>
         <li><a href="content/modules.html#marl.agent.q_agent.QAgent.target">(marl.agent.q_agent.QAgent method)</a>
@@ -629,9 +621,15 @@
       <ul>
         <li><a href="content/modules.html#marl.exploration.expl_process.ExplorationProcess.update">(marl.exploration.expl_process.ExplorationProcess method)</a>
 </li>
-      </ul></li>
-      <li><a href="content/modules.html#marl.agent.maac_agent.MADDPGAgent.update_actor">update_actor() (marl.agent.maac_agent.MADDPGAgent method)</a>
+        <li><a href="content/modules.html#marl.exploration.ou_noise.OUNoise.update">(marl.exploration.ou_noise.OUNoise method)</a>
 </li>
+      </ul></li>
+      <li><a href="content/modules.html#marl.agent.maac_agent.MAACAgent.update_actor">update_actor() (marl.agent.maac_agent.MAACAgent method)</a>
+
+      <ul>
+        <li><a href="content/modules.html#marl.agent.maac_agent.MADDPGAgent.update_actor">(marl.agent.maac_agent.MADDPGAgent method)</a>
+</li>
+      </ul></li>
       <li><a href="content/modules.html#marl.agent.maac_agent.MAPGAgent.update_critic">update_critic() (marl.agent.maac_agent.MAPGAgent method)</a>
 </li>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.update_exploration">update_exploration() (marl.agent.agent.TrainableAgent method)</a>
@@ -655,8 +653,6 @@
       <li><a href="content/modules.html#marl.agent.q_agent.DQNAgent.update_q">update_q() (marl.agent.q_agent.DQNAgent method)</a>
 
       <ul>
-        <li><a href="content/modules.html#marl.agent.q_agent.MinimaxDQNAgent.update_q">(marl.agent.q_agent.MinimaxDQNAgent method)</a>
-</li>
         <li><a href="content/modules.html#marl.agent.q_agent.MinimaxQAgent.update_q">(marl.agent.q_agent.MinimaxQAgent method)</a>
 </li>
         <li><a href="content/modules.html#marl.agent.q_agent.QAgent.update_q">(marl.agent.q_agent.QAgent method)</a>
@@ -667,8 +663,6 @@
       <li><a href="content/modules.html#marl.agent.q_agent.DQNAgent.update_target_model">update_target_model() (marl.agent.q_agent.DQNAgent method)</a>
 
       <ul>
-        <li><a href="content/modules.html#marl.agent.q_agent.MinimaxDQNAgent.update_target_model">(marl.agent.q_agent.MinimaxDQNAgent method)</a>
-</li>
         <li><a href="content/modules.html#marl.agent.q_agent.MinimaxQAgent.update_target_model">(marl.agent.q_agent.MinimaxQAgent method)</a>
 </li>
         <li><a href="content/modules.html#marl.agent.q_agent.QAgent.update_target_model">(marl.agent.q_agent.QAgent method)</a>
@@ -685,8 +679,6 @@
       <li><a href="content/modules.html#marl.agent.q_agent.DQNAgent.value">value() (marl.agent.q_agent.DQNAgent method)</a>
 
       <ul>
-        <li><a href="content/modules.html#marl.agent.q_agent.MinimaxDQNAgent.value">(marl.agent.q_agent.MinimaxDQNAgent method)</a>
-</li>
         <li><a href="content/modules.html#marl.agent.q_agent.MinimaxQAgent.value">(marl.agent.q_agent.MinimaxQAgent method)</a>
 </li>
         <li><a href="content/modules.html#marl.agent.q_agent.QAgent.value">(marl.agent.q_agent.QAgent method)</a>
