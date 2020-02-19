@@ -15,7 +15,7 @@ class EpsGreedy(ExplorationProcess):
         self.eps_fin = eps_fin
         self.eps = self.eps_deb
         if fin_expl < deb_expl:
-            raise ValueError("'deb_expl' must be bigger than 'fin_expl'")
+            raise ValueError("'deb_expl' must be lower than 'fin_expl'")
         self.deb_expl = deb_expl
         self.fin_expl = fin_expl
     
@@ -28,7 +28,7 @@ class EpsGreedy(ExplorationProcess):
     def update(self, t):
         """ Update epsilon linearly """   
         if t > self.init_expl_step:
-            self.eps = max(self.eps_fin, self.eps - (self.eps_deb-self.eps_fin)/(self.final_expl_step-self.init_expl_step))
+            self.eps = max(self.eps_fin, self.eps_deb - t*(self.eps_deb-self.eps_fin)/(self.final_expl_step-self.init_expl_step))
         
     def __call__(self, policy, observation):
         """ Choose an action according to the policy and the exploration rate """   

@@ -29,7 +29,8 @@ def gymSpace2dim(gym_space):
     if isinstance(gym_space, gym.spaces.Discrete):
         return gym_space.n
     if isinstance(gym_space, gym.spaces.Box):
-        return list(gym_space.shape)
+        l_sp = list(gym_space.shape)
+        return l_sp[0] if len(l_sp) <2 else l_sp
     
 def super_cat(obs, act):
     if type(obs[0]) is not np.ndarray and type(obs[0]) is not list and len(obs.shape) <=1 and len(act.shape) <=1:

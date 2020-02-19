@@ -14,7 +14,6 @@ class RandomPolicy(Policy):
     The class of random policies
     
     :param model: (Model or torch.nn.Module) The q-value model 
-    :param observation_space: (gym.Spaces) The observation space
     :param action_space: (gym.Spaces) The action space
     """
     def __init__(self, action_space):
@@ -41,7 +40,7 @@ class QPolicy(Policy):
         self.observation_space = observation_space
         self.action_space = action_space
         
-        self.Q = marl.model.make(model, n_observations=gymSpace2dim(self.observation_space), n_actions=gymSpace2dim(self.action_space))
+        self.Q = marl.model.make(model, obs_sp=gymSpace2dim(self.observation_space), act_sp=gymSpace2dim(self.action_space))
         
     def __call__(self, state):
         """
@@ -76,19 +75,20 @@ class StochasticPolicy(Policy):
         self.observation_space = observation_space
         self.action_space = action_space
         
-        input_dim = gymSpace2dim(self.observation_space)[0]
-        output_dim = gymSpace2dim(self.action_space)
-        self.model = marl.model.make(model, input_size=input_dim, output_size=output_dim)
+        obs_dim = gymSpace2dim(self.observation_space)
+        act_dim = gymSpace2dim(self.action_space)
+        self.model = marl.model.make(model, obs_sp=obs_dim, act_sp=act_dim)
         
     def forward(self, x):
         x = self.model(x)
-        return Categorical(x)
+        pd = Categorical(x)
+        return pd
 
     def __call__(self, observation):
         observation = torch.tensor(observation).float()
         with torch.no_grad():
             pd = self.forward(observation)
-            return pd.sample()
+            return pd.sample().item()
         
 class DeterministicPolicy(Policy):
     """
@@ -105,12 +105,12 @@ class DeterministicPolicy(Policy):
         self.observation_space = observation_space
         self.action_space = action_space
         
-        input_dim = gymSpace2dim(self.observation_space)[0]
-        output_dim = gymSpace2dim(self.action_space)
-        self.model = marl.model.make(model, input_size=input_dim, output_size=output_dim)
+        obs_dim = gymSpace2dim(self.observation_space)
+        act_dim = gymSpace2dim(self.action_space)
+        self.model = marl.model.make(model, obs_sp=obs_dim, act_sp=act_dim)
 
     def __call__(self, observation):
         observation = torch.tensor(observation).float()
         with torch.no_grad():
             action = np.array(self.model(observation))
-            return np.clip(action, 0.1, 0.5)
+            return np.clip(action, 0., 1.)

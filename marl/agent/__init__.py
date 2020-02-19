@@ -5,11 +5,6 @@ from .maac_agent import *
 from ..marl import *
 
 register(
-    id='TrainalbleAgent',
-    entry_point='marl.agent.agent:TrainableAgent'
-)
-
-register(
     id='QTableAgent',
     entry_point='marl.agent.q_agent:QTableAgent'
 )
@@ -22,4 +17,19 @@ register(
 register(
     id='MinimaxQAgent',
     entry_point='marl.agent.q_agent:MinimaxQAgent'
+)
+
+register(
+    id='DeepACAgent',
+    entry_point='marl.agent.pg_agent:DeepACAgent'
+)
+
+register(
+    id='PHC',
+    entry_point='marl.agent.pg_agent:PHC'
+)
+
+register(
+    id='MADDPGAgent',
+    entry_point='marl.agent.maac_agent:MADDPGAgent'
 )

@@ -32,10 +32,47 @@ class Agent(object):
         
     def action(self, observation):
         """
-        Return the greedy action given an observation  
+        Return the action given an observation  
         :param observation: The observation
         """
         return self.policy(observation)
+    
+    def greedy_action(self, observation):
+        """
+        Return the greedy action given an observation  
+        :param observation: The observation
+        """
+        return Agent.action(self, observation)
+    
+    def test(self, env, nb_episodes=1, max_num_step=200, render=True, time_laps=0.):
+        """
+        Test a model.
+        
+        :param env: (Gym) The environment
+        :param nb_episodes: (int) The number of episodes to test
+        :param max_num_step: (int) The maximum number a step before stopping an episode
+        :param render: (bool) Whether to visualize the test or not (using render function of the environment)
+        """
+        rewards = np.array([])
+        for episode in range(nb_episodes):
+            observation = env.reset()
+            done = False
+            if render:
+                env.render()
+                time.sleep(time_laps)
+            for step in range(max_num_step):
+                action = self.greedy_action(observation)
+                observation, reward, done, _ = env.step(action)
+                sum_r = np.array(reward) if step==0 else np.add(sum_r, reward)
+                if render:
+                    env.render()
+                    time.sleep(time_laps)
+                if is_done(done):
+                    break
+            rewards = np.array([sum_r/step]) if episode==0 else np.append(rewards, [sum_r/step], axis=0)
+        if render:
+            env.close()
+        return rewards, rewards.mean(axis=0), rewards.std(axis=0)
     
     def __repr__(self):
         return _std_repr(self)
@@ -124,14 +161,6 @@ class TrainableAgent(Agent):
         """
         return self.exploration(self.policy, observation)
         
-    def greedy_action(self, observation):
-        """
-        Return the greedy action given an observation.
-        
-        :param observation: The observation
-        """
-        return Agent.action(self, observation)
-        
     def save_policy(self, folder='.',filename='', timestep=None):
         """
         Save the policy in a file called '<filename>-<agent_name>-<timestep>'.
@@ -165,6 +194,7 @@ class TrainableAgent(Agent):
         episode = 0
         self.reset_exploration(nb_timesteps)
         while timestep < nb_timesteps:
+            self.update_exploration(timestep)
             episode +=1
             obs = env.reset()
             done = False
@@ -178,7 +208,6 @@ class TrainableAgent(Agent):
                 self.update_model(timestep)
                 obs = obs2
                 timestep+=1
-                self.update_exploration(timestep)
                 if render:
                     env.render()
                     time.sleep(time_laps)
@@ -197,37 +226,6 @@ class TrainableAgent(Agent):
                 if is_done(done):
                     break
         print("#> End of learning process !")
-        
-                
-    def test(self, env, nb_episodes=1, max_num_step=200, render=True, time_laps=0.):
-        """
-        Test a model.
-        
-        :param env: (Gym) The environment
-        :param nb_episodes: (int) The number of episodes to test
-        :param max_num_step: (int) The maximum number a step before stopping an episode
-        :param render: (bool) Whether to visualize the test or not (using render function of the environment)
-        """
-        rewards = np.array([])
-        for episode in range(nb_episodes):
-            observation = env.reset()
-            done = False
-            if render:
-                env.render()
-                time.sleep(time_laps)
-            for step in range(max_num_step):
-                action = self.greedy_action(observation)
-                observation, reward, done, _ = env.step(action)
-                sum_r = np.array(reward) if step==0 else np.add(sum_r, reward)
-                if render:
-                    env.render()
-                    time.sleep(time_laps)
-                if is_done(done):
-                    break
-            rewards = np.array([sum_r/step]) if episode==0 else np.append(rewards, [sum_r/step], axis=0)
-        if render:
-            env.close()
-        return rewards, rewards.mean(axis=0), rewards.std(axis=0)
     
 
 class MATrainable(object):

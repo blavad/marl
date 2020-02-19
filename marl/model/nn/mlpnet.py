@@ -9,10 +9,10 @@ def hidden_init(layer):
     return (-lim, lim)
 
 class MlpNet(nn.Module):
-    def __init__(self, input_size, output_size, hidden_size=[64,64], hidden_activ=nn.ReLU, last_activ=None):
+    def __init__(self, obs_sp, act_sp, hidden_size=[64,64], hidden_activ=nn.ReLU, last_activ=None):
         super(MlpNet, self).__init__()
-        self.input_size = input_size
-        self.output_size = output_size
+        self.input_size = obs_sp
+        self.output_size = act_sp
         self.h_activ = hidden_activ
         self.last_activ = last_activ
         
@@ -45,8 +45,8 @@ class MlpNet(nn.Module):
         return x
     
 class GumbelMlpNet(MlpNet):
-    def __init__(self, input_size, output_size, hidden_size=[64,64], hidden_activ=nn.ReLU, tau=1.):
-        super(GumbelMlpNet, self).__init__(input_size=input_size, output_size=output_size, hidden_size=[64,64], hidden_activ=nn.ReLU)
+    def __init__(self, obs_sp, act_sp, hidden_size=[64,64], hidden_activ=nn.ReLU, tau=1.):
+        super(GumbelMlpNet, self).__init__(obs_sp=obs_sp, act_sp=act_sp, hidden_size=[64,64], hidden_activ=nn.ReLU)
         self.tau = tau
         
     def forward(self, x):
@@ -54,51 +54,3 @@ class GumbelMlpNet(MlpNet):
         x = F.gumbel_softmax(x, tau=self.tau, hard=False)
         return x
     
-
-    
-############# En Cours ##############
-def hidden_init(layer):
-    fan_in = layer.weight.data.size()[0]
-    lim = 1. / np.sqrt(fan_in)
-    return (-lim, lim)
-
-class Actor(nn.Module):
-    def __init__(self, state_shape, action_size, seed, fc1_units=256, fc2_units = 128):
-        super(Actor, self).__init__()
-        self.seed = torch.manual_seed(seed)
-        self.fc1 = nn.Linear(state_shape, fc1_units)
-        self.fc2 = nn.Linear(fc1_units, fc2_units)
-        self.fc3 = nn.Linear(fc2_units, action_size)
-        self.reset_parameters()
-
-    def reset_parameters(self):
-        self.fc1.weight.data.uniform_(*hidden_init(self.fc1))
-        self.fc2.weight.data.uniform_(*hidden_init(self.fc2))
-        self.fc3.weight.data.uniform_(-3e-3, 3e-3)
-
-    def forward(self, state):
-        x = F.relu(self.fc1(state))
-        x = F.relu(self.fc2(x))
-        x = F.tanh(self.fc3(x))
-        return x
-
-class Critic(nn.Module):
-    def __init__(self, full_obs_shape, output_shape, seed, fc1_units=256, fc2_units=128):
-        super(Critic, self).__init__()
-        self.seed = torch.manual_seed(seed)
-        self.fc1 = nn.Linear(full_obs_shape, fc1_units)
-        self.fc2 = nn.Linear(fc1_units, fc2_units)
-        self.fc3 = nn.Linear(fc2_units, 1)
-        self.reset_parameters()
-
-    def reset_parameters(self):
-        self.fc1.weight.data.uniform_(*hidden_init(self.fc1))
-        self.fc2.weight.data.uniform_(*hidden_init(self.fc2))
-        self.fc3.weight.data.uniform_(-3e-3, 3e-3)
-
-    def forward(self, m_obs, o_obs, m_actions, o_actions):
-        full_ob = torch.cat((m_obs, o_obs, m_actions, o_actions), dim = 1)
-        x = F.leaky_relu(self.fc1(full_ob))
-        x = F.leaky_relu(self.fc2(x))
-        x = F.leaky_relu(self.fc3(x))
-        return x

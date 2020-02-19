@@ -30,8 +30,8 @@ class MAPGAgent(TrainableAgent, MATrainable):
     :param tau: (float) The update rate   
     :param name: (str) The name of the agent      
     """
-    def __init__(self, critic_model, actor_policy, actor_model, observation_space, action_space, index=None, mas=None, experience="ReplayMemory-1000", exploration="EpsGreedy", lr_actor=0.001, lr_critic=0.001, gamma=0.95, batch_size=32, tau=0.01, use_target_net=False, name="MAACAgent"):
-        TrainableAgent.__init__(self,policy=actor_policy, model=actor_model, observation_space=observation_space, action_space=action_space, experience=experience, exploration=exploration, lr=lr_actor, gamma=gamma, batch_size=batch_size, name=name)
+    def __init__(self, critic_model, actor_policy, observation_space, action_space, actor_model=None, index=None, mas=None, experience="ReplayMemory-1000", exploration="EpsGreedy", lr_actor=0.001, lr_critic=0.001, gamma=0.95, batch_size=32, tau=0.01, use_target_net=False, name="MAACAgent"):
+        TrainableAgent.__init__(self, policy=actor_policy, model=actor_model, observation_space=observation_space, action_space=action_space, experience=experience, exploration=exploration, lr=lr_actor, gamma=gamma, batch_size=batch_size, name=name)
         MATrainable.__init__(self, mas, index)        
         
         self.tau = tau
@@ -80,14 +80,18 @@ class MAPGAgent(TrainableAgent, MATrainable):
             self.soft_update(self.critic_model, self.target_critic, self.tau)
             
     def update_critic(self, local_batch, global_batch):
-        self.critic_optimizer.zero_grad()
         
         # Calculate target r_i + gamma * Q_i(x,a1',a2',...,aN')
         target_value = self.target(local_batch, global_batch)
         
         # Calculate value Q_i(x,a1,a2,...,aN)
         inputs_critic = self._critic_inputs(global_batch.observation, global_batch.action)
+        
+        
         curr_value = self.critic_model(inputs_critic)
+        
+        ### = self.critic_ag.update_q(curr_value, target_value)
+        self.critic_optimizer.zero_grad()
         
         # Calculate critic loss 
         loss = self.critic_criterion(curr_value, target_value)
@@ -138,18 +142,21 @@ class MAACAgent(MAPGAgent):
     :param use_target_net: (bool) If true use a target model 
     :param name: (str) The name of the agent   
     """
-    def __init__(self, critic_model, actor_model, observation_space, action_space, index=None, experience="ReplayMemory-1000", exploration="Greedy", lr_actor=0.001, lr_critic=0.001, gamma=0.95, batch_size=32, tau=0.01, use_target_net=False, name="MAACAgent"):
+    def __init__(self, critic_model, actor_model, observation_space, action_space, index=None, experience="ReplayMemory-1000", exploration="EpsGreedy", lr_actor=0.001, lr_critic=0.001, gamma=0.95, batch_size=32, tau=0.01, use_target_net=False, name="MAACAgent"):
         super(MAACAgent, self).__init__(critic_model=critic_model, actor_policy='StochasticPolicy', actor_model=actor_model, observation_space=observation_space, action_space=action_space, index=index, experience=experience, exploration=exploration, lr_actor=lr_actor, lr_critic=lr_critic, gamma=gamma, batch_size=batch_size, name=name)
 
-    # def update_actor(self, local_batch, global_batch):
-    #     self.actor_optimizer.zero_grad()
-    #     # Calcul actor loss
-    #     pd = self.policy.forward(local_batch.observation)
-    #     log_prob = pd.log_prob(local_batch.action) #.unsqueeze(0)
-    #     gae = self.critic_model(global_batch.observation, global_batch.action).detach()
-    #     actor_loss = -(log_prob * gae).mean()
-    #     actor_loss.backward()
-    #     self.actor_optimizer.step()
+    def update_actor(self, local_batch, global_batch):
+        self.actor_optimizer.zero_grad()
+        # Calcul actor loss
+        pd = self.policy.forward(local_batch.observation)
+        log_prob = pd.log_prob(local_batch.action) #.unsqueeze(0)
+        critic_in = self._critic_inputs(global_batch.observation, global_batch.action)
+        print(local_batch.observation)
+        print(critic_in)
+        gae = self.critic_model(critic_in).detach()
+        actor_loss = -(log_prob * gae).mean()
+        actor_loss.backward()
+        self.actor_optimizer.step()
     
 class MADDPGAgent(MAPGAgent):
     """
@@ -171,7 +178,7 @@ class MADDPGAgent(MAPGAgent):
     :param use_target_net: (bool) If true use a target model 
     :param name: (str) The name of the agent   
     """
-    def __init__(self, critic_model, actor_model, observation_space, action_space, index=None, experience="ReplayMemory-1000", exploration="Greedy", lr_actor=0.01, lr_critic=0.01, gamma=0.95, batch_size=32, tau=0.01, use_target_net=100, name="MADDPGAgent"):
+    def __init__(self, critic_model, actor_model, observation_space, action_space, index=None, experience="ReplayMemory-1000", exploration="OUNoise", lr_actor=0.01, lr_critic=0.01, gamma=0.95, batch_size=32, tau=0.01, use_target_net=100, name="MADDPGAgent"):
         super(MADDPGAgent, self).__init__(critic_model=critic_model, actor_policy='DeterministicPolicy', actor_model=actor_model, observation_space=observation_space, action_space=action_space, index=index, experience=experience, exploration=exploration, lr_actor=lr_actor, lr_critic=lr_critic, gamma=gamma, tau=tau, use_target_net=use_target_net, batch_size=batch_size, name=name)
     
     def update_actor(self, local_batch, global_batch):

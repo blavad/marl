@@ -1,14 +1,15 @@
 from marl.tools import ClassSpec, _std_repr
+import torch
 import torch.nn as nn
 
 class Model(object):
     model = {}
     
-    def load(self, filename):
-        raise NotImplementedError
-
     def save(self, filename):
-        raise NotImplementedError
+        torch.save(self.value, filename)
+        
+    def load(self, filename):
+        self.value = torch.load(filename)
     
     def __repr__(self):
         return _std_repr(self)

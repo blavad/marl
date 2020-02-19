@@ -7,11 +7,11 @@ class OUNoise(ExplorationProcess):
     """
     The Ornstein-Uhlenbeck process.
     
-    :param size: (float) The initial amount of exploration to process
-    :param seed: (float) The final amount of exploration to process
-    :param mu: (float) The percentage of time before starting exploration (default: 0.1)
-    :param theta: (float) The percentage of time before starting exploration (default: 0.1)
-    :param sigma: (float) The percentage of time before starting exploration (default: 0.1)
+    :param size: (float) The number of variables to add noise
+    :param seed: (float) The seed
+    :param mu: (float) The drift term 
+    :param theta: (float) The amount of keeping previous state
+    :param sigma: (float) The amount of noise
     """
     
     def __init__(self, size, seed, mu=0., theta=0.15, sigma=0.2):
@@ -24,6 +24,9 @@ class OUNoise(ExplorationProcess):
     def reset(self, t=None):
         """ Reinitialize the state of the process """
         self.state = copy.copy(self.mu)
+        
+    def update(self, t):
+        self.reset()
         
     def __call__(self, policy, observation):
         return policy(observation) + self.sample()

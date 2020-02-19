@@ -14,16 +14,16 @@ pip install -e marl
 
 ### Single-agent algorithms
 
-| **TD-learning**    | **Q-learning**     | **DQN**             | **Actor-Critic**               | **DDPG**            |
-| ------------------ | ------------------ | ------------------- | -------------------- | ------------------- | 
-| :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark:   | :heavy_check_mark:  |
+| **Q-learning**     | **DQN**             | **Actor-Critic**     | **DDPG**            |**TD3**            |
+| ------------------ | ------------------- | -------------------- | ------------------- |------------------- | 
+| :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark:   | :heavy_check_mark:  |:x:  |
 
 
 ### Multi-agent algorithms
 
-| **minimaxQ**         | **minimaxDQN**       | **JAL** | **PHC-WoLF** | **MAAC**             | **MADDPG**           | 
-| -------------------- | -------------------- | ------- | ------------ | -------------------- |  ------------------- | 
- |  :heavy_check_mark: | :heavy_check_mark:   |  :x:    |  :x:         | :heavy_check_mark:   | :heavy_check_mark:   |
+| **minimaxQ**         | **PHC**       | **JAL** | **MAAC**             | **MADDPG**           | 
+| -------------------- | -------------------- | ------- |  -------------------- |  ------------------- | 
+|  :heavy_check_mark: | :heavy_check_mark:   |  :x:    |  :heavy_check_mark:   | :heavy_check_mark:   |
 
 ## Examples
 
@@ -66,11 +66,12 @@ obs_s = env.observation_space
 act_s = env.action_space
 
 # Custom exploration process
-expl = EpsGreedy(eps_deb=1.,eps_fin=.3)
+expl1 = EpsGreedy(eps_deb=1.,eps_fin=.3)
+expl2 = EpsGreedy(eps_deb=1.,eps_fin=.3)
 
 # Create two minimax-Q agents
-q_agent1 = MinimaxQAgent(obs_s, act_s, act_s, exploration=expl, gamma=0.9, lr=0.001, name="SoccerJ1")
-q_agent2 = MinimaxQAgent(obs_s, act_s, act_s, exploration=expl, gamma=0.9, lr=0.001, name="SoccerJ2")
+q_agent1 = MinimaxQAgent(obs_s, act_s, act_s, exploration=expl1, gamma=0.9, lr=0.001, name="SoccerJ1")
+q_agent2 = MinimaxQAgent(obs_s, act_s, act_s, exploration=expl2, gamma=0.9, lr=0.001, name="SoccerJ2")
 
 # Create the trainable multi-agent system
 mas = MARL(agents_list=[q_agent1, q_agent2])
