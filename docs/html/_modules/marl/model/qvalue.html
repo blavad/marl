@@ -86,7 +86,7 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html">Multi-agent RL</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#agent">Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#agents">Agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#experience">Experience</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#exploration">Exploration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#policies">Policies</a></li>
@@ -255,6 +255,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_obs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_actions</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">n_actions</span><span class="p">)</span>
     
 <div class="viewcode-block" id="ActionProb.__call__"><a class="viewcode-back" href="../../../content/modules.html#marl.model.qvalue.ActionProb.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">torch</span><span class="o">.</span><span class="n">is_tensor</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">state</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">state</span> <span class="o">=</span>  <span class="nb">list</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">torch</span><span class="o">.</span><span class="n">is_tensor</span><span class="p">(</span><span class="n">action</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">action</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">action</span> <span class="o">=</span>  <span class="nb">list</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">action</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>     
         <span class="k">if</span> <span class="n">action</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

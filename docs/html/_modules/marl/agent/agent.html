@@ -86,7 +86,7 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html">Multi-agent RL</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#agent">Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#agents">Agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#experience">Experience</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#exploration">Exploration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#policies">Policies</a></li>
@@ -188,10 +188,47 @@
         
 <div class="viewcode-block" id="Agent.action"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.agent.Agent.action">[docs]</a>    <span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the greedy action given an observation  </span>
+<span class="sd">        Return the action given an observation  </span>
 <span class="sd">        :param observation: The observation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="Agent.greedy_action"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.agent.Agent.greedy_action">[docs]</a>    <span class="k">def</span> <span class="nf">greedy_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the greedy action given an observation  </span>
+<span class="sd">        :param observation: The observation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Agent</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="Agent.test"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.agent.Agent.test">[docs]</a>    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">nb_episodes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_num_step</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">render</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">time_laps</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test a model.</span>
+<span class="sd">        </span>
+<span class="sd">        :param env: (Gym) The environment</span>
+<span class="sd">        :param nb_episodes: (int) The number of episodes to test</span>
+<span class="sd">        :param max_num_step: (int) The maximum number a step before stopping an episode</span>
+<span class="sd">        :param render: (bool) Whether to visualize the test or not (using render function of the environment)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rewards</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="k">for</span> <span class="n">episode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_episodes</span><span class="p">):</span>
+            <span class="n">observation</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">render</span><span class="p">:</span>
+                <span class="n">env</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">time_laps</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_num_step</span><span class="p">):</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">greedy_action</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>
+                <span class="n">observation</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+                <span class="n">sum_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">reward</span><span class="p">)</span> <span class="k">if</span> <span class="n">step</span><span class="o">==</span><span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sum_r</span><span class="p">,</span> <span class="n">reward</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">render</span><span class="p">:</span>
+                    <span class="n">env</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">time_laps</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">is_done</span><span class="p">(</span><span class="n">done</span><span class="p">):</span>
+                    <span class="k">break</span>
+            <span class="n">rewards</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sum_r</span><span class="o">/</span><span class="n">step</span><span class="p">])</span> <span class="k">if</span> <span class="n">episode</span><span class="o">==</span><span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rewards</span><span class="p">,</span> <span class="p">[</span><span class="n">sum_r</span><span class="o">/</span><span class="n">step</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">render</span><span class="p">:</span>
+            <span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">rewards</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">rewards</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
     
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">_std_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -280,14 +317,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exploration</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="p">,</span> <span class="n">observation</span><span class="p">)</span></div>
         
-<div class="viewcode-block" id="TrainableAgent.greedy_action"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.agent.TrainableAgent.greedy_action">[docs]</a>    <span class="k">def</span> <span class="nf">greedy_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the greedy action given an observation.</span>
-<span class="sd">        </span>
-<span class="sd">        :param observation: The observation</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Agent</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">)</span></div>
-        
 <div class="viewcode-block" id="TrainableAgent.save_policy"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.agent.TrainableAgent.save_policy">[docs]</a>    <span class="k">def</span> <span class="nf">save_policy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">timestep</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the policy in a file called &#39;&lt;filename&gt;-&lt;agent_name&gt;-&lt;timestep&gt;&#39;.</span>
@@ -352,38 +381,7 @@
                 
                 <span class="k">if</span> <span class="n">is_done</span><span class="p">(</span><span class="n">done</span><span class="p">):</span>
                     <span class="k">break</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;#&gt; End of learning process !&quot;</span><span class="p">)</span></div>
-        
-                
-<div class="viewcode-block" id="TrainableAgent.test"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.agent.TrainableAgent.test">[docs]</a>    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">nb_episodes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_num_step</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">render</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">time_laps</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Test a model.</span>
-<span class="sd">        </span>
-<span class="sd">        :param env: (Gym) The environment</span>
-<span class="sd">        :param nb_episodes: (int) The number of episodes to test</span>
-<span class="sd">        :param max_num_step: (int) The maximum number a step before stopping an episode</span>
-<span class="sd">        :param render: (bool) Whether to visualize the test or not (using render function of the environment)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">rewards</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
-        <span class="k">for</span> <span class="n">episode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_episodes</span><span class="p">):</span>
-            <span class="n">observation</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-            <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="n">render</span><span class="p">:</span>
-                <span class="n">env</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
-                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">time_laps</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_num_step</span><span class="p">):</span>
-                <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">greedy_action</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>
-                <span class="n">observation</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
-                <span class="n">sum_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">reward</span><span class="p">)</span> <span class="k">if</span> <span class="n">step</span><span class="o">==</span><span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sum_r</span><span class="p">,</span> <span class="n">reward</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">render</span><span class="p">:</span>
-                    <span class="n">env</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
-                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">time_laps</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">is_done</span><span class="p">(</span><span class="n">done</span><span class="p">):</span>
-                    <span class="k">break</span>
-            <span class="n">rewards</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sum_r</span><span class="o">/</span><span class="n">step</span><span class="p">])</span> <span class="k">if</span> <span class="n">episode</span><span class="o">==</span><span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rewards</span><span class="p">,</span> <span class="p">[</span><span class="n">sum_r</span><span class="o">/</span><span class="n">step</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">render</span><span class="p">:</span>
-            <span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">rewards</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">rewards</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;#&gt; End of learning process !&quot;</span><span class="p">)</span></div></div>
     
 
 <div class="viewcode-block" id="MATrainable"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.agent.MATrainable">[docs]</a><span class="k">class</span> <span class="nc">MATrainable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>

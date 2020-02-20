@@ -87,7 +87,7 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="content/modules.html">Multi-agent RL</a></li>
-<li class="toctree-l1"><a class="reference internal" href="content/modules.html#agent">Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/modules.html#agents">Agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="content/modules.html#experience">Experience</a></li>
 <li class="toctree-l1"><a class="reference internal" href="content/modules.html#exploration">Exploration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="content/modules.html#policies">Policies</a></li>
@@ -278,10 +278,14 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="content/modules.html#marl.policy.policies.DeterministicPolicy">DeterministicPolicy (class in marl.policy.policies)</a>
+      <li><a href="content/modules.html#marl.agent.pg_agent.DeepACAgent">DeepACAgent (class in marl.agent.pg_agent)</a>
+</li>
+      <li><a href="content/modules.html#marl.agent.pg_agent.PHC.delta">delta() (marl.agent.pg_agent.PHC property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/modules.html#marl.policy.policies.DeterministicPolicy">DeterministicPolicy (class in marl.policy.policies)</a>
+</li>
       <li><a href="content/modules.html#marl.agent.q_agent.DQNAgent">DQNAgent (class in marl.agent.q_agent)</a>
 </li>
   </ul></td>
@@ -332,7 +336,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#marl.exploration.greedy.Greedy">Greedy (class in marl.exploration.greedy)</a>
 </li>
-      <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.greedy_action">greedy_action() (marl.agent.agent.TrainableAgent method)</a>
+      <li><a href="content/modules.html#marl.agent.agent.Agent.greedy_action">greedy_action() (marl.agent.agent.Agent method)</a>
 
       <ul>
         <li><a href="content/modules.html#marl.marl.MARL.greedy_action">(marl.marl.MARL method)</a>
@@ -356,11 +360,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.learn">learn() (marl.agent.agent.TrainableAgent method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#marl.policy.policy.Policy.load">load() (marl.policy.policy.Policy method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#marl.marl.MARL.load_model">load_model() (marl.marl.MARL method)</a>
+</li>
+      <li><a href="content/modules.html#marl.agent.pg_agent.PGAgent.lr_actor">lr_actor() (marl.agent.pg_agent.PGAgent property)</a>
+</li>
+      <li><a href="content/modules.html#marl.agent.pg_agent.PGAgent.lr_critic">lr_critic() (marl.agent.pg_agent.PGAgent property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -398,12 +406,14 @@
 </li>
       <li><a href="content/modules.html#module-marl.agent.maac_agent">marl.agent.maac_agent (module)</a>
 </li>
-      <li><a href="content/modules.html#module-marl.agent.q_agent">marl.agent.q_agent (module)</a>
+      <li><a href="content/modules.html#module-marl.agent.pg_agent">marl.agent.pg_agent (module)</a>
 </li>
-      <li><a href="content/modules.html#module-marl.experience.experience">marl.experience.experience (module)</a>
+      <li><a href="content/modules.html#module-marl.agent.q_agent">marl.agent.q_agent (module)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/modules.html#module-marl.experience.experience">marl.experience.experience (module)</a>
+</li>
       <li><a href="content/modules.html#module-marl.experience.replay_buffer">marl.experience.replay_buffer (module)</a>
 </li>
       <li><a href="content/modules.html#module-marl.exploration.eps_greedy">marl.exploration.eps_greedy (module)</a>
@@ -454,12 +464,16 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="content/modules.html#marl.policy.policy.Policy">Policy (class in marl.policy.policy)</a>
+      <li><a href="content/modules.html#marl.agent.pg_agent.PGAgent">PGAgent (class in marl.agent.pg_agent)</a>
 </li>
-      <li><a href="content/modules.html#marl.policy.policy.Policy.policy">policy (marl.policy.policy.Policy attribute)</a>
+      <li><a href="content/modules.html#marl.agent.pg_agent.PHC">PHC (class in marl.agent.pg_agent)</a>
+</li>
+      <li><a href="content/modules.html#marl.policy.policy.Policy">Policy (class in marl.policy.policy)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/modules.html#marl.policy.policy.Policy.policy">policy (marl.policy.policy.Policy attribute)</a>
+</li>
       <li><a href="content/modules.html#marl.exploration.expl_process.ExplorationProcess.process">process (marl.exploration.expl_process.ExplorationProcess attribute)</a>
 </li>
       <li><a href="content/modules.html#marl.experience.experience.Experience.push">push() (marl.experience.experience.Experience method)</a>
@@ -606,7 +620,7 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.test">test() (marl.agent.agent.TrainableAgent method)</a>
+      <li><a href="content/modules.html#marl.agent.agent.Agent.test">test() (marl.agent.agent.Agent method)</a>
 </li>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent">TrainableAgent (class in marl.agent.agent)</a>
 </li>
@@ -629,6 +643,12 @@
       <ul>
         <li><a href="content/modules.html#marl.agent.maac_agent.MADDPGAgent.update_actor">(marl.agent.maac_agent.MADDPGAgent method)</a>
 </li>
+        <li><a href="content/modules.html#marl.agent.pg_agent.DeepACAgent.update_actor">(marl.agent.pg_agent.DeepACAgent method)</a>
+</li>
+        <li><a href="content/modules.html#marl.agent.pg_agent.PGAgent.update_actor">(marl.agent.pg_agent.PGAgent method)</a>
+</li>
+        <li><a href="content/modules.html#marl.agent.pg_agent.PHC.update_actor">(marl.agent.pg_agent.PHC method)</a>
+</li>
       </ul></li>
       <li><a href="content/modules.html#marl.agent.maac_agent.MAPGAgent.update_critic">update_critic() (marl.agent.maac_agent.MAPGAgent method)</a>
 </li>
@@ -642,6 +662,8 @@
 
       <ul>
         <li><a href="content/modules.html#marl.agent.maac_agent.MAPGAgent.update_model">(marl.agent.maac_agent.MAPGAgent method)</a>
+</li>
+        <li><a href="content/modules.html#marl.agent.pg_agent.PGAgent.update_model">(marl.agent.pg_agent.PGAgent method)</a>
 </li>
         <li><a href="content/modules.html#marl.agent.q_agent.QAgent.update_model">(marl.agent.q_agent.QAgent method)</a>
 </li>
@@ -668,6 +690,14 @@
         <li><a href="content/modules.html#marl.agent.q_agent.QAgent.update_target_model">(marl.agent.q_agent.QAgent method)</a>
 </li>
         <li><a href="content/modules.html#marl.agent.q_agent.QTableAgent.update_target_model">(marl.agent.q_agent.QTableAgent method)</a>
+</li>
+      </ul></li>
+      <li><a href="content/modules.html#marl.agent.pg_agent.DeepACAgent.update_target_policy">update_target_policy() (marl.agent.pg_agent.DeepACAgent method)</a>
+
+      <ul>
+        <li><a href="content/modules.html#marl.agent.pg_agent.PGAgent.update_target_policy">(marl.agent.pg_agent.PGAgent method)</a>
+</li>
+        <li><a href="content/modules.html#marl.agent.pg_agent.PHC.update_target_policy">(marl.agent.pg_agent.PHC method)</a>
 </li>
       </ul></li>
   </ul></td>

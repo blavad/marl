@@ -86,7 +86,7 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html">Multi-agent RL</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#agent">Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#agents">Agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#experience">Experience</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#exploration">Exploration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#policies">Policies</a></li>
@@ -163,11 +163,11 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The Ornstein-Uhlenbeck process.</span>
 <span class="sd">    </span>
-<span class="sd">    :param size: (float) The initial amount of exploration to process</span>
-<span class="sd">    :param seed: (float) The final amount of exploration to process</span>
-<span class="sd">    :param mu: (float) The percentage of time before starting exploration (default: 0.1)</span>
-<span class="sd">    :param theta: (float) The percentage of time before starting exploration (default: 0.1)</span>
-<span class="sd">    :param sigma: (float) The percentage of time before starting exploration (default: 0.1)</span>
+<span class="sd">    :param size: (float) The number of variables to add noise</span>
+<span class="sd">    :param seed: (float) The seed</span>
+<span class="sd">    :param mu: (float) The drift term </span>
+<span class="sd">    :param theta: (float) The amount of keeping previous state</span>
+<span class="sd">    :param sigma: (float) The amount of noise</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>

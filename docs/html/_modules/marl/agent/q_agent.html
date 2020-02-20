@@ -86,7 +86,7 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html">Multi-agent RL</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#agent">Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#agents">Agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#experience">Experience</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#exploration">Exploration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#policies">Policies</a></li>
@@ -209,15 +209,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experience</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
         
-        <span class="c1"># print(batch)</span>
-        
         <span class="c1"># Compute target r_t + gamma*max_a Q(s_t+1, a)</span>
         <span class="n">target_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">(</span><span class="n">curr_policy</span><span class="o">.</span><span class="n">Q</span><span class="p">,</span> <span class="n">batch</span><span class="p">)</span>
         
         <span class="c1"># Compute current value Q(s_t, a_t)</span>
         <span class="n">curr_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">observation</span><span class="p">,</span> <span class="n">batch</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
-        
-        <span class="c1"># print(&quot;Target : &quot;, target_value, &quot; - Current : &quot;, curr_value)</span>
         
         <span class="c1"># Update Q values</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_q</span><span class="p">(</span><span class="n">curr_value</span><span class="p">,</span> <span class="n">target_value</span><span class="p">,</span> <span class="n">batch</span><span class="p">)</span>

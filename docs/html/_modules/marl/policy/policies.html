@@ -86,7 +86,7 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html">Multi-agent RL</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#agent">Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#agents">Agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#experience">Experience</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#exploration">Exploration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../content/modules.html#policies">Policies</a></li>
@@ -170,7 +170,6 @@
 <span class="sd">    The class of random policies</span>
 <span class="sd">    </span>
 <span class="sd">    :param model: (Model or torch.nn.Module) The q-value model </span>
-<span class="sd">    :param observation_space: (gym.Spaces) The observation space</span>
 <span class="sd">    :param action_space: (gym.Spaces) The action space</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_space</span><span class="p">):</span>
@@ -238,13 +237,14 @@
         
 <div class="viewcode-block" id="StochasticPolicy.forward"><a class="viewcode-back" href="../../../content/modules.html#marl.policy.policies.StochasticPolicy.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+        <span class="n">pd</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span></div>
 
 <div class="viewcode-block" id="StochasticPolicy.__call__"><a class="viewcode-back" href="../../../content/modules.html#marl.policy.policies.StochasticPolicy.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">):</span>
         <span class="n">observation</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
         <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
             <span class="n">pd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span></div></div>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span></div></div>
         
 <div class="viewcode-block" id="DeterministicPolicy"><a class="viewcode-back" href="../../../content/modules.html#marl.policy.policies.DeterministicPolicy">[docs]</a><span class="k">class</span> <span class="nc">DeterministicPolicy</span><span class="p">(</span><span class="n">Policy</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
