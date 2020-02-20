@@ -217,3 +217,36 @@ class DQNAgent(QAgent):
         t_observation = torch.from_numpy(observation).float()
         return self.policy.Q(t_observation).gather(1, t_action)
     
+class ContinuousDQNAgent(DQNAgent):
+    """
+    The class of trainable agent using a neural network to model the  function Q
+    
+    :param qmodel: (Model or torch.nn.Module) The q-value model 
+    :param observation_space: (gym.Spaces) The observation space
+    :param action_space: (gym.Spaces) The action space
+    :param experience: (Experience) The experience memory data structure
+    :param exploration: (Exploration) The exploration process 
+    :param gamma: (float) The training parameters
+    :param lr: (float) The learning rate
+    :param batch_size: (int) The size of a batch
+    :param target_update_freq: (int) The update frequency of the target model  
+    :param name: (str) The name of the agent      
+    """
+    
+    def __init__(self, qmodel, actor_policy, observation_space, action_space, experience="ReplayMemory-10000", exploration="EpsGreedy", gamma=0.99, lr=0.0005,  batch_size=32, target_update_freq=1000, name="DQNAgent"):
+        super(ContinuousDQNAgent, self).__init__(qmodel=qmodel, observation_space=observation_space, action_space=action_space, experience=experience, exploration=exploration, gamma=gamma, lr=lr, batch_size=batch_size, target_update_freq=target_update_freq, name=name)
+        self.actor_policy = actor_policy
+    
+    def target(self, Q, batch):
+        next_obs  = torch.from_numpy(batch.next_observation).float()
+        next_action =  torch.from_numpy(self.actor_policy(next_obs)).float()
+        next_state_action_values = Q(next_obs, next_action)
+        rew = torch.from_numpy(batch.reward).float()
+        not_dones = torch.from_numpy(1.-batch.done_flag).float()
+        target_value = (rew + not_dones * self.gamma * next_state_action_values).unsqueeze(1)
+        return target_value.detach()
+        
+    def value(self, observation, action):
+        obs  = torch.from_numpy(observation).float()
+        action =  torch.from_numpy(action).float()
+        return self.policy.Q(obs, action)

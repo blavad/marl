@@ -105,6 +105,9 @@ class DeterministicPolicy(Policy):
         self.observation_space = observation_space
         self.action_space = action_space
         
+        self.low = self.action_space.low[0] if isinstance(self.action_space, gym.spaces.Box) else 0
+        self.high = self.action_space.high[0] if isinstance(self.action_space, gym.spaces.Box) else 1
+        
         obs_dim = gymSpace2dim(self.observation_space)
         act_dim = gymSpace2dim(self.action_space)
         self.model = marl.model.make(model, obs_sp=obs_dim, act_sp=act_dim)
@@ -113,4 +116,4 @@ class DeterministicPolicy(Policy):
         observation = torch.tensor(observation).float()
         with torch.no_grad():
             action = np.array(self.model(observation))
-            return np.clip(action, 0., 1.)
+            return np.clip(action, self.low, self.high)

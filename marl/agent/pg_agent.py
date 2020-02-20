@@ -1,5 +1,5 @@
 import marl
-from marl.agent import TrainableAgent, DQNAgent, QTableAgent, MATrainable
+from marl.agent import TrainableAgent, DQNAgent, QTableAgent, ContinuousDQNAgent, MATrainable
 from marl.experience import ReplayMemory
 from marl.policy import StochasticPolicy
 
@@ -123,12 +123,11 @@ class DeepACAgent(PGAgent):
         gae = self.critic.policy.Q(obs).gather(1,act.unsqueeze(1)).detach()
         
         actor_loss = -(log_prob * gae).mean()
-        
         actor_loss.backward()
         self.actor_optimizer.step()
     
 
-class PHC(PGAgent):
+class PHCAgent(PGAgent):
     """
     Policy Hill Climbing Agent's class. The critic is train following standard Q-learning algorithm.
     
@@ -165,26 +164,41 @@ class PHC(PGAgent):
             self.policy.model.value[obs,a] = max(self.policy.model.value[obs,a] - delta_sa[a],0)
         self.policy.model.value[obs,max_a] += sum(delta_sa).item()
         
-# class DDPGAgent(TrainableAgent):
+class DDPGAgent(PGAgent):
+    """
+    Deep Deterministic Policy Gradient Agent's class. The critic is train following standard "SARSA" algorithm (ContinuousDQN).
     
-#     def __init__(self, critic_policy, actor_policy, experience_buffer, lr_critic = 0.01, lr_actor = 0.01, tau = 0.01, gamma = 0.95, num_sub_policy=2, capacity_buff = 1.e6, seed=None):
-#         self.lr_critic = lr_critic
-#         self.lr_actor = lr_actor
-#         self.momentum = 0.95
-#         self.tau = tau
-#         self.num_sub_policy = num_sub_policy
-#         self.env = env
+    :param critic_model: (nn.Module) The critic's model 
+    :param actor_model: (nn.Module) The model for the actor
+    :param observation_space: (gym.Spaces) The observation space
+    :param action_space: (gym.Spaces) The action space
+    :param experience: (Experience) The experience memory data structure
+    :param exploration: (Exploration) The exploration process 
+    :param lr_actor: (float) The learning rate for the actor
+    :param lr_critic: (float) The learning rate for the critic
+    :param gamma: (float) The training parameters
+    :param batch_size: (int) The size of a batch
+    :param target_update_freq: (int) The update frequency of the target model  
+    :param name: (str) The name of the agent      
+    """
+    def __init__(self, critic_model, actor_model, observation_space, action_space, experience="ReplayMemory-1000", exploration="OUNoise", lr_actor=0.01, lr_critic=0.01, gamma=0.95, batch_size=32, target_update_freq=None, name="DDPGAgent"):
+        PGAgent.__init__(self, critic=None, actor_policy="DeterministicPolicy", actor_model=actor_model, observation_space=observation_space, action_space=action_space, experience=experience, exploration=exploration, lr_actor=lr_actor, gamma=gamma, batch_size=batch_size, name=name)
         
-#         self.critic = DQNAgent(critic_policy, ReplayMemory(capacity_buff), "EpsGreedy")
-#         self.actor = PGAgent(actor_policy, ReplayMemory(capacity_buff), "EpsGreedy")
+        policy_for_critic = self.target_policy if self.use_target_net else self.policy 
+        self.critic = ContinuousDQNAgent(qmodel=critic_model, actor_policy=policy_for_critic, observation_space=observation_space, action_space=action_space, experience=self.experience, gamma=self.gamma, lr=lr_critic, batch_size=self.batch_size, target_update_freq=self.target_update_freq)
         
-#         self.agents = [self.critic, self.actor]
-        
-#     def soft_update(self, local_model, target_model, tau):
-#         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
-#             target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)        
+        self.actor_optimizer = optim.Adam(self.policy.model.parameters(), lr=self.lr) 
 
-#     def update_model(self, t):
-#         self.critic.update_model(t)
-#         self.actor.update_model(t)
-#         self.soft_update(self.critic.local_policy, self.critic.policy, self.tau)
+    def update_target_policy(self):
+        self.target_policy.model.load_state_dict(self.policy.model.state_dict())
+
+    def update_actor(self, batch):
+        self.actor_optimizer.zero_grad()
+
+        obs = torch.from_numpy(batch.observation).float()                
+        my_action = self.policy.model(obs)
+
+        policy_loss = -self.critic.policy.Q(obs, self.policy.model(obs))
+        policy_loss = policy_loss.mean()
+        policy_loss.backward()
+        self.actor_optimizer.step()

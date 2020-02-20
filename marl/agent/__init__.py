@@ -25,9 +25,15 @@ register(
 )
 
 register(
-    id='PHC',
-    entry_point='marl.agent.pg_agent:PHC'
+    id='PHCAgent',
+    entry_point='marl.agent.pg_agent:PHCAgent'
 )
+
+register(
+    id='DDPGAgent',
+    entry_point='marl.agent.pg_agent:DDPGAgent'
+)
+
 
 register(
     id='MADDPGAgent',

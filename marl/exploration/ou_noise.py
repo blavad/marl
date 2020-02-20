@@ -14,16 +14,17 @@ class OUNoise(ExplorationProcess):
     :param sigma: (float) The amount of noise
     """
     
-    def __init__(self, size, seed, mu=0., theta=0.15, sigma=0.2):
-        self.mu = mu * np.ones(size)
+    def __init__(self, size, dt=0.01, mu=0., theta=0.15, sigma=0.2):
+        self.size = size
+        self.dt = dt
+        self.mu = mu 
         self.theta = theta
         self.sigma = sigma
-        self.seed = random.seed(seed)
         self.reset()
 
     def reset(self, t=None):
         """ Reinitialize the state of the process """
-        self.state = copy.copy(self.mu)
+        self.state =  self.mu * np.ones(self.size)
         
     def update(self, t):
         self.reset()
@@ -34,6 +35,6 @@ class OUNoise(ExplorationProcess):
     def sample(self):
         """Update internal state and return it as a noise sample."""
         x = self.state
-        dx = self.theta * (self.mu - x) + self.sigma * np.array([random.random() for i in range(len(x))])
+        dx = self.theta * (self.mu - x) * self.dt + self.sigma * np.random.randn(len(x)) * np.sqrt(self.dt)
         self.state = x + dx
         return self.state

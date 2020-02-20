@@ -33,3 +33,9 @@ register(
     id='GumbelMlpNet',
     entry_point='marl.model.nn.mlpnet:GumbelMlpNet',
 )
+
+
+register(
+    id='ContinuousCritic',
+    entry_point='marl.model.nn.mlpnet:ContinuousCritic',
+)
