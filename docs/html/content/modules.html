@@ -325,7 +325,7 @@
 </dl>
 <dl class="attribute">
 <dt id="marl.agent.agent.Agent.agents">
-<code class="sig-name descname">agents</code><em class="property"> = {'DQNAgent': &lt;marl.tools.ClassSpec object&gt;, 'DeepACAgent': &lt;marl.tools.ClassSpec object&gt;, 'MADDPGAgent': &lt;marl.tools.ClassSpec object&gt;, 'MinimaxQAgent': &lt;marl.tools.ClassSpec object&gt;, 'PHC': &lt;marl.tools.ClassSpec object&gt;, 'QTableAgent': &lt;marl.tools.ClassSpec object&gt;}</em><a class="headerlink" href="#marl.agent.agent.Agent.agents" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">agents</code><em class="property"> = {'DDPGAgent': &lt;marl.tools.ClassSpec object&gt;, 'DQNAgent': &lt;marl.tools.ClassSpec object&gt;, 'DeepACAgent': &lt;marl.tools.ClassSpec object&gt;, 'MADDPGAgent': &lt;marl.tools.ClassSpec object&gt;, 'MinimaxQAgent': &lt;marl.tools.ClassSpec object&gt;, 'PHCAgent': &lt;marl.tools.ClassSpec object&gt;, 'QTableAgent': &lt;marl.tools.ClassSpec object&gt;}</em><a class="headerlink" href="#marl.agent.agent.Agent.agents" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -807,6 +807,57 @@
 
 </dd></dl>
 
+<dl class="class">
+<dt id="marl.agent.q_agent.ContinuousDQNAgent">
+<em class="property">class </em><code class="sig-prename descclassname">marl.agent.q_agent.</code><code class="sig-name descname">ContinuousDQNAgent</code><span class="sig-paren">(</span><em class="sig-param">qmodel</em>, <em class="sig-param">actor_policy</em>, <em class="sig-param">observation_space</em>, <em class="sig-param">action_space</em>, <em class="sig-param">experience='ReplayMemory-10000'</em>, <em class="sig-param">exploration='EpsGreedy'</em>, <em class="sig-param">gamma=0.99</em>, <em class="sig-param">lr=0.0005</em>, <em class="sig-param">batch_size=32</em>, <em class="sig-param">target_update_freq=1000</em>, <em class="sig-param">name='DQNAgent'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/q_agent.html#ContinuousDQNAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.q_agent.ContinuousDQNAgent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#marl.agent.q_agent.DQNAgent" title="marl.agent.q_agent.DQNAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.agent.q_agent.DQNAgent</span></code></a></p>
+<p>The class of trainable agent using a neural network to model the  function Q</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>qmodel</strong> – (Model or torch.nn.Module) The q-value model</p></li>
+<li><p><strong>observation_space</strong> – (gym.Spaces) The observation space</p></li>
+<li><p><strong>action_space</strong> – (gym.Spaces) The action space</p></li>
+<li><p><strong>experience</strong> – (Experience) The experience memory data structure</p></li>
+<li><p><strong>exploration</strong> – (Exploration) The exploration process</p></li>
+<li><p><strong>gamma</strong> – (float) The training parameters</p></li>
+<li><p><strong>lr</strong> – (float) The learning rate</p></li>
+<li><p><strong>batch_size</strong> – (int) The size of a batch</p></li>
+<li><p><strong>target_update_freq</strong> – (int) The update frequency of the target model</p></li>
+<li><p><strong>name</strong> – (str) The name of the agent</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="marl.agent.q_agent.ContinuousDQNAgent.target">
+<code class="sig-name descname">target</code><span class="sig-paren">(</span><em class="sig-param">Q</em>, <em class="sig-param">batch</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/q_agent.html#ContinuousDQNAgent.target"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.q_agent.ContinuousDQNAgent.target" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the target value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Q</strong> – (Model or torch.nn.Module) The model of the Q-value</p></li>
+<li><p><strong>batch</strong> – (list) A list composed of the different information about the batch required</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="marl.agent.q_agent.ContinuousDQNAgent.value">
+<code class="sig-name descname">value</code><span class="sig-paren">(</span><em class="sig-param">observation</em>, <em class="sig-param">action</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/q_agent.html#ContinuousDQNAgent.value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.q_agent.ContinuousDQNAgent.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation</strong> – The observation</p></li>
+<li><p><strong>action</strong> – The action</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-marl.agent.pg_agent">
 <span id="policy-gradient-based-model"></span><h2>Policy Gradient based model<a class="headerlink" href="#module-marl.agent.pg_agent" title="Permalink to this headline">¶</a></h2>
@@ -907,8 +958,8 @@
 </dd></dl>
 
 <dl class="class">
-<dt id="marl.agent.pg_agent.PHC">
-<em class="property">class </em><code class="sig-prename descclassname">marl.agent.pg_agent.</code><code class="sig-name descname">PHC</code><span class="sig-paren">(</span><em class="sig-param">observation_space</em>, <em class="sig-param">action_space</em>, <em class="sig-param">exploration='EpsGreedy'</em>, <em class="sig-param">delta=0.01</em>, <em class="sig-param">lr_critic=0.01</em>, <em class="sig-param">gamma=0.95</em>, <em class="sig-param">target_update_freq=None</em>, <em class="sig-param">name='PHCAgent'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/pg_agent.html#PHC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.pg_agent.PHC" title="Permalink to this definition">¶</a></dt>
+<dt id="marl.agent.pg_agent.PHCAgent">
+<em class="property">class </em><code class="sig-prename descclassname">marl.agent.pg_agent.</code><code class="sig-name descname">PHCAgent</code><span class="sig-paren">(</span><em class="sig-param">observation_space</em>, <em class="sig-param">action_space</em>, <em class="sig-param">exploration='EpsGreedy'</em>, <em class="sig-param">delta=0.01</em>, <em class="sig-param">lr_critic=0.01</em>, <em class="sig-param">gamma=0.95</em>, <em class="sig-param">target_update_freq=None</em>, <em class="sig-param">name='PHCAgent'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/pg_agent.html#PHCAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.pg_agent.PHCAgent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#marl.agent.pg_agent.PGAgent" title="marl.agent.pg_agent.PGAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.agent.pg_agent.PGAgent</span></code></a></p>
 <p>Policy Hill Climbing Agent’s class. The critic is train following standard Q-learning algorithm.</p>
 <dl class="field-list simple">
@@ -926,19 +977,56 @@
 </dd>
 </dl>
 <dl class="method">
-<dt id="marl.agent.pg_agent.PHC.update_target_policy">
-<code class="sig-name descname">update_target_policy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/pg_agent.html#PHC.update_target_policy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.pg_agent.PHC.update_target_policy" title="Permalink to this definition">¶</a></dt>
+<dt id="marl.agent.pg_agent.PHCAgent.update_target_policy">
+<code class="sig-name descname">update_target_policy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/pg_agent.html#PHCAgent.update_target_policy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.pg_agent.PHCAgent.update_target_policy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update the target policy.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="marl.agent.pg_agent.PHC.delta">
-<em class="property">property </em><code class="sig-name descname">delta</code><a class="headerlink" href="#marl.agent.pg_agent.PHC.delta" title="Permalink to this definition">¶</a></dt>
+<dt id="marl.agent.pg_agent.PHCAgent.delta">
+<em class="property">property </em><code class="sig-name descname">delta</code><a class="headerlink" href="#marl.agent.pg_agent.PHCAgent.delta" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="marl.agent.pg_agent.PHC.update_actor">
-<code class="sig-name descname">update_actor</code><span class="sig-paren">(</span><em class="sig-param">batch</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/pg_agent.html#PHC.update_actor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.pg_agent.PHC.update_actor" title="Permalink to this definition">¶</a></dt>
+<dt id="marl.agent.pg_agent.PHCAgent.update_actor">
+<code class="sig-name descname">update_actor</code><span class="sig-paren">(</span><em class="sig-param">batch</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/pg_agent.html#PHCAgent.update_actor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.pg_agent.PHCAgent.update_actor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the actor.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="marl.agent.pg_agent.DDPGAgent">
+<em class="property">class </em><code class="sig-prename descclassname">marl.agent.pg_agent.</code><code class="sig-name descname">DDPGAgent</code><span class="sig-paren">(</span><em class="sig-param">critic_model</em>, <em class="sig-param">actor_model</em>, <em class="sig-param">observation_space</em>, <em class="sig-param">action_space</em>, <em class="sig-param">experience='ReplayMemory-1000'</em>, <em class="sig-param">exploration='OUNoise'</em>, <em class="sig-param">lr_actor=0.01</em>, <em class="sig-param">lr_critic=0.01</em>, <em class="sig-param">gamma=0.95</em>, <em class="sig-param">batch_size=32</em>, <em class="sig-param">target_update_freq=None</em>, <em class="sig-param">name='DDPGAgent'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/pg_agent.html#DDPGAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.pg_agent.DDPGAgent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#marl.agent.pg_agent.PGAgent" title="marl.agent.pg_agent.PGAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.agent.pg_agent.PGAgent</span></code></a></p>
+<p>Deep Deterministic Policy Gradient Agent’s class. The critic is train following standard “SARSA” algorithm (ContinuousDQN).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>critic_model</strong> – (nn.Module) The critic’s model</p></li>
+<li><p><strong>actor_model</strong> – (nn.Module) The model for the actor</p></li>
+<li><p><strong>observation_space</strong> – (gym.Spaces) The observation space</p></li>
+<li><p><strong>action_space</strong> – (gym.Spaces) The action space</p></li>
+<li><p><strong>experience</strong> – (Experience) The experience memory data structure</p></li>
+<li><p><strong>exploration</strong> – (Exploration) The exploration process</p></li>
+<li><p><strong>lr_actor</strong> – (float) The learning rate for the actor</p></li>
+<li><p><strong>lr_critic</strong> – (float) The learning rate for the critic</p></li>
+<li><p><strong>gamma</strong> – (float) The training parameters</p></li>
+<li><p><strong>batch_size</strong> – (int) The size of a batch</p></li>
+<li><p><strong>target_update_freq</strong> – (int) The update frequency of the target model</p></li>
+<li><p><strong>name</strong> – (str) The name of the agent</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="marl.agent.pg_agent.DDPGAgent.update_target_policy">
+<code class="sig-name descname">update_target_policy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/pg_agent.html#DDPGAgent.update_target_policy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.pg_agent.DDPGAgent.update_target_policy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the target policy.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="marl.agent.pg_agent.DDPGAgent.update_actor">
+<code class="sig-name descname">update_actor</code><span class="sig-paren">(</span><em class="sig-param">batch</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/pg_agent.html#DDPGAgent.update_actor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.pg_agent.DDPGAgent.update_actor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update the actor.</p>
 </dd></dl>
 
@@ -1299,7 +1387,7 @@
 <span id="ornsteinuhlenbeck-process"></span><h2>Ornstein–Uhlenbeck Process<a class="headerlink" href="#module-marl.exploration.ou_noise" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="marl.exploration.ou_noise.OUNoise">
-<em class="property">class </em><code class="sig-prename descclassname">marl.exploration.ou_noise.</code><code class="sig-name descname">OUNoise</code><span class="sig-paren">(</span><em class="sig-param">size</em>, <em class="sig-param">seed</em>, <em class="sig-param">mu=0.0</em>, <em class="sig-param">theta=0.15</em>, <em class="sig-param">sigma=0.2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/exploration/ou_noise.html#OUNoise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.exploration.ou_noise.OUNoise" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">marl.exploration.ou_noise.</code><code class="sig-name descname">OUNoise</code><span class="sig-paren">(</span><em class="sig-param">size</em>, <em class="sig-param">dt=0.01</em>, <em class="sig-param">mu=0.0</em>, <em class="sig-param">theta=0.15</em>, <em class="sig-param">sigma=0.2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/exploration/ou_noise.html#OUNoise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.exploration.ou_noise.OUNoise" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#marl.exploration.expl_process.ExplorationProcess" title="marl.exploration.expl_process.ExplorationProcess"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.exploration.expl_process.ExplorationProcess</span></code></a></p>
 <p>The Ornstein-Uhlenbeck process.</p>
 <dl class="field-list simple">
@@ -1645,7 +1733,7 @@ This kind of value function is used in minimax-Q algorithm.</p>
 
 <dl class="class">
 <dt id="marl.model.nn.mlpnet.MlpNet">
-<em class="property">class </em><code class="sig-prename descclassname">marl.model.nn.mlpnet.</code><code class="sig-name descname">MlpNet</code><span class="sig-paren">(</span><em class="sig-param">obs_sp, act_sp, hidden_size=[64, 64], hidden_activ=&lt;class 'torch.nn.modules.activation.ReLU'&gt;, last_activ=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/nn/mlpnet.html#MlpNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.nn.mlpnet.MlpNet" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">marl.model.nn.mlpnet.</code><code class="sig-name descname">MlpNet</code><span class="sig-paren">(</span><em class="sig-param">obs_sp, act_sp, hidden_size=[64, 64], hidden_activ=&lt;class 'torch.nn.modules.activation.ReLU'&gt;, last_activ=None, lay_norm=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/nn/mlpnet.html#MlpNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.nn.mlpnet.MlpNet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
 <dl class="method">
 <dt id="marl.model.nn.mlpnet.MlpNet.reset_parameters">
@@ -1670,11 +1758,36 @@ registered hooks while the latter silently ignores them.</p>
 
 <dl class="class">
 <dt id="marl.model.nn.mlpnet.GumbelMlpNet">
-<em class="property">class </em><code class="sig-prename descclassname">marl.model.nn.mlpnet.</code><code class="sig-name descname">GumbelMlpNet</code><span class="sig-paren">(</span><em class="sig-param">obs_sp, act_sp, hidden_size=[64, 64], hidden_activ=&lt;class 'torch.nn.modules.activation.ReLU'&gt;, tau=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/nn/mlpnet.html#GumbelMlpNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.nn.mlpnet.GumbelMlpNet" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">marl.model.nn.mlpnet.</code><code class="sig-name descname">GumbelMlpNet</code><span class="sig-paren">(</span><em class="sig-param">obs_sp, act_sp, hidden_size=[64, 64], hidden_activ=&lt;class 'torch.nn.modules.activation.ReLU'&gt;, tau=1.0, lay_norm=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/nn/mlpnet.html#GumbelMlpNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.nn.mlpnet.GumbelMlpNet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#marl.model.nn.mlpnet.MlpNet" title="marl.model.nn.mlpnet.MlpNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.model.nn.mlpnet.MlpNet</span></code></a></p>
 <dl class="method">
 <dt id="marl.model.nn.mlpnet.GumbelMlpNet.forward">
 <code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/nn/mlpnet.html#GumbelMlpNet.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.nn.mlpnet.GumbelMlpNet.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="marl.model.nn.mlpnet.ContinuousCritic">
+<em class="property">class </em><code class="sig-prename descclassname">marl.model.nn.mlpnet.</code><code class="sig-name descname">ContinuousCritic</code><span class="sig-paren">(</span><em class="sig-param">obs_sp, act_sp, hidden_size=[64, 64]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/nn/mlpnet.html#ContinuousCritic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.nn.mlpnet.ContinuousCritic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="method">
+<dt id="marl.model.nn.mlpnet.ContinuousCritic.reset_parameters">
+<code class="sig-name descname">reset_parameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/nn/mlpnet.html#ContinuousCritic.reset_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.nn.mlpnet.ContinuousCritic.reset_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.model.nn.mlpnet.ContinuousCritic.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">obs</em>, <em class="sig-param">act</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/model/nn/mlpnet.html#ContinuousCritic.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.model.nn.mlpnet.ContinuousCritic.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">

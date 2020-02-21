@@ -155,7 +155,7 @@
             
   <h1>Source code for marl.agent.pg_agent</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">marl</span>
-<span class="kn">from</span> <span class="nn">marl.agent</span> <span class="kn">import</span> <span class="n">TrainableAgent</span><span class="p">,</span> <span class="n">DQNAgent</span><span class="p">,</span> <span class="n">QTableAgent</span><span class="p">,</span> <span class="n">MATrainable</span>
+<span class="kn">from</span> <span class="nn">marl.agent</span> <span class="kn">import</span> <span class="n">TrainableAgent</span><span class="p">,</span> <span class="n">DQNAgent</span><span class="p">,</span> <span class="n">QTableAgent</span><span class="p">,</span> <span class="n">ContinuousDQNAgent</span><span class="p">,</span> <span class="n">MATrainable</span>
 <span class="kn">from</span> <span class="nn">marl.experience</span> <span class="kn">import</span> <span class="n">ReplayMemory</span>
 <span class="kn">from</span> <span class="nn">marl.policy</span> <span class="kn">import</span> <span class="n">StochasticPolicy</span>
 
@@ -279,12 +279,11 @@
         <span class="n">gae</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">act</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
         
         <span class="n">actor_loss</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">log_prob</span> <span class="o">*</span> <span class="n">gae</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-        
         <span class="n">actor_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">actor_optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span></div></div>
     
 
-<div class="viewcode-block" id="PHC"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.pg_agent.PHC">[docs]</a><span class="k">class</span> <span class="nc">PHC</span><span class="p">(</span><span class="n">PGAgent</span><span class="p">):</span>
+<div class="viewcode-block" id="PHCAgent"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.pg_agent.PHCAgent">[docs]</a><span class="k">class</span> <span class="nc">PHCAgent</span><span class="p">(</span><span class="n">PGAgent</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Policy Hill Climbing Agent&#39;s class. The critic is train following standard Q-learning algorithm.</span>
 <span class="sd">    </span>
@@ -303,14 +302,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">critic</span> <span class="o">=</span> <span class="n">QTableAgent</span><span class="p">(</span><span class="n">observation_space</span><span class="o">=</span><span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="o">=</span><span class="n">action_space</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr_critic</span><span class="p">,</span> <span class="n">target_update_freq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_update_freq</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="o">.</span><span class="n">experience</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experience</span>
 
-<div class="viewcode-block" id="PHC.update_target_policy"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.pg_agent.PHC.update_target_policy">[docs]</a>    <span class="k">def</span> <span class="nf">update_target_policy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PHCAgent.update_target_policy"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.pg_agent.PHCAgent.update_target_policy">[docs]</a>    <span class="k">def</span> <span class="nf">update_target_policy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target_policy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="p">)</span></div>
         
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">delta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_actor</span>
 
-<div class="viewcode-block" id="PHC.update_actor"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.pg_agent.PHC.update_actor">[docs]</a>    <span class="k">def</span> <span class="nf">update_actor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+<div class="viewcode-block" id="PHCAgent.update_actor"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.pg_agent.PHCAgent.update_actor">[docs]</a>    <span class="k">def</span> <span class="nf">update_actor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
         <span class="n">n_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">n_actions</span>
         <span class="n">obs</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">observation</span>
         <span class="n">max_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="o">.</span><span class="n">greedy_action</span><span class="p">(</span><span class="n">obs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> 
@@ -321,29 +320,44 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">obs</span><span class="p">,</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">obs</span><span class="p">,</span><span class="n">a</span><span class="p">]</span> <span class="o">-</span> <span class="n">delta_sa</span><span class="p">[</span><span class="n">a</span><span class="p">],</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">obs</span><span class="p">,</span><span class="n">max_a</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">delta_sa</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span></div></div>
         
-<span class="c1"># class DDPGAgent(TrainableAgent):</span>
-    
-<span class="c1">#     def __init__(self, critic_policy, actor_policy, experience_buffer, lr_critic = 0.01, lr_actor = 0.01, tau = 0.01, gamma = 0.95, num_sub_policy=2, capacity_buff = 1.e6, seed=None):</span>
-<span class="c1">#         self.lr_critic = lr_critic</span>
-<span class="c1">#         self.lr_actor = lr_actor</span>
-<span class="c1">#         self.momentum = 0.95</span>
-<span class="c1">#         self.tau = tau</span>
-<span class="c1">#         self.num_sub_policy = num_sub_policy</span>
-<span class="c1">#         self.env = env</span>
+<div class="viewcode-block" id="DDPGAgent"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.pg_agent.DDPGAgent">[docs]</a><span class="k">class</span> <span class="nc">DDPGAgent</span><span class="p">(</span><span class="n">PGAgent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deep Deterministic Policy Gradient Agent&#39;s class. The critic is train following standard &quot;SARSA&quot; algorithm (ContinuousDQN).</span>
+<span class="sd">    </span>
+<span class="sd">    :param critic_model: (nn.Module) The critic&#39;s model </span>
+<span class="sd">    :param actor_model: (nn.Module) The model for the actor</span>
+<span class="sd">    :param observation_space: (gym.Spaces) The observation space</span>
+<span class="sd">    :param action_space: (gym.Spaces) The action space</span>
+<span class="sd">    :param experience: (Experience) The experience memory data structure</span>
+<span class="sd">    :param exploration: (Exploration) The exploration process </span>
+<span class="sd">    :param lr_actor: (float) The learning rate for the actor</span>
+<span class="sd">    :param lr_critic: (float) The learning rate for the critic</span>
+<span class="sd">    :param gamma: (float) The training parameters</span>
+<span class="sd">    :param batch_size: (int) The size of a batch</span>
+<span class="sd">    :param target_update_freq: (int) The update frequency of the target model  </span>
+<span class="sd">    :param name: (str) The name of the agent      </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">critic_model</span><span class="p">,</span> <span class="n">actor_model</span><span class="p">,</span> <span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="s2">&quot;ReplayMemory-1000&quot;</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="s2">&quot;OUNoise&quot;</span><span class="p">,</span> <span class="n">lr_actor</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">lr_critic</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">target_update_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;DDPGAgent&quot;</span><span class="p">):</span>
+        <span class="n">PGAgent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">critic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">actor_policy</span><span class="o">=</span><span class="s2">&quot;DeterministicPolicy&quot;</span><span class="p">,</span> <span class="n">actor_model</span><span class="o">=</span><span class="n">actor_model</span><span class="p">,</span> <span class="n">observation_space</span><span class="o">=</span><span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="o">=</span><span class="n">action_space</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="n">experience</span><span class="p">,</span> <span class="n">exploration</span><span class="o">=</span><span class="n">exploration</span><span class="p">,</span> <span class="n">lr_actor</span><span class="o">=</span><span class="n">lr_actor</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
         
-<span class="c1">#         self.critic = DQNAgent(critic_policy, ReplayMemory(capacity_buff), &quot;EpsGreedy&quot;)</span>
-<span class="c1">#         self.actor = PGAgent(actor_policy, ReplayMemory(capacity_buff), &quot;EpsGreedy&quot;)</span>
+        <span class="n">policy_for_critic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_policy</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_target_net</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">critic</span> <span class="o">=</span> <span class="n">ContinuousDQNAgent</span><span class="p">(</span><span class="n">qmodel</span><span class="o">=</span><span class="n">critic_model</span><span class="p">,</span> <span class="n">actor_policy</span><span class="o">=</span><span class="n">policy_for_critic</span><span class="p">,</span> <span class="n">observation_space</span><span class="o">=</span><span class="n">observation_space</span><span class="p">,</span> <span class="n">action_space</span><span class="o">=</span><span class="n">action_space</span><span class="p">,</span> <span class="n">experience</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">experience</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr_critic</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">target_update_freq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_update_freq</span><span class="p">)</span>
         
-<span class="c1">#         self.agents = [self.critic, self.actor]</span>
-        
-<span class="c1">#     def soft_update(self, local_model, target_model, tau):</span>
-<span class="c1">#         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):</span>
-<span class="c1">#             target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)        </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actor_optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span> 
 
-<span class="c1">#     def update_model(self, t):</span>
-<span class="c1">#         self.critic.update_model(t)</span>
-<span class="c1">#         self.actor.update_model(t)</span>
-<span class="c1">#         self.soft_update(self.critic.local_policy, self.critic.policy, self.tau)</span>
+<div class="viewcode-block" id="DDPGAgent.update_target_policy"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.pg_agent.DDPGAgent.update_target_policy">[docs]</a>    <span class="k">def</span> <span class="nf">update_target_policy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_policy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="DDPGAgent.update_actor"><a class="viewcode-back" href="../../../content/modules.html#marl.agent.pg_agent.DDPGAgent.update_actor">[docs]</a>    <span class="k">def</span> <span class="nf">update_actor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actor_optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+        <span class="n">obs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">observation</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>                
+        <span class="n">my_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+
+        <span class="n">policy_loss</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">Q</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">obs</span><span class="p">))</span>
+        <span class="n">policy_loss</span> <span class="o">=</span> <span class="n">policy_loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">policy_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actor_optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span></div></div>
 </pre></div>
 
            </div>
