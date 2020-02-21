@@ -30,7 +30,7 @@ class OUNoise(ExplorationProcess):
         self.reset()
         
     def __call__(self, policy, observation):
-        return policy(observation) + self.sample()
+        return np.clip(policy(observation) + self.sample(), policy.low, policy.high)
         
     def sample(self):
         """Update internal state and return it as a noise sample."""
