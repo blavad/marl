@@ -27,6 +27,26 @@ pip install -e marl
 
 ## Examples
 
+### Check existing methods
+```python
+import marl
+
+# Check available agents
+print("\n| Agents\t\t", list(marl.agent.available()))
+
+# Check available agents
+print("\n| Policies\t\t", list(marl.policy.available()))
+
+# Check available agents
+print("\n| Models\t\t", list(marl.model.available()))
+
+# Check available exploration process
+print("\n| Expl. Processes\t", list(marl.exploration.available()))
+
+# Check available experience memory
+print("\n| Experience Memory\t", list(marl.experience.available()))
+```
+
 ### Train a single agent with DQN algorithm
 ```python
 import marl
