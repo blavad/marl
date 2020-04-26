@@ -7,7 +7,8 @@ Project doc : <a href="https://blavad.github.io/marl/html/index.html"> [DOC]</a>
 ## Installation
 ```bash
 git clone https://github.com/blavad/marl.git
-pip install -e marl
+cd marl
+pip install -e .
 ```
 
 ## Implemented algorithms
@@ -75,6 +76,7 @@ dqn_agent.test(env, nb_episodes=10)
 
 ```python
 import marl
+from marl import MARL
 from marl.agent import MinimaxQAgent
 from marl.exploration import EpsGreedy
 
