@@ -15,7 +15,8 @@ Ubuntu
 .. code-block:: bash
 
   git clone https://github.com/blavad/marl
-  pip install -e marl
+  cd marl
+  pip install -e .
 
 
 Mac OS
@@ -24,4 +25,5 @@ Mac OS
 .. code-block:: bash
 
   git clone https://github.com/blavad/marl
-  pip install -e marl
+  cd marl
+  pip install -e .
