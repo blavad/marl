@@ -81,7 +81,7 @@
               <p class="caption"><span class="caption-text">Quick start:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../quickstart/install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart/example.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart/example.html">Usage and examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
@@ -164,6 +164,9 @@
     
 <div class="viewcode-block" id="Experience.sample"><a class="viewcode-back" href="../../../content/modules.html#marl.experience.experience.Experience.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_siz</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+    
+<div class="viewcode-block" id="Experience.none_transition"><a class="viewcode-back" href="../../../content/modules.html#marl.experience.experience.Experience.none_transition">[docs]</a>    <span class="k">def</span> <span class="nf">none_transition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transition</span><span class="p">([</span><span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transition</span><span class="o">.</span><span class="n">_fields</span><span class="p">))])</span></div>
     
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>

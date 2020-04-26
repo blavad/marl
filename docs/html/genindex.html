@@ -82,7 +82,7 @@
               <p class="caption"><span class="caption-text">Quick start:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="quickstart/install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart/example.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart/example.html">Usage and examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
@@ -169,6 +169,7 @@
  | <a href="#H"><strong>H</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#Q"><strong>Q</strong></a>
@@ -262,7 +263,7 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="content/modules.html#marl.experience.replay_buffer.ExpReplay.burn_in_capacity">burn_in_capacity() (marl.experience.replay_buffer.ExpReplay method)</a>
+      <li><a href="content/modules.html#marl.experience.replay_buffer.PrioritizedReplayMemory.beta_increment_per_sampling">beta_increment_per_sampling (marl.experience.replay_buffer.PrioritizedReplayMemory attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -270,6 +271,8 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/modules.html#marl.experience.replay_buffer.PrioritizedReplayMemory.capacity">capacity() (marl.experience.replay_buffer.PrioritizedReplayMemory property)</a>
+</li>
       <li><a href="content/modules.html#marl.model.nn.mlpnet.ContinuousCritic">ContinuousCritic (class in marl.model.nn.mlpnet)</a>
 </li>
   </ul></td>
@@ -311,8 +314,6 @@
       <li><a href="content/modules.html#marl.experience.experience.Experience.experience">experience (marl.experience.experience.Experience attribute)</a>
 </li>
       <li><a href="content/modules.html#marl.exploration.expl_process.ExplorationProcess">ExplorationProcess (class in marl.exploration.expl_process)</a>
-</li>
-      <li><a href="content/modules.html#marl.experience.replay_buffer.ExpReplay">ExpReplay (class in marl.experience.replay_buffer)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -370,7 +371,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.learn">learn() (marl.agent.agent.TrainableAgent method)</a>
 </li>
-      <li><a href="content/modules.html#marl.policy.policy.Policy.load">load() (marl.policy.policy.Policy method)</a>
+      <li><a href="content/modules.html#marl.policy.policy.ModelBasedPolicy.load">load() (marl.policy.policy.ModelBasedPolicy method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -452,9 +453,17 @@
 </li>
       <li><a href="content/modules.html#marl.model.nn.mlpnet.MlpNet">MlpNet (class in marl.model.nn.mlpnet)</a>
 </li>
-      <li><a href="content/modules.html#marl.policy.policies.QPolicy.model">model() (marl.policy.policies.QPolicy property)</a>
+      <li><a href="content/modules.html#marl.policy.policy.ModelBasedPolicy">ModelBasedPolicy (class in marl.policy.policy)</a>
 </li>
       <li><a href="content/modules.html#marl.model.qvalue.MultiQTable">MultiQTable (class in marl.model.qvalue)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/modules.html#marl.experience.experience.Experience.none_transition">none_transition() (marl.experience.experience.Experience method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -480,34 +489,44 @@
 </li>
       <li><a href="content/modules.html#marl.policy.policy.Policy">Policy (class in marl.policy.policy)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#marl.policy.policy.Policy.policy">policy (marl.policy.policy.Policy attribute)</a>
 </li>
+      <li><a href="content/modules.html#marl.experience.replay_buffer.PrioritizedReplayMemory">PrioritizedReplayMemory (class in marl.experience.replay_buffer)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/modules.html#marl.exploration.expl_process.ExplorationProcess.process">process (marl.exploration.expl_process.ExplorationProcess attribute)</a>
 </li>
       <li><a href="content/modules.html#marl.experience.experience.Experience.push">push() (marl.experience.experience.Experience method)</a>
 
       <ul>
+        <li><a href="content/modules.html#marl.experience.replay_buffer.PrioritizedReplayMemory.push">(marl.experience.replay_buffer.PrioritizedReplayMemory method)</a>
+</li>
         <li><a href="content/modules.html#marl.experience.replay_buffer.ReplayMemory.push">(marl.experience.replay_buffer.ReplayMemory method)</a>
 </li>
       </ul></li>
+      <li><a href="content/modules.html#marl.experience.replay_buffer.PrioritizedReplayMemory.push_error">push_error() (marl.experience.replay_buffer.PrioritizedReplayMemory method)</a>
+</li>
+      <li><a href="content/modules.html#marl.experience.replay_buffer.PrioritizedReplayMemory.push_transition">push_transition() (marl.experience.replay_buffer.PrioritizedReplayMemory method)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="Q">Q</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/modules.html#marl.policy.policies.QPolicy.Q">Q() (marl.policy.policies.QPolicy property)</a>
+</li>
       <li><a href="content/modules.html#marl.model.qvalue.MultiQTable.q_table">q_table() (marl.model.qvalue.MultiQTable property)</a>
 
       <ul>
         <li><a href="content/modules.html#marl.model.qvalue.QTable.q_table">(marl.model.qvalue.QTable property)</a>
 </li>
       </ul></li>
-      <li><a href="content/modules.html#marl.agent.q_agent.QAgent">QAgent (class in marl.agent.q_agent)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/modules.html#marl.agent.q_agent.QAgent">QAgent (class in marl.agent.q_agent)</a>
+</li>
       <li><a href="content/modules.html#marl.policy.policies.QPolicy">QPolicy (class in marl.policy.policies)</a>
 </li>
       <li><a href="content/modules.html#marl.model.qvalue.QTable">QTable (class in marl.model.qvalue)</a>
@@ -573,6 +592,8 @@
       <li><a href="content/modules.html#marl.experience.experience.Experience.sample">sample() (marl.experience.experience.Experience method)</a>
 
       <ul>
+        <li><a href="content/modules.html#marl.experience.replay_buffer.PrioritizedReplayMemory.sample">(marl.experience.replay_buffer.PrioritizedReplayMemory method)</a>
+</li>
         <li><a href="content/modules.html#marl.experience.replay_buffer.ReplayMemory.sample">(marl.experience.replay_buffer.ReplayMemory method)</a>
 </li>
         <li><a href="content/modules.html#marl.exploration.ou_noise.OUNoise.sample">(marl.exploration.ou_noise.OUNoise method)</a>
@@ -580,7 +601,7 @@
       </ul></li>
       <li><a href="content/modules.html#marl.experience.replay_buffer.ReplayMemory.sample_index">sample_index() (marl.experience.replay_buffer.ReplayMemory method)</a>
 </li>
-      <li><a href="content/modules.html#marl.policy.policy.Policy.save">save() (marl.policy.policy.Policy method)</a>
+      <li><a href="content/modules.html#marl.policy.policy.ModelBasedPolicy.save">save() (marl.policy.policy.ModelBasedPolicy method)</a>
 </li>
       <li><a href="content/modules.html#marl.agent.agent.TrainableAgent.save_all">save_all() (marl.agent.agent.TrainableAgent method)</a>
 </li>
@@ -646,9 +667,11 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="content/modules.html#marl.exploration.eps_greedy.EpsGreedy.update">update() (marl.exploration.eps_greedy.EpsGreedy method)</a>
+      <li><a href="content/modules.html#marl.experience.replay_buffer.PrioritizedReplayMemory.update">update() (marl.experience.replay_buffer.PrioritizedReplayMemory method)</a>
 
       <ul>
+        <li><a href="content/modules.html#marl.exploration.eps_greedy.EpsGreedy.update">(marl.exploration.eps_greedy.EpsGreedy method)</a>
+</li>
         <li><a href="content/modules.html#marl.exploration.expl_process.ExplorationProcess.update">(marl.exploration.expl_process.ExplorationProcess method)</a>
 </li>
         <li><a href="content/modules.html#marl.exploration.ou_noise.OUNoise.update">(marl.exploration.ou_noise.OUNoise method)</a>

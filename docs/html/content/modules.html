@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Examples" href="../quickstart/example.html" /> 
+    <link rel="prev" title="Usage and examples" href="../quickstart/example.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -82,7 +82,7 @@
               <p class="caption"><span class="caption-text">Quick start:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart/install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../quickstart/example.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/example.html">Usage and examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
@@ -465,7 +465,7 @@
 
 <dl class="method">
 <dt id="marl.agent.agent.TrainableAgent.learn">
-<code class="sig-name descname">learn</code><span class="sig-paren">(</span><em class="sig-param">env</em>, <em class="sig-param">nb_timesteps</em>, <em class="sig-param">max_num_step=100</em>, <em class="sig-param">test_freq=1000</em>, <em class="sig-param">save_freq=1000</em>, <em class="sig-param">save_folder='models'</em>, <em class="sig-param">render=False</em>, <em class="sig-param">time_laps=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/agent.html#TrainableAgent.learn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.agent.TrainableAgent.learn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">learn</code><span class="sig-paren">(</span><em class="sig-param">env</em>, <em class="sig-param">nb_timesteps</em>, <em class="sig-param">max_num_step=100</em>, <em class="sig-param">test_freq=1000</em>, <em class="sig-param">save_freq=1000</em>, <em class="sig-param">save_folder='models'</em>, <em class="sig-param">render=False</em>, <em class="sig-param">time_laps=0.0</em>, <em class="sig-param">verbose=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/agent/agent.html#TrainableAgent.learn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.agent.agent.TrainableAgent.learn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the learning part.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1162,7 +1162,7 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="attribute">
 <dt id="marl.experience.experience.Experience.experience">
-<code class="sig-name descname">experience</code><em class="property"> = {'ReplayMemory': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-1': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-100': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-1000': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-10000': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-100000': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-2000': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-30000': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-500': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-5000': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-50000': &lt;marl.tools.ClassSpec object&gt;}</em><a class="headerlink" href="#marl.experience.experience.Experience.experience" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">experience</code><em class="property"> = {'PrioritizedReplayMemory': &lt;marl.tools.ClassSpec object&gt;, 'PrioritizedReplayMemory-1': &lt;marl.tools.ClassSpec object&gt;, 'PrioritizedReplayMemory-100': &lt;marl.tools.ClassSpec object&gt;, 'PrioritizedReplayMemory-1000': &lt;marl.tools.ClassSpec object&gt;, 'PrioritizedReplayMemory-10000': &lt;marl.tools.ClassSpec object&gt;, 'PrioritizedReplayMemory-100000': &lt;marl.tools.ClassSpec object&gt;, 'PrioritizedReplayMemory-2000': &lt;marl.tools.ClassSpec object&gt;, 'PrioritizedReplayMemory-30000': &lt;marl.tools.ClassSpec object&gt;, 'PrioritizedReplayMemory-500': &lt;marl.tools.ClassSpec object&gt;, 'PrioritizedReplayMemory-5000': &lt;marl.tools.ClassSpec object&gt;, 'PrioritizedReplayMemory-50000': &lt;marl.tools.ClassSpec object&gt;, 'RNNPrioritizedReplayMemory': &lt;marl.tools.ClassSpec object&gt;, 'RNNPrioritizedReplayMemory-1': &lt;marl.tools.ClassSpec object&gt;, 'RNNPrioritizedReplayMemory-100': &lt;marl.tools.ClassSpec object&gt;, 'RNNPrioritizedReplayMemory-1000': &lt;marl.tools.ClassSpec object&gt;, 'RNNPrioritizedReplayMemory-10000': &lt;marl.tools.ClassSpec object&gt;, 'RNNPrioritizedReplayMemory-100000': &lt;marl.tools.ClassSpec object&gt;, 'RNNPrioritizedReplayMemory-2000': &lt;marl.tools.ClassSpec object&gt;, 'RNNPrioritizedReplayMemory-30000': &lt;marl.tools.ClassSpec object&gt;, 'RNNPrioritizedReplayMemory-500': &lt;marl.tools.ClassSpec object&gt;, 'RNNPrioritizedReplayMemory-5000': &lt;marl.tools.ClassSpec object&gt;, 'RNNPrioritizedReplayMemory-50000': &lt;marl.tools.ClassSpec object&gt;, 'RNNReplayMemory': &lt;marl.tools.ClassSpec object&gt;, 'RNNReplayMemory-1': &lt;marl.tools.ClassSpec object&gt;, 'RNNReplayMemory-100': &lt;marl.tools.ClassSpec object&gt;, 'RNNReplayMemory-1000': &lt;marl.tools.ClassSpec object&gt;, 'RNNReplayMemory-10000': &lt;marl.tools.ClassSpec object&gt;, 'RNNReplayMemory-100000': &lt;marl.tools.ClassSpec object&gt;, 'RNNReplayMemory-2000': &lt;marl.tools.ClassSpec object&gt;, 'RNNReplayMemory-30000': &lt;marl.tools.ClassSpec object&gt;, 'RNNReplayMemory-500': &lt;marl.tools.ClassSpec object&gt;, 'RNNReplayMemory-5000': &lt;marl.tools.ClassSpec object&gt;, 'RNNReplayMemory-50000': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-1': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-100': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-1000': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-10000': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-100000': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-2000': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-30000': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-500': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-5000': &lt;marl.tools.ClassSpec object&gt;, 'ReplayMemory-50000': &lt;marl.tools.ClassSpec object&gt;}</em><a class="headerlink" href="#marl.experience.experience.Experience.experience" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1173,6 +1173,11 @@
 <dl class="method">
 <dt id="marl.experience.experience.Experience.sample">
 <code class="sig-name descname">sample</code><span class="sig-paren">(</span><em class="sig-param">batch_siz=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/experience/experience.html#Experience.sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.experience.experience.Experience.sample" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.experience.experience.Experience.none_transition">
+<code class="sig-name descname">none_transition</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/experience/experience.html#Experience.none_transition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.experience.experience.Experience.none_transition" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1212,11 +1217,11 @@
 <span id="replaybuffer"></span><h2>ReplayBuffer<a class="headerlink" href="#module-marl.experience.replay_buffer" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="marl.experience.replay_buffer.ReplayMemory">
-<em class="property">class </em><code class="sig-prename descclassname">marl.experience.replay_buffer.</code><code class="sig-name descname">ReplayMemory</code><span class="sig-paren">(</span><em class="sig-param">capacity</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/experience/replay_buffer.html#ReplayMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.experience.replay_buffer.ReplayMemory" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">marl.experience.replay_buffer.</code><code class="sig-name descname">ReplayMemory</code><span class="sig-paren">(</span><em class="sig-param">capacity</em>, <em class="sig-param">transition_type='FFTransition'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/experience/replay_buffer.html#ReplayMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.experience.replay_buffer.ReplayMemory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#marl.experience.experience.Experience" title="marl.experience.experience.Experience"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.experience.experience.Experience</span></code></a></p>
 <dl class="method">
 <dt id="marl.experience.replay_buffer.ReplayMemory.push">
-<code class="sig-name descname">push</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/experience/replay_buffer.html#ReplayMemory.push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.experience.replay_buffer.ReplayMemory.push" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">push</code><span class="sig-paren">(</span><em class="sig-param">*transition</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/experience/replay_buffer.html#ReplayMemory.push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.experience.replay_buffer.ReplayMemory.push" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1237,12 +1242,42 @@
 </dd></dl>
 
 <dl class="class">
-<dt id="marl.experience.replay_buffer.ExpReplay">
-<em class="property">class </em><code class="sig-prename descclassname">marl.experience.replay_buffer.</code><code class="sig-name descname">ExpReplay</code><span class="sig-paren">(</span><em class="sig-param">memory_size=5000</em>, <em class="sig-param">burn_in=1000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/experience/replay_buffer.html#ExpReplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.experience.replay_buffer.ExpReplay" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dt id="marl.experience.replay_buffer.PrioritizedReplayMemory">
+<em class="property">class </em><code class="sig-prename descclassname">marl.experience.replay_buffer.</code><code class="sig-name descname">PrioritizedReplayMemory</code><span class="sig-paren">(</span><em class="sig-param">capacity</em>, <em class="sig-param">alpha=0.6</em>, <em class="sig-param">beta=0.4</em>, <em class="sig-param">eps=1e-06</em>, <em class="sig-param">transition_type='FFTransition'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/experience/replay_buffer.html#PrioritizedReplayMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.experience.replay_buffer.PrioritizedReplayMemory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#marl.experience.experience.Experience" title="marl.experience.experience.Experience"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.experience.experience.Experience</span></code></a></p>
+<dl class="attribute">
+<dt id="marl.experience.replay_buffer.PrioritizedReplayMemory.beta_increment_per_sampling">
+<code class="sig-name descname">beta_increment_per_sampling</code><em class="property"> = 0.001</em><a class="headerlink" href="#marl.experience.replay_buffer.PrioritizedReplayMemory.beta_increment_per_sampling" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
-<dt id="marl.experience.replay_buffer.ExpReplay.burn_in_capacity">
-<code class="sig-name descname">burn_in_capacity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/experience/replay_buffer.html#ExpReplay.burn_in_capacity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.experience.replay_buffer.ExpReplay.burn_in_capacity" title="Permalink to this definition">¶</a></dt>
+<dt id="marl.experience.replay_buffer.PrioritizedReplayMemory.capacity">
+<em class="property">property </em><code class="sig-name descname">capacity</code><a class="headerlink" href="#marl.experience.replay_buffer.PrioritizedReplayMemory.capacity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.experience.replay_buffer.PrioritizedReplayMemory.push">
+<code class="sig-name descname">push</code><span class="sig-paren">(</span><em class="sig-param">error</em>, <em class="sig-param">*transition</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/experience/replay_buffer.html#PrioritizedReplayMemory.push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.experience.replay_buffer.PrioritizedReplayMemory.push" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.experience.replay_buffer.PrioritizedReplayMemory.push_error">
+<code class="sig-name descname">push_error</code><span class="sig-paren">(</span><em class="sig-param">error</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/experience/replay_buffer.html#PrioritizedReplayMemory.push_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.experience.replay_buffer.PrioritizedReplayMemory.push_error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.experience.replay_buffer.PrioritizedReplayMemory.push_transition">
+<code class="sig-name descname">push_transition</code><span class="sig-paren">(</span><em class="sig-param">observation</em>, <em class="sig-param">action</em>, <em class="sig-param">reward</em>, <em class="sig-param">done_flag</em>, <em class="sig-param">next_observation</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/experience/replay_buffer.html#PrioritizedReplayMemory.push_transition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.experience.replay_buffer.PrioritizedReplayMemory.push_transition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.experience.replay_buffer.PrioritizedReplayMemory.sample">
+<code class="sig-name descname">sample</code><span class="sig-paren">(</span><em class="sig-param">batch_size=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/experience/replay_buffer.html#PrioritizedReplayMemory.sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.experience.replay_buffer.PrioritizedReplayMemory.sample" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.experience.replay_buffer.PrioritizedReplayMemory.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">idx</em>, <em class="sig-param">error</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/experience/replay_buffer.html#PrioritizedReplayMemory.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.experience.replay_buffer.PrioritizedReplayMemory.update" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1454,16 +1489,6 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="marl.policy.policy.Policy.load">
-<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/policy/policy.html#Policy.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.policy.policy.Policy.load" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="marl.policy.policy.Policy.save">
-<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/policy/policy.html#Policy.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.policy.policy.Policy.save" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="marl.policy.policy.Policy.make">
 <em class="property">classmethod </em><code class="sig-name descname">make</code><span class="sig-paren">(</span><em class="sig-param">id</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/policy/policy.html#Policy.make"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.policy.policy.Policy.make" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1476,6 +1501,22 @@
 <dl class="method">
 <dt id="marl.policy.policy.Policy.available">
 <em class="property">classmethod </em><code class="sig-name descname">available</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/policy/policy.html#Policy.available"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.policy.policy.Policy.available" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="marl.policy.policy.ModelBasedPolicy">
+<em class="property">class </em><code class="sig-prename descclassname">marl.policy.policy.</code><code class="sig-name descname">ModelBasedPolicy</code><span class="sig-paren">(</span><em class="sig-param">model</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/policy/policy.html#ModelBasedPolicy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.policy.policy.ModelBasedPolicy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#marl.policy.policy.Policy" title="marl.policy.policy.Policy"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.policy.policy.Policy</span></code></a></p>
+<dl class="method">
+<dt id="marl.policy.policy.ModelBasedPolicy.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/policy/policy.html#ModelBasedPolicy.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.policy.policy.ModelBasedPolicy.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="marl.policy.policy.ModelBasedPolicy.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/policy/policy.html#ModelBasedPolicy.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.policy.policy.ModelBasedPolicy.save" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1527,7 +1568,7 @@
 <dl class="class">
 <dt id="marl.policy.policies.QPolicy">
 <em class="property">class </em><code class="sig-prename descclassname">marl.policy.policies.</code><code class="sig-name descname">QPolicy</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">observation_space=None</em>, <em class="sig-param">action_space=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/policy/policies.html#QPolicy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.policy.policies.QPolicy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#marl.policy.policy.Policy" title="marl.policy.policy.Policy"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.policy.policy.Policy</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#marl.policy.policy.ModelBasedPolicy" title="marl.policy.policy.ModelBasedPolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.policy.policy.ModelBasedPolicy</span></code></a></p>
 <p>The class of policies based on a Q function</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1550,8 +1591,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="marl.policy.policies.QPolicy.model">
-<em class="property">property </em><code class="sig-name descname">model</code><a class="headerlink" href="#marl.policy.policies.QPolicy.model" title="Permalink to this definition">¶</a></dt>
+<dt id="marl.policy.policies.QPolicy.Q">
+<em class="property">property </em><code class="sig-name descname">Q</code><a class="headerlink" href="#marl.policy.policies.QPolicy.Q" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1559,7 +1600,7 @@
 <dl class="class">
 <dt id="marl.policy.policies.StochasticPolicy">
 <em class="property">class </em><code class="sig-prename descclassname">marl.policy.policies.</code><code class="sig-name descname">StochasticPolicy</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">observation_space=None</em>, <em class="sig-param">action_space=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/policy/policies.html#StochasticPolicy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.policy.policies.StochasticPolicy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#marl.policy.policy.Policy" title="marl.policy.policy.Policy"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.policy.policy.Policy</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#marl.policy.policy.ModelBasedPolicy" title="marl.policy.policy.ModelBasedPolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.policy.policy.ModelBasedPolicy</span></code></a></p>
 <p>The class of stochastic policies</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1586,7 +1627,7 @@
 <dl class="class">
 <dt id="marl.policy.policies.DeterministicPolicy">
 <em class="property">class </em><code class="sig-prename descclassname">marl.policy.policies.</code><code class="sig-name descname">DeterministicPolicy</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">observation_space=None</em>, <em class="sig-param">action_space=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/marl/policy/policies.html#DeterministicPolicy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#marl.policy.policies.DeterministicPolicy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#marl.policy.policy.Policy" title="marl.policy.policy.Policy"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.policy.policy.Policy</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#marl.policy.policy.ModelBasedPolicy" title="marl.policy.policy.ModelBasedPolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">marl.policy.policy.ModelBasedPolicy</span></code></a></p>
 <p>The class of deterministic policies</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1813,7 +1854,7 @@ registered hooks while the latter silently ignores them.</p>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="../quickstart/example.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../quickstart/example.html" class="btn btn-neutral float-left" title="Usage and examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
