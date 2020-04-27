@@ -1,6 +1,6 @@
 .. _example:
 
-Usage and examples
+Examples
 ==================
 
 Check available classes

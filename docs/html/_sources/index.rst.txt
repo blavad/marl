@@ -15,6 +15,7 @@ Github repository: https://github.com/blavad/marl
 
    quickstart/install
    quickstart/example
+   quickstart/environment
 
 .. toctree::
    :maxdepth: 7
