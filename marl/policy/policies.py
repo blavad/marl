@@ -6,7 +6,7 @@ import torch.nn.functional as F
 from torch.distributions import Categorical
 
 import marl
-from .policy import Policy
+from .policy import Policy, ModelBasedPolicy
 from marl.tools import gymSpace2dim
 
 class RandomPolicy(Policy):
@@ -28,7 +28,7 @@ class RandomPolicy(Policy):
         return self.action_space.sample()
     
 
-class QPolicy(Policy):
+class QPolicy(ModelBasedPolicy):
     """
     The class of policies based on a Q function
     
@@ -40,7 +40,8 @@ class QPolicy(Policy):
         self.observation_space = observation_space
         self.action_space = action_space
         
-        self.Q = marl.model.make(model, obs_sp=gymSpace2dim(self.observation_space), act_sp=gymSpace2dim(self.action_space))
+        self.model = marl.model.make(model, obs_sp=gymSpace2dim(self.observation_space), act_sp=gymSpace2dim(self.action_space))
+        
         
     def __call__(self, state):
         """
@@ -57,10 +58,11 @@ class QPolicy(Policy):
             
 
     @property
-    def model(self):
-        return self.Q
+    def Q(self):
+        return self.model
 
-class StochasticPolicy(Policy):
+
+class StochasticPolicy(ModelBasedPolicy):
     """
     The class of stochastic policies
     
@@ -90,7 +92,7 @@ class StochasticPolicy(Policy):
             pd = self.forward(observation)
             return pd.sample().item()
         
-class DeterministicPolicy(Policy):
+class DeterministicPolicy(ModelBasedPolicy):
     """
     The class of deterministic policies
     

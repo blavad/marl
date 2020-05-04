@@ -1,6 +1,9 @@
 import importlib
 import gym
 import numpy as np
+import torch
+
+#### Function for simpler susage ####
 
 def _addindent(s_, numSpaces):
     s = s_.split('\n')
@@ -32,19 +35,6 @@ def gymSpace2dim(gym_space):
         l_sp = list(gym_space.shape)
         return l_sp[0] if len(l_sp) <2 else l_sp
     
-def super_cat(obs, act):
-    if type(obs[0]) is not np.ndarray and type(obs[0]) is not list and len(obs.shape) <=1 and len(act.shape) <=1:
-        concat = [obs, act]
-    else:
-        concat = [super_cat(o, a) for o, a in zip(obs,act)]
-    return np.concatenate(concat)
-
-def is_done(done):
-    if type(done) is bool:
-        return done
-    elif type(done) is  list:
-        done = [is_done(d) for d in done]
-        return all(done)
 
 def load(name):
     mod_name, attr_name = name.split(":")
@@ -70,3 +60,113 @@ class ClassSpec(object):
             expl = cls(**_kwargs)
         return expl
     
+
+##### Tools for data preprocessing ##### 
+
+def super_cat(obs, act):
+    if type(obs[0]) is not np.ndarray and type(obs[0]) is not list and len(obs.shape) <=1 and len(act.shape) <=1:
+        concat = [obs, act]
+    else:
+        concat = [super_cat(o, a) for o, a in zip(obs,act)]
+    return np.concatenate(concat)
+
+def seq2unique_dict(seq_dict):
+    new_dict = {}
+    for key in seq_dict[0].keys():
+        new_dict[key] = []
+    for sub_dict in seq_dict:
+        for key in sub_dict.keys():
+            new_dict[key].append(sub_dict[key])
+    return new_dict
+
+def seq2unique_transition(seq_transition):
+    dict_transition = {}
+    transition_class = seq_transition[0].__class__
+    fields_ = seq_transition[0]._fields
+    # Init value of dict to void
+    for field in fields_:
+        val = getattr(seq_transition[0], field)
+        if isinstance(val, dict):
+            dict_transition[field] = {}
+            for key in val.keys():
+                dict_transition[field][key] = []
+        else:
+            dict_transition[field] = []
+    # Add elements in dict of full transition
+    for tr in seq_transition:
+        for field in fields_:
+            if isinstance(dict_transition[field], dict):
+                for key in dict_transition[field].keys():
+                    dict_transition[field][key].append(getattr(tr, field)[key])    
+            else:
+                dict_transition[field].append(getattr(tr, field))
+    return transition_class(**dict_transition)
+
+def zeros_like(var):
+    zero_var = None
+    if isinstance(var, dict):
+        zero_var = {}
+        for key, val in var.items():
+            zero_var[key] = zeros_like(val)
+    if isinstance(var, list):
+        zero_var = [zeros_like(val) for val in var]
+    if isinstance(var, torch.Tensor):
+        zero_var = torch.zeros_like(var)
+    if isinstance(var, float) or isinstance(var, int):
+        zero_var = 0
+    if isinstance(var, str):
+        zero_var = ''
+    if isinstance(var, bool):
+        new_var = False
+    assert zero_var is not None, "Erreur type nonreconnu"
+    return zero_var 
+
+def ones_like(var):
+    return v_like(var, value=1.)
+
+def v_like(var, value=0):
+    new_var = None
+    if isinstance(var, dict):
+        new_var = {}
+        for key, val in val.items():
+            new_var[key] = v_like(val, value)
+    if isinstance(var, list):
+        new_var = [v_like(val, value) for val in var]
+    if isinstance(var,torch.Tensor):
+        new_var = torch.full_like(var, value)
+    if isinstance(var, float) or isinstance(var, int):
+        new_var = value
+    if isinstance(var, bool):
+        if value == 0:
+            new_var = False
+        if value == 1:
+            new_var = True
+        else :
+            raise TypeError("bool doesn't match with value ", value)
+        
+    assert new_var is not None, "Erreur type non reconnu"
+    return new_var 
+
+            
+def pad_like(transition):
+    dict_transition = {}
+    if transition.__class__.__name__ != "FFTransition":
+        raise NotImplementedError
+    observation = zeros_like(transition.observation)
+    action = zeros_like(transition.action)
+    reward = zeros_like(transition.reward)
+    done_flag = ones_like(transition.done_flag)
+    next_observation = zeros_like(transition.next_observation)
+    return transition.__class__(observation=observation,
+                                action=action,
+                                reward=reward,
+                                done_flag=done_flag,
+                                next_observation=next_observation)
+
+    
+def is_done(done):
+    if type(done) is bool:
+        return done
+    elif type(done) is list:
+        done = [is_done(d) for d in done]
+        return all(done)

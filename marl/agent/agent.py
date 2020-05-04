@@ -3,6 +3,7 @@ from marl.tools import ClassSpec, _std_repr, is_done
 
 from marl.policy.policy import Policy
 from marl.exploration import ExplorationProcess
+from marl.experience import ReplayMemory, PrioritizedReplayMemory
 
 import os
 import time
@@ -53,7 +54,8 @@ class Agent(object):
         :param max_num_step: (int) The maximum number a step before stopping an episode
         :param render: (bool) Whether to visualize the test or not (using render function of the environment)
         """
-        rewards = np.array([])
+        mean_rewards = np.array([])
+        sum_rewards = np.array([])
         for episode in range(nb_episodes):
             observation = env.reset()
             done = False
@@ -69,10 +71,13 @@ class Agent(object):
                     time.sleep(time_laps)
                 if is_done(done):
                     break
-            rewards = np.array([sum_r/step]) if episode==0 else np.append(rewards, [sum_r/step], axis=0)
+            mean_rewards = np.array([sum_r/step]) if episode==0 else np.append(mean_rewards, [sum_r/step], axis=0)
+            sum_rewards = np.array([sum_r]) if episode==0 else np.append(sum_rewards, [sum_r], axis=0)
         if render:
             env.close()
-        return rewards, rewards.mean(axis=0), rewards.std(axis=0)
+        return {'mean_by_step' : [mean_rewards, mean_rewards.mean(axis=0), mean_rewards.std(axis=0)] ,
+                'mean_by_episode' : [sum_rewards, sum_rewards.mean(axis=0), sum_rewards.std(axis=0)]
+                }
     
     def __repr__(self):
         return _std_repr(self)
@@ -133,7 +138,10 @@ class TrainableAgent(Agent):
         """
         Store a transition in the experience buffer.
         """
-        self.experience.push(*args)
+        if isinstance(self.experience, ReplayMemory):
+            self.experience.push(*args)
+        elif isinstance(self.experience, PrioritizedReplayMemory):
+            self.experience.push_transition(*args)
         
     def update_model(self, t):
         """
@@ -179,7 +187,7 @@ class TrainableAgent(Agent):
     def save_all(self):
         pass
     
-    def learn(self, env, nb_timesteps, max_num_step=100, test_freq=1000, save_freq=1000, save_folder="models", render=False, time_laps=0.):
+    def learn(self, env, nb_timesteps, max_num_step=100, test_freq=1000, save_freq=1000, save_folder="models", render=False, time_laps=0., verbose=1):
         """
         Start the learning part.
         
@@ -203,10 +211,16 @@ class TrainableAgent(Agent):
                 time.sleep(time_laps)
             for _ in range(timestep, timestep + max_num_step):
                 action = self.action(obs)
+                if verbose == 3:
+                    # print("#> Observation : ", obs)
+                    print("#> Action : ", action)
                 obs2, rew, done, _ = env.step(action)
+                
                 self.store_experience(obs, action, rew, obs2, done)
-                self.update_model(timestep)
+                
                 obs = obs2
+                self.update_model(timestep)
+                
                 timestep+=1
                 if render:
                     env.render()
@@ -214,19 +228,46 @@ class TrainableAgent(Agent):
             
                 # Save the model
                 if timestep % save_freq == 0:
-                    print("Step {}/{} --- Save Model".format(timestep, nb_timesteps))
+                    print("#> Step {}/{} --- Save Model".format(timestep, nb_timesteps))
                     self.save_policy(timestep=timestep, folder=save_folder)
                     
                 # Test the model
                 if timestep % test_freq == 0:
-                    _, m_rews, std_rews = self.test(env, 100, max_num_step=max_num_step, render=False)
-                    print("Step {}/{} ({} episodes) --- Mean rewards {} -- Dev rewards {}\n".format(timestep, nb_timesteps, episode, m_rews, std_rews))
+                    res_test = self.test(env, 100, max_num_step=max_num_step, render=False)
+                    _, m_m_rews, m_std_rews = res_test['mean_by_step']
+                    _, s_m_rews, s_std_rews = res_test['mean_by_episode']
+                    if verbose == 2:
+                        log = "#> Step {}/{} (ep {})\n\
+                            |\tMean By Step {} / Dev {}\n\
+                            |\tMean By Episode {} / Dev {}) \n".format(timestep, 
+                                                                nb_timesteps, 
+                                                                episode, 
+                                                                np.around(m_m_rews, decimals=2), 
+                                                                np.around(m_std_rews, decimals=2), 
+                                                                np.around(s_m_rews, decimals=2), 
+                                                                np.around(s_std_rews, decimals=2))
+                        log += self.training_log(verbose)
+                    else:
+                        log = "#> Step {}/{} (ep {})\n\
+                            |\tMean By Step {}\n\
+                            |\tMean By Episode {}\n".format(timestep, 
+                                                                nb_timesteps, 
+                                                                episode, 
+                                                                np.around(m_m_rews, decimals=2), 
+                                                                np.around(s_m_rews, decimals=2))
+                    print(log)
                     break
                 
                 if is_done(done):
                     break
         print("#> End of learning process !")
     
+    
+    def training_log(self, verbose):
+        if verbose >= 2:
+            log = "#> {}\n\
+                    |\tExperience : {}\n".format(self.name, self.experience,)
+            return log
 
 class MATrainable(object):
     def __init__(self, mas, index):    
