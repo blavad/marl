@@ -31,9 +31,7 @@ class QAgent(TrainableAgent):
         
         self.off_policy = target_update_freq is not None
         self.target_update_freq = target_update_freq
-        
-        assert isinstance(self.experience, ReplayMemory), "This version only support Replay Memory as experience"
-        
+                
         if self.off_policy:
             self.target_policy = copy.deepcopy(self.policy)
         
