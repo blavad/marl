@@ -28,7 +28,7 @@ class MAS(object):
 
         :param observation: The joint observation
         """
-        return [Agent.action(ag, obs) for ag, obs in zip(self.agents, observation)]    
+        return [ag.greedy_action(ag, obs) for ag, obs in zip(self.agents, observation)]    
     
     def get_by_name(self, name):
         for ag in self.agents:
@@ -85,7 +85,7 @@ class MARL(TrainableAgent, MAS):
         return [ag.action(obs) for ag, obs in zip(self.agents, observation)]
         
     def greedy_action(self, observation):
-        return [Agent.action(ag, obs) for ag, obs in zip(self.agents, observation)]
+        return [ag.greedy_action(obs) for ag, obs in zip(self.agents, observation)]
     
     def save_policy(self, folder='.', filename='', timestep=None):
         """
@@ -106,4 +106,13 @@ class MARL(TrainableAgent, MAS):
         for ag in self.agents:
             if isinstance(ag, TrainableAgent):
                 ag.load_model(filename)
-                 
+                
+    def training_log(self, verbose):
+        log = ""
+        if verbose >= 2:
+            for ag in self.agents:
+                if isinstance(ag, TrainableAgent):
+                    log += ag.training_log(verbose)
+                else:
+                    log += "#> {}\n".format(ag.name)
+        return log

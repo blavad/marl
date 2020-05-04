@@ -9,18 +9,6 @@ class Policy(object):
     def __call__(self, state):
         raise NotImplementedError
     
-    def load(self, filename):
-        if isinstance(self.model, nn.Module):
-            self.model.load_state_dict(torch.load(filename))
-        else:
-            self.model.load(filename=filename)
-
-    def save(self, filename):
-        if isinstance(self.model, nn.Module):
-            torch.save(self.model.state_dict(), filename)
-        else:
-            self.model.save(filename=filename)
-            
     def __repr__(self):
         return _std_repr(self)
     
@@ -40,6 +28,23 @@ class Policy(object):
     @classmethod
     def available(cls):
         return Policy.policy.keys()
+    
+class ModelBasedPolicy(Policy):
+    
+    def __init__(self, model):
+        self.model = model
+    
+    def load(self, filename):
+        if isinstance(self.model, nn.Module):
+            self.model.load_state_dict(torch.load(filename))
+        else:
+            self.model.load(filename=filename)
+
+    def save(self, filename):
+        if isinstance(self.model, nn.Module):
+            torch.save(self.model.state_dict(), filename)
+        else:
+            self.model.save(filename=filename)
 
 def register(id, entry_point, **kwargs):
     Policy.register(id, entry_point, **kwargs)
