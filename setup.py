@@ -6,6 +6,6 @@ setup(name='marl',
       url='https://github.com/blavad/marl',
       author='David Albert',
       author_email='david.albert@insa-rouen.fr',
-      packages=find_packages(),
+      packages=['marl', 'marl.agent', 'marl.experience', 'marl.exploration', 'marl.policy', 'marl.model','marl.model.nn'],
       install_requires=['gym', 'numpy','torch', 'torchvision']
 )
