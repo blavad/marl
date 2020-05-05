@@ -1,6 +1,7 @@
 import os
 import marl
 from .agent import TrainableAgent, Agent
+from torch.utils.tensorboard import SummaryWriter
 
 class MAS(object):
     """
@@ -55,6 +56,14 @@ class MARL(TrainableAgent, MAS):
     def __init__(self, agents_list=[], name='marl'):
         MAS.__init__(self, agents_list=agents_list, name=name)
         self.experience = marl.experience.make("ReplayMemory", capacity=10000)
+        
+        self.init_writer()
+        
+    def init_writer(self):
+        self.writer = SummaryWriter('logs/{}'.format(self.name))
+        for ag in self.agents:
+            if isinstance(ag, TrainableAgent):
+                ag.writer = self.writer
         
     def store_experience(self, *args):
         TrainableAgent.store_experience(self, *args)

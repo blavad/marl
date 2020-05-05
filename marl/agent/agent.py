@@ -9,6 +9,7 @@ import os
 import time
 import torch
 import torch.optim as optim
+from torch.utils.tensorboard import SummaryWriter
 import numpy as np
 
 class Agent(object):
@@ -125,6 +126,8 @@ class TrainableAgent(Agent):
         self.exploration = marl.exploration.make(exploration)
         
         assert self.experience.capacity >= self.batch_size
+        
+        self.writer = SummaryWriter('logs/{}'.format(self.name))
     
     @property
     def observation_space(self):
@@ -236,6 +239,7 @@ class TrainableAgent(Agent):
                     res_test = self.test(env, 100, max_num_step=max_num_step, render=False)
                     _, m_m_rews, m_std_rews = res_test['mean_by_step']
                     _, s_m_rews, s_std_rews = res_test['mean_by_episode']
+                    self.writer.add_scalar("mean_sum_reward", sum(s_m_rews)/len(s_m_rews))
                     if verbose == 2:
                         log = "#> Step {}/{} (ep {})\n\
                             |\tMean By Step {} / Dev {}\n\
