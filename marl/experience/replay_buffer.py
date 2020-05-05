@@ -64,7 +64,7 @@ class PrioritizedReplayMemory(Experience):
         self.tree = SumTree(capacity)
         self.burn_in_frames = capacity//12 if burn_in_frames is None else burn_in_frames
         
-        assert self.burn_in < capacity
+        assert self.burn_in_frames < capacity
             
         # self.seed = seed
         self.alpha = alpha
