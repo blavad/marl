@@ -59,10 +59,13 @@ class ReplayMemory(Experience):
 class PrioritizedReplayMemory(Experience):
     beta_increment_per_sampling = 0.001
 
-    def __init__(self, capacity, alpha=0.6, beta=0.4, eps=1e-6, transition_type="FFTransition"):
+    def __init__(self, capacity, burn_in_frames=None, alpha=0.6, beta=0.4, eps=1e-6, transition_type="FFTransition"):
         
         self.tree = SumTree(capacity)
+        self.burn_in_frames = capacity//12 if burn_in_frames is None else burn_in_frames
         
+        assert self.burn_in < capacity
+            
         # self.seed = seed
         self.alpha = alpha
         self.beta = beta
@@ -76,7 +79,6 @@ class PrioritizedReplayMemory(Experience):
         return self.tree.capacity
 
     def _get_priority(self, error):
-        # print("Err : ", error)
         return (np.abs(error) + self.eps) ** self.alpha
 
     # def push(self, error, *transition):
