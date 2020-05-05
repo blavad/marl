@@ -30,7 +30,7 @@ class Agent(object):
         self.id = Agent.counter
         
         self.name = name
-        self.policy = Policy.make(policy)
+        self.policy = marl.policy.make(policy)
         
     def action(self, observation):
         """
@@ -239,7 +239,7 @@ class TrainableAgent(Agent):
                     res_test = self.test(env, 100, max_num_step=max_num_step, render=False)
                     _, m_m_rews, m_std_rews = res_test['mean_by_step']
                     _, s_m_rews, s_std_rews = res_test['mean_by_episode']
-                    self.writer.add_scalar("mean_sum_reward", sum(s_m_rews)/len(s_m_rews))
+                    self.writer.add_scalar("Reward/mean_sum", sum(s_m_rews)/len(s_m_rews))
                     if verbose == 2:
                         log = "#> Step {}/{} (ep {})\n\
                             |\tMean By Step {} / Dev {}\n\
