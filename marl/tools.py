@@ -80,27 +80,31 @@ def seq2unique_dict(seq_dict):
     return new_dict
 
 def seq2unique_transition(seq_transition):
-    dict_transition = {}
-    transition_class = seq_transition[0].__class__
-    fields_ = seq_transition[0]._fields
-    # Init value of dict to void
-    for field in fields_:
-        val = getattr(seq_transition[0], field)
-        if isinstance(val, dict):
-            dict_transition[field] = {}
-            for key in val.keys():
-                dict_transition[field][key] = []
-        else:
-            dict_transition[field] = []
-    # Add elements in dict of full transition
-    for tr in seq_transition:
+    try:
+        dict_transition = {}
+        transition_class = seq_transition[0].__class__
+        fields_ = seq_transition[0]._fields
+        # Init value of dict to void
         for field in fields_:
-            if isinstance(dict_transition[field], dict):
-                for key in dict_transition[field].keys():
-                    dict_transition[field][key].append(getattr(tr, field)[key])    
+            val = getattr(seq_transition[0], field)
+            if isinstance(val, dict):
+                dict_transition[field] = {}
+                for key in val.keys():
+                    dict_transition[field][key] = []
             else:
-                dict_transition[field].append(getattr(tr, field))
-    return transition_class(**dict_transition)
+                dict_transition[field] = []
+        # Add elements in dict of full transition
+        for tr in seq_transition:
+            for field in fields_:
+                if isinstance(dict_transition[field], dict):
+                    for key in dict_transition[field].keys():
+                        dict_transition[field][key].append(getattr(tr, field)[key])    
+                else:
+                    dict_transition[field].append(getattr(tr, field))
+        return transition_class(**dict_transition)
+    except AttributeError:
+        print("\n\n\n!!!!!!! Attribute Error !!!!!!!!!")
+        print(seq_transition)
 
 def zeros_like(var):
     zero_var = None
