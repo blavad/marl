@@ -14,8 +14,12 @@ transition = {
 }
 
 class ReplayMemory(Experience):
-    def __init__(self, capacity, transition_type="FFTransition"):
+    def __init__(self, capacity, burn_in_frames=None, transition_type="FFTransition"):
         self.capacity = capacity
+        self.burn_in_frames = capacity//12 if burn_in_frames is None else burn_in_frames
+        
+        assert self.burn_in_frames < capacity
+        
         self.memory = []
         self.position = 0
         self.transition_type = transition_type
@@ -28,13 +32,22 @@ class ReplayMemory(Experience):
         self.memory[self.position] = self.transition(*transition)
         self.position = (self.position + 1) % self.capacity
 
+
+    def push_tr(self, tr):
+        assert len(self.transition._fields)==len(tr._fields) , "Invalid number of transition values : {} given instead of {} required".format(len(tr._fields), len(self.transition._fields))
+        
+        if len(self.memory) < self.capacity:
+            self.memory.append(None)
+        self.memory[self.position] = tr
+        self.position = (self.position + 1) % self.capacity 
+
     def sample(self, batch_size=1):
         assert batch_size <= len(self), "Batch size > Memory length"
         _sample = random.sample(self.memory, batch_size)
-        _sample = list(zip(*_sample))
-        sample_arr = [np.asarray(s) for s in _sample]
-        # sample_arr = [torch.from_numpy(np.asarray(s)).float() for s in _sample]
-        return self.transition(*sample_arr)
+        # _sample = list(zip(*_sample))
+        # sample_arr = [np.asarray(s) for s in _sample]
+        # return self.transition(*sample_arr)
+        return seq2unique_transition(_sample)
 
     def __len__(self):
         return len(self.memory)
@@ -80,14 +93,6 @@ class PrioritizedReplayMemory(Experience):
 
     def _get_priority(self, error):
         return (np.abs(error) + self.eps) ** self.alpha
-
-    # def push(self, error, *transition):
-    #     assert len(self.transition._fields)==len(transition) , "Invalid number of transition values : {} given instead of {} required".format(len(transition), len(self.transition._fields))
-        
-    #     p = self._get_priority(error)
-    #     self.tree.add(p, transition)
-        
-    #     self.current_transition = self.none_transition_dict()
         
     def push(self, error, transition):
         assert len(self.transition._fields)==len(transition._fields) , "Invalid number of transition values : {} given instead of {} required".format(len(transition._fields), len(self.transition._fields))
