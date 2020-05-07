@@ -46,6 +46,9 @@ class Agent(object):
         """
         return Agent.action(self, observation)
     
+    def reset(self):
+        pass
+    
     def test(self, env, nb_episodes=1, max_num_step=200, render=True, time_laps=0.):
         """
         Test a model.
@@ -59,12 +62,15 @@ class Agent(object):
         sum_rewards = np.array([])
         for episode in range(nb_episodes):
             observation = env.reset()
+            self.reset()
             done = False
             if render:
                 env.render()
                 time.sleep(time_laps)
             for step in range(max_num_step):
                 action = self.greedy_action(observation)
+                if render:
+                    print(action)
                 observation, reward, done, _ = env.step(action)
                 sum_r = np.array(reward) if step==0 else np.add(sum_r, reward)
                 if render:

@@ -59,6 +59,10 @@ class MARL(TrainableAgent, MAS):
         
         self.init_writer()
         
+    def reset(self):
+        for  ag in self.agents:
+            ag.reset()
+            
     def init_writer(self):
         self.writer = SummaryWriter('logs/{}'.format(self.name))
         for ag in self.agents:
