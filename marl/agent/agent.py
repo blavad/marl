@@ -7,6 +7,7 @@ from marl.experience import ReplayMemory, PrioritizedReplayMemory
 
 import os
 import time
+from datetime import datetime
 import torch
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
@@ -207,6 +208,8 @@ class TrainableAgent(Agent):
         :param save_freq: (int) The frequency of saving model
         """
         print("#> Start learning process !")
+        start_time = datetime.now()
+        print("Date : ", start_time.strftime("%d/%m/%Y %H:%M:%S"))
         timestep = 0
         episode = 0
         self.reset_exploration(nb_timesteps)
@@ -246,23 +249,26 @@ class TrainableAgent(Agent):
                     _, m_m_rews, m_std_rews = res_test['mean_by_step']
                     _, s_m_rews, s_std_rews = res_test['mean_by_episode']
                     self.writer.add_scalar("Reward/mean_sum", sum(s_m_rews)/len(s_m_rews), timestep)
+                    duration = datetime.now() - start_time
                     if verbose == 2:
-                        log = "#> Step {}/{} (ep {})\n\
+                        log = "#> Step {}/{} (ep {}) - {}\n\
                             |\tMean By Step {} / Dev {}\n\
                             |\tMean By Episode {} / Dev {}) \n".format(timestep, 
                                                                 nb_timesteps, 
                                                                 episode, 
+                                                                duration,
                                                                 np.around(m_m_rews, decimals=2), 
                                                                 np.around(m_std_rews, decimals=2), 
                                                                 np.around(s_m_rews, decimals=2), 
                                                                 np.around(s_std_rews, decimals=2))
                         log += self.training_log(verbose)
                     else:
-                        log = "#> Step {}/{} (ep {})\n\
+                        log = "#> Step {}/{} (ep {}) - {}\n\
                             |\tMean By Step {}\n\
                             |\tMean By Episode {}\n".format(timestep, 
                                                                 nb_timesteps, 
                                                                 episode, 
+                                                                duration,
                                                                 np.around(m_m_rews, decimals=2), 
                                                                 np.around(s_m_rews, decimals=2))
                     print(log)
@@ -276,7 +282,8 @@ class TrainableAgent(Agent):
     def training_log(self, verbose):
         if verbose >= 2:
             log = "#> {}\n\
-                    |\tExperience : {}\n".format(self.name, self.experience,)
+                    |\tExperience : {}\n\
+                    |\tExploration : {}\n".format(self.name, self.experience, self.exploration)
             return log
 
 class MATrainable(object):
