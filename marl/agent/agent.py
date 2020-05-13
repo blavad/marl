@@ -73,6 +73,7 @@ class Agent(object):
                 if render:
                     print(action)
                 observation, reward, done, _ = env.step(action)
+                # print(reward)
                 sum_r = np.array(reward) if step==0 else np.add(sum_r, reward)
                 if render:
                     env.render()
@@ -197,7 +198,7 @@ class TrainableAgent(Agent):
     def save_all(self):
         pass
     
-    def learn(self, env, nb_timesteps, max_num_step=100, test_freq=1000, save_freq=1000, save_folder="models", render=False, time_laps=0., verbose=1):
+    def learn(self, env, nb_timesteps, max_num_step=100, test_freq=1000, save_freq=1000, save_folder="models", render=False, time_laps=0., verbose=1, timestep_init=0):
         """
         Start the learning part.
         
@@ -207,10 +208,13 @@ class TrainableAgent(Agent):
         :param test_freq: (int) The frequency of testing model
         :param save_freq: (int) The frequency of saving model
         """
+        assert timestep_init >=0, "Initial timestep must be upper or equal than 0"
+        assert timestep_init < nb_timesteps, "Initial timestep must be lower than the total number of timesteps"
+        
         print("#> Start learning process !")
         start_time = datetime.now()
         print("Date : ", start_time.strftime("%d/%m/%Y %H:%M:%S"))
-        timestep = 0
+        timestep = timestep_init
         episode = 0
         self.reset_exploration(nb_timesteps)
         while timestep < nb_timesteps:

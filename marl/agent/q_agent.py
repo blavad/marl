@@ -65,6 +65,7 @@ class QAgent(TrainableAgent):
         
         if self.off_policy and t % self.target_update_freq==0:
             self.update_target_model()
+            
     
     def target(self, Q, batch):
         """
@@ -227,10 +228,7 @@ class ContinuousDQNAgent(DQNAgent):
     :param action_space: (gym.Spaces) The action space
     :param experience: (Experience) The experience memory data structure
     :param exploration: (Exploration) The exploration process 
-    :param gamma: (float) The training parameters
-    :param lr: (float) The learning rate
-    :param batch_size: (int) The size of a batch
-    :param target_update_freq: (int) The update frequency of the target model  
+    :param gamma: (float) The training parameterstimestep_initof the target model  
     :param name: (str) The name of the agent      
     """
     

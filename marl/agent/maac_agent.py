@@ -53,7 +53,6 @@ class MAPGAgent(TrainableAgent, MATrainable):
             
             self.target_policy = copy.deepcopy(self.policy)
             self.target_policy.model.eval()
-
     
     def soft_update(self, local_model, target_model, tau):
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):

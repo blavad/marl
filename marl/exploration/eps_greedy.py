@@ -28,7 +28,7 @@ class EpsGreedy(ExplorationProcess):
     def update(self, t):
         """ Update epsilon linearly """   
         if t > self.init_expl_step:
-            self.eps = max(self.eps_fin, self.eps_deb - t*(self.eps_deb-self.eps_fin)/(self.final_expl_step-self.init_expl_step))
+            self.eps = max(self.eps_fin, self.eps_deb - (t-self.init_expl_step)*(self.eps_deb-self.eps_fin)/(self.final_expl_step-self.init_expl_step))
         
     def __call__(self, policy, observation):
         """ Choose an action according to the policy and the exploration rate """   
