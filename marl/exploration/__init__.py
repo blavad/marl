@@ -5,7 +5,42 @@ from marl.exploration.ou_noise import OUNoise
     
 register(
     id='Greedy',
-    entry_point='marl.exploration.greedy:Greedy'
+    entry_point='marl.exploration.eps_greedy:Greedy'
+)
+
+register(
+    id='EpsGreedy',
+    entry_point='marl.exploration.eps_greedy:EpsGreedy',
+)
+
+register(
+    id='EpsGreedy-lin',
+    entry_point='marl.exploration.eps_greedy:EpsGreedy',   
+)
+
+register(
+    id='Expert',
+    entry_point='marl.exploration.eps_greedy:Expert',
+)
+
+register(
+    id='EpsExpert',
+    entry_point='marl.exploration.eps_greedy:EpsExpert',
+)
+
+register(
+    id='HierarchicalEpsGreedy',
+    entry_point='marl.exploration.eps_greedy:HierarchicalEpsGreedy',
+)
+
+register(
+    id='EpsExpertEpsGreedy',
+    entry_point='marl.exploration.eps_greedy:EpsExpertEpsGreedy',
+)
+
+register(
+    id='OUNoise',
+    entry_point='marl.exploration.ou_noise:OUNoise'
 )
 
 register(
@@ -48,19 +83,4 @@ register(
     entry_point='marl.exploration.eps_greedy:EpsGreedy',
     eps_deb=0.01,
     eps_fin=0.01
-)
-
-register(
-    id='EpsGreedy',
-    entry_point='marl.exploration.eps_greedy:EpsGreedy',
-)
-
-register(
-    id='EpsGreedy-lin',
-    entry_point='marl.exploration.eps_greedy:EpsGreedy',   
-)
-
-register(
-    id='OUNoise',
-    entry_point='marl.exploration.ou_noise:OUNoise'
 )
