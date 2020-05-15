@@ -55,7 +55,7 @@ class MARL(TrainableAgent, MAS):
     """
     def __init__(self, agents_list=[], name='marl', log_dir="logs"):
         MAS.__init__(self, agents_list=agents_list, name=name)
-        self.experience = marl.experience.make("ReplayMemory", capacity=10000)
+        # self.experience = marl.experience.make("ReplayMemory", capacity=10000)
         
         self.init_writer(log_dir)
         
@@ -71,7 +71,7 @@ class MARL(TrainableAgent, MAS):
                 ag.init_writer(log_path)
         
     def store_experience(self, *args):
-        TrainableAgent.store_experience(self, *args)
+        # TrainableAgent.store_experience(self, *args)
         observation, action, reward, next_observation, done = args
         for i, ag in enumerate(self.agents):
             if isinstance(ag, TrainableAgent):
