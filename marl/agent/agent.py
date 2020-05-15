@@ -122,7 +122,7 @@ class TrainableAgent(Agent):
     :param name: (str) The name of the agent      
     """
          
-    def __init__(self, policy, observation_space=None, action_space=None, model=None, experience="ReplayMemory-10000", exploration="EpsGreedy", gamma=0.99, lr=0.001, batch_size=32, name="TrainableAgent"):
+    def __init__(self, policy, observation_space=None, action_space=None, model=None, experience="ReplayMemory-10000", exploration="EpsGreedy", gamma=0.99, lr=0.001, batch_size=32, name="TrainableAgent", log_dir='logs'):
         Agent.__init__(self, policy=marl.policy.make(policy, model=model, observation_space=observation_space, action_space=action_space), name=name)
         
         self.lr = lr
@@ -135,7 +135,7 @@ class TrainableAgent(Agent):
         
         assert self.experience.capacity >= self.batch_size
         
-        self.writer = SummaryWriter('logs/{}'.format(self.name))
+        self.init_writer(log_dir)    
     
     @property
     def observation_space(self):
@@ -144,6 +144,11 @@ class TrainableAgent(Agent):
     @property
     def action_space(self):
         return self.policy.action_space
+    
+    
+    def init_writer(self, log_dir):
+        self.writer = SummaryWriter(os.path.join(log_dir, self.name))
+        
     
     def store_experience(self, *args):
         """
@@ -216,6 +221,7 @@ class TrainableAgent(Agent):
         print("Date : ", start_time.strftime("%d/%m/%Y %H:%M:%S"))
         timestep = timestep_init
         episode = 0
+        test = False
         self.reset_exploration(nb_timesteps)
         while timestep < nb_timesteps:
             self.update_exploration(timestep)
@@ -246,40 +252,45 @@ class TrainableAgent(Agent):
                 if timestep % save_freq == 0:
                     print("#> Step {}/{} --- Save Model".format(timestep, nb_timesteps))
                     self.save_policy(timestep=timestep, folder=save_folder)
-                    
+                
+                
                 # Test the model
                 if timestep % test_freq == 0:
-                    res_test = self.test(env, 100, max_num_step=max_num_step, render=False)
-                    _, m_m_rews, m_std_rews = res_test['mean_by_step']
-                    _, s_m_rews, s_std_rews = res_test['mean_by_episode']
-                    self.writer.add_scalar("Reward/mean_sum", sum(s_m_rews)/len(s_m_rews), timestep)
-                    duration = datetime.now() - start_time
-                    if verbose == 2:
-                        log = "#> Step {}/{} (ep {}) - {}\n\
-                            |\tMean By Step {} / Dev {}\n\
-                            |\tMean By Episode {} / Dev {}) \n".format(timestep, 
-                                                                nb_timesteps, 
-                                                                episode, 
-                                                                duration,
-                                                                np.around(m_m_rews, decimals=2), 
-                                                                np.around(m_std_rews, decimals=2), 
-                                                                np.around(s_m_rews, decimals=2), 
-                                                                np.around(s_std_rews, decimals=2))
-                        log += self.training_log(verbose)
-                    else:
-                        log = "#> Step {}/{} (ep {}) - {}\n\
-                            |\tMean By Step {}\n\
-                            |\tMean By Episode {}\n".format(timestep, 
-                                                                nb_timesteps, 
-                                                                episode, 
-                                                                duration,
-                                                                np.around(m_m_rews, decimals=2), 
-                                                                np.around(s_m_rews, decimals=2))
-                    print(log)
-                    break
+                    test = True
                 
                 if is_done(done):
                     break
+                
+            if test:
+                res_test = self.test(env, 100, max_num_step=max_num_step, render=False)
+                _, m_m_rews, m_std_rews = res_test['mean_by_step']
+                _, s_m_rews, s_std_rews = res_test['mean_by_episode']
+                self.writer.add_scalar("Reward/mean_sum", sum(s_m_rews)/len(s_m_rews), timestep)
+                duration = datetime.now() - start_time
+                if verbose == 2:
+                    log = "#> Step {}/{} (ep {}) - {}\n\
+                        |\tMean By Step {} / Dev {}\n\
+                        |\tMean By Episode {} / Dev {}) \n".format(timestep, 
+                                                            nb_timesteps, 
+                                                            episode, 
+                                                            duration,
+                                                            np.around(m_m_rews, decimals=2), 
+                                                            np.around(m_std_rews, decimals=2), 
+                                                            np.around(s_m_rews, decimals=2), 
+                                                            np.around(s_std_rews, decimals=2))
+                    log += self.training_log(verbose)
+                else:
+                    log = "#> Step {}/{} (ep {}) - {}\n\
+                        |\tMean By Step {}\n\
+                        |\tMean By Episode {}\n".format(timestep, 
+                                                            nb_timesteps, 
+                                                            episode, 
+                                                            duration,
+                                                            np.around(m_m_rews, decimals=2), 
+                                                            np.around(s_m_rews, decimals=2))
+                print(log)
+                test = False
+                
         print("#> End of learning process !")
     
     

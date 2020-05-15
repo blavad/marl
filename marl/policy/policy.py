@@ -6,11 +6,17 @@ from marl.tools import ClassSpec, _std_repr
 class Policy(object):
     policy = {}
     
+    def __init__(self, action_space):
+        self.action_space = action_space
+    
     def __call__(self, state):
         raise NotImplementedError
     
     def __repr__(self):
         return _std_repr(self)
+    
+    def random_action(self, observation=None):
+        return self.action_space.sample()
     
     @classmethod
     def make(cls, id, **kwargs):

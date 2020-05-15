@@ -1,6 +1,5 @@
 from marl.exploration.expl_process import ExplorationProcess, make, available, register
-from marl.exploration.greedy import Greedy
-from marl.exploration.eps_greedy import EpsGreedy
+from marl.exploration.eps_greedy import EpsGreedy, Greedy, EpsExpert, Expert, EpsExpertEpsGreedy, HierarchicalEpsGreedy
 from marl.exploration.ou_noise import OUNoise
 
     

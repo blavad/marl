@@ -53,21 +53,22 @@ class MARL(TrainableAgent, MAS):
     :param agents_list: (list) The list of agents in the MARL model
     :param name: (str) The name of the system
     """
-    def __init__(self, agents_list=[], name='marl'):
+    def __init__(self, agents_list=[], name='marl', log_dir="logs"):
         MAS.__init__(self, agents_list=agents_list, name=name)
         self.experience = marl.experience.make("ReplayMemory", capacity=10000)
         
-        self.init_writer()
+        self.init_writer(log_dir)
         
     def reset(self):
         for  ag in self.agents:
             ag.reset()
             
-    def init_writer(self):
-        self.writer = SummaryWriter('logs/{}'.format(self.name))
+    def init_writer(self, log_dir):
+        log_path = os.path.join(log_dir, self.name)
+        self.writer = SummaryWriter(log_path)
         for ag in self.agents:
             if isinstance(ag, TrainableAgent):
-                ag.writer = self.writer
+                ag.init_writer(log_path)
         
     def store_experience(self, *args):
         TrainableAgent.store_experience(self, *args)
