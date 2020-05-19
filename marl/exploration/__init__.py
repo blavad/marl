@@ -1,5 +1,5 @@
 from marl.exploration.expl_process import ExplorationProcess, make, available, register
-from marl.exploration.eps_greedy import EpsGreedy, Greedy, EpsExpert, Expert, EpsExpertEpsGreedy, HierarchicalEpsGreedy
+from marl.exploration.eps_greedy import EpsGreedy, Greedy, EpsExpert, Expert, EpsExpertEpsGreedy, HierarchicalEpsGreedy, EpsSoftmax, Softmax
 from marl.exploration.ou_noise import OUNoise
 
     
@@ -16,6 +16,16 @@ register(
 register(
     id='EpsGreedy-lin',
     entry_point='marl.exploration.eps_greedy:EpsGreedy',   
+)
+
+register(
+    id='Softmax',
+    entry_point='marl.exploration.eps_greedy:Softmax',
+)
+
+register(
+    id='EpsSoftmax',
+    entry_point='marl.exploration.eps_greedy:EpsSoftmax',
 )
 
 register(

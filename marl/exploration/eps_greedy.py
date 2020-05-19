@@ -79,6 +79,16 @@ class Greedy(EpsGreedy):
     def __call__(self, policy, observation):
         return policy(observation)
 
+class EpsSoftmax(EpsGreedy):
+    def greedy_action(self, policy, observation):
+        return policy.softmax_action(observation)
+        
+
+class Softmax(EpsSoftmax):
+     def __init__(self):
+            super().__init__(eps_deb=0.0, eps_fin=0.0)
+                
+
 class EpsExpert(EpsGreedy):
     """
     The epsilon-expert process consists in taking an action randomly with probability epsilon and following Expert policy otherwise.
