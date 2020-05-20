@@ -21,7 +21,7 @@ class UCB1(ExplorationProcess):
             
     def __call__(self, policy, observation):
         q_value = policy.model(observation)
-        ucb1_value = q_value + q_value.max().item() * torch.tensor([math.sqrt(2*math.log(self.t)/i) for i in self.count])
-        action = ucb1_value.argmax().item()
+        ucb1_value = q_value + q_value.max().item() * torch.tensor([math.sqrt(2*math.log(self.t)/i) for i in self.count]).to(q_value.device)
+        action = ucb1_value.argmax().cpu().item()
         self.count[action] += 1
         return action
