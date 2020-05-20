@@ -17,7 +17,7 @@ class UCB1(ExplorationProcess):
         self.t = sum(self.count)
         
     def update(self, t):
-        self.t = self.t + 1
+        self.t = sum(self.count)
             
     def __call__(self, policy, observation):
         q_value = policy.model(observation)
