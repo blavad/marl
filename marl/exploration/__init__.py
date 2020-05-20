@@ -1,6 +1,7 @@
 from marl.exploration.expl_process import ExplorationProcess, make, available, register
 from marl.exploration.eps_greedy import EpsGreedy, Greedy, EpsExpert, Expert, EpsExpertEpsGreedy, HierarchicalEpsGreedy, EpsSoftmax, Softmax
 from marl.exploration.ou_noise import OUNoise
+from marl.exploration.expls import UCB1
 
     
 register(
@@ -26,6 +27,11 @@ register(
 register(
     id='EpsSoftmax',
     entry_point='marl.exploration.eps_greedy:EpsSoftmax',
+)
+
+register(
+    id='UCB1',
+    entry_point='marl.exploration.expls:UCB1',
 )
 
 register(
