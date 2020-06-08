@@ -126,8 +126,8 @@ class QTableAgent(QAgent):
     def target(self, Q, batch):
         next_obs  = batch.next_observation
         next_action_value = Q(next_obs).max(1).values.float()
-        rew = torch.from_numpy(batch.reward).float()
-        not_dones = torch.from_numpy(1.-batch.done_flag).float()
+        rew = torch.tensor(batch.reward).float()
+        not_dones = torch.tensor(1.-batch.done_flag).float()
         
         target_value = rew + not_dones * self.gamma * next_action_value
         return target_value
@@ -166,8 +166,8 @@ class MinimaxQAgent(QAgent, MATrainable):
     def target(self, Q, joint_batch):
         next_obs  = joint_batch.next_observation.squeeze(0)[self.index]
         next_value = Q(next_obs).max()
-        rew = torch.from_numpy(joint_batch.reward).squeeze(0)[self.index].float()
-        not_dones = torch.from_numpy(1.-joint_batch.done_flag).squeeze(0)[self.index].float()
+        rew = torch.tensor(joint_batch.reward).squeeze(0)[self.index].float()
+        not_dones = torch.tensor(1.-joint_batch.done_flag).squeeze(0)[self.index].float()
         target_value = rew + not_dones * self.gamma * next_value
         return target_value
         
@@ -207,16 +207,16 @@ class DQNAgent(QAgent):
         self.target_policy.Q.load_state_dict(self.policy.Q.state_dict())
     
     def target(self, Q, batch):
-        next_obs  = torch.from_numpy(batch.next_observation).float()
+        next_obs  = torch.tensor(batch.next_observation).float()
         next_action_values = Q(next_obs).max(1).values.float()
-        rew = torch.from_numpy(batch.reward).float()
-        not_dones = torch.from_numpy(1.-batch.done_flag).float()
+        rew = torch.tensor(batch.reward).float()
+        not_dones = torch.tensor(1.-batch.done_flag).float()
         target_value = (rew + not_dones * self.gamma * next_action_values).unsqueeze(1)
         return target_value.detach()
         
     def value(self, observation, action):
-        t_action = torch.from_numpy(action).long().unsqueeze(1)
-        t_observation = torch.from_numpy(observation).float()
+        t_action = torch.tensor(action).long().unsqueeze(1)
+        t_observation = torch.tensor(observation).float()
         return self.policy.Q(t_observation).gather(1, t_action)
     
 class ContinuousDQNAgent(DQNAgent):
@@ -237,15 +237,15 @@ class ContinuousDQNAgent(DQNAgent):
         self.actor_policy = actor_policy
     
     def target(self, Q, batch):
-        next_obs  = torch.from_numpy(batch.next_observation).float()
-        next_action =  torch.from_numpy(self.actor_policy(next_obs)).float()
+        next_obs  = torch.tensor(batch.next_observation).float()
+        next_action =  torch.tensor(self.actor_policy(next_obs)).float()
         next_state_action_values = Q(next_obs, next_action)
-        rew = torch.from_numpy(batch.reward).float()
-        not_dones = torch.from_numpy(1.-batch.done_flag).float()
+        rew = torch.tensor(batch.reward).float()
+        not_dones = torch.tensor(1.-batch.done_flag).float()
         target_value = (rew + not_dones * self.gamma * next_state_action_values).unsqueeze(1)
         return target_value.detach()
         
     def value(self, observation, action):
-        obs  = torch.from_numpy(observation).float()
-        action =  torch.from_numpy(action).float()
+        obs  = torch.tensor(observation).float()
+        action =  torch.tensor(action).float()
         return self.policy.Q(obs, action)
