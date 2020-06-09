@@ -233,9 +233,6 @@ class TrainableAgent(Agent):
                 time.sleep(time_laps)
             for _ in range(timestep, timestep + max_num_step):
                 action = self.action(obs)
-                if verbose == 3:
-                    # print("#> Observation : ", obs)
-                    print("#> Action : ", action)
                 obs2, rew, done, _ = env.step(action)
                 
                 self.store_experience(obs, action, rew, obs2, done)
