@@ -190,10 +190,11 @@ class DQNAgent(QAgent):
     :param name: (str) The name of the agent      
     """
     
-    def __init__(self, qmodel, observation_space, action_space, experience="ReplayMemory-10000", exploration="EpsGreedy", gamma=0.99, lr=0.0005,  batch_size=32, target_update_freq=1000, name="DQNAgent"):
+    def __init__(self, qmodel, observation_space, action_space, experience="ReplayMemory-10000", exploration="EpsGreedy", gamma=0.99, lr=0.0005,  batch_size=32, tau=1., target_update_freq=1000, name="DQNAgent"):
         super(DQNAgent, self).__init__(qmodel=qmodel, observation_space=observation_space, action_space=action_space, experience=experience, exploration=exploration, gamma=gamma, lr=lr, batch_size=batch_size, target_update_freq=target_update_freq, name=name)
         self.criterion = nn.SmoothL1Loss() # Huber criterion
         self.optimizer = optim.Adam(self.policy.Q.parameters(), lr=self.lr)
+        self.tau = tau     
         if self.off_policy:
             self.target_policy.Q.eval()
             
@@ -202,9 +203,28 @@ class DQNAgent(QAgent):
         loss = self.criterion(curr_value, target_value)
         loss.backward()
         self.optimizer.step()
-        
+    
+    def write_logs(self, t):
+        if t%50 == 0:
+            b = self.experience.sample(self.batch_size)
+        obs_state = torch.FloatTensor(b.observation)
+        with torch.no_grad():
+            q = self.target_policy.Q(obs_state)
+            self.writer.add_scalar('Q-value', q.mean().item(), t)
+
     def update_target_model(self):
+        if self.tau ==1:
+            self.hard_update()
+        else:
+            self.soft_update(self.tau)
+        
+    def hard_update(self):
         self.target_policy.Q.load_state_dict(self.policy.Q.state_dict())
+
+    def soft_update(self, tau):
+        for target_param, local_param in zip(self.target_policy.Q.parameters(), self.policy.Q.parameters()):
+            target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
+
     
     def target(self, Q, batch):
         next_obs  = torch.tensor(batch.next_observation).float()
