@@ -15,18 +15,40 @@ def _addindent(s_, numSpaces):
     s = first + '\n' + s
     return s
 
-def _std_repr(obj):
+def _std_child_lines(obj, separator='\n'):
     child_lines = []
     for key, value in obj.__dict__.items():
-        mod_str = repr(value)
+        mod_str = repr(value) 
         mod_str = _addindent(mod_str, 2)
         child_lines.append('# ' + key + ': ' + mod_str)
-    lines = child_lines
-    main_str = obj.__class__.__name__ + '('
-    if lines:
-        main_str += '\n  ' + '\n  '.join(lines) + '\n'
-    main_str += ')'
+    child_str = ''
+    if child_lines:
+        child_str +=  '{} '.format(separator).join(child_lines) 
+    return child_str
+
+def _sub_child_lines(obj, separator='\n', exclude=[]):
+    child_lines = []
+    for key, value in obj.__dict__.items():
+        if key not in exclude:
+            mod_str = repr(value) 
+            mod_str = _addindent(mod_str, 2)
+            child_lines.append('# ' + key + ': ' + mod_str)
+    child_str = ''
+    if child_lines:
+        child_str +=  '{} '.format(separator).join(child_lines) 
+    return child_str
+
+def _std_repr(obj, separator='\n'):
+    chil_str = _std_child_lines(obj, separator)
+    main_str = obj.__class__.__name__
+    if chil_str is not '':
+        main_str += '({}'.format(separator)
+        main_str +=  chil_str
+        main_str += '{})'.format(separator)
     return main_str
+
+def _inline_std_repr(obj):
+    return _std_repr(obj, separator=' ')
 
 def gymSpace2dim(gym_space):
     if isinstance(gym_space, gym.spaces.Discrete):
@@ -80,27 +102,31 @@ def seq2unique_dict(seq_dict):
     return new_dict
 
 def seq2unique_transition(seq_transition):
-    dict_transition = {}
-    transition_class = seq_transition[0].__class__
-    fields_ = seq_transition[0]._fields
-    # Init value of dict to void
-    for field in fields_:
-        val = getattr(seq_transition[0], field)
-        if isinstance(val, dict):
-            dict_transition[field] = {}
-            for key in val.keys():
-                dict_transition[field][key] = []
-        else:
-            dict_transition[field] = []
-    # Add elements in dict of full transition
-    for tr in seq_transition:
+    try:
+        dict_transition = {}
+        transition_class = seq_transition[0].__class__
+        fields_ = seq_transition[0]._fields
+        # Init value of dict to void
         for field in fields_:
-            if isinstance(dict_transition[field], dict):
-                for key in dict_transition[field].keys():
-                    dict_transition[field][key].append(getattr(tr, field)[key])    
+            val = getattr(seq_transition[0], field)
+            if isinstance(val, dict):
+                dict_transition[field] = {}
+                for key in val.keys():
+                    dict_transition[field][key] = []
             else:
-                dict_transition[field].append(getattr(tr, field))
-    return transition_class(**dict_transition)
+                dict_transition[field] = []
+        # Add elements in dict of full transition
+        for tr in seq_transition:
+            for field in fields_:
+                if isinstance(dict_transition[field], dict):
+                    for key in dict_transition[field].keys():
+                        dict_transition[field][key].append(getattr(tr, field)[key])    
+                else:
+                    dict_transition[field].append(getattr(tr, field))
+        return transition_class(**dict_transition)
+    except AttributeError:
+        print("\n\n\n!!!!!!! Attribute Error !!!!!!!!!")
+        print(seq_transition)
 
 def zeros_like(var):
     zero_var = None
@@ -117,8 +143,11 @@ def zeros_like(var):
     if isinstance(var, str):
         zero_var = ''
     if isinstance(var, bool):
-        new_var = False
-    assert zero_var is not None, "Erreur type nonreconnu"
+        zero_var = False
+    if zero_var is None:
+        zero_var = None
+    
+    # assert zero_var is not None, "Erreur type nonreconnu ({}): {}".format(type(var), var)
     return zero_var 
 
 def ones_like(var):
@@ -144,7 +173,7 @@ def v_like(var, value=0):
         else :
             raise TypeError("bool doesn't match with value ", value)
         
-    assert new_var is not None, "Erreur type non reconnu"
+    assert new_var is not None, "Erreur type non reconnu ({}): {}".format(type(var), var)
     return new_var 
 
             
@@ -152,6 +181,7 @@ def pad_like(transition):
     dict_transition = {}
     if transition.__class__.__name__ != "FFTransition":
         raise NotImplementedError
+    # print(transition.observation)
     observation = zeros_like(transition.observation)
     action = zeros_like(transition.action)
     reward = zeros_like(transition.reward)

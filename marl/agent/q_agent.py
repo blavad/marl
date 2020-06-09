@@ -31,9 +31,7 @@ class QAgent(TrainableAgent):
         
         self.off_policy = target_update_freq is not None
         self.target_update_freq = target_update_freq
-        
-        assert isinstance(self.experience, ReplayMemory), "This version only support Replay Memory as experience"
-        
+                
         if self.off_policy:
             self.target_policy = copy.deepcopy(self.policy)
         
@@ -67,6 +65,7 @@ class QAgent(TrainableAgent):
         
         if self.off_policy and t % self.target_update_freq==0:
             self.update_target_model()
+            
     
     def target(self, Q, batch):
         """
@@ -127,8 +126,8 @@ class QTableAgent(QAgent):
     def target(self, Q, batch):
         next_obs  = batch.next_observation
         next_action_value = Q(next_obs).max(1).values.float()
-        rew = torch.from_numpy(batch.reward).float()
-        not_dones = torch.from_numpy(1.-batch.done_flag).float()
+        rew = torch.tensor(batch.reward).float()
+        not_dones = 1.- torch.tensor(batch.done_flag).float()
         
         target_value = rew + not_dones * self.gamma * next_action_value
         return target_value
@@ -167,8 +166,8 @@ class MinimaxQAgent(QAgent, MATrainable):
     def target(self, Q, joint_batch):
         next_obs  = joint_batch.next_observation.squeeze(0)[self.index]
         next_value = Q(next_obs).max()
-        rew = torch.from_numpy(joint_batch.reward).squeeze(0)[self.index].float()
-        not_dones = torch.from_numpy(1.-joint_batch.done_flag).squeeze(0)[self.index].float()
+        rew = torch.tensor(joint_batch.reward).squeeze(0)[self.index].float()
+        not_dones = torch.tensor(1.-joint_batch.done_flag).squeeze(0)[self.index].float()
         target_value = rew + not_dones * self.gamma * next_value
         return target_value
         
@@ -191,10 +190,11 @@ class DQNAgent(QAgent):
     :param name: (str) The name of the agent      
     """
     
-    def __init__(self, qmodel, observation_space, action_space, experience="ReplayMemory-10000", exploration="EpsGreedy", gamma=0.99, lr=0.0005,  batch_size=32, target_update_freq=1000, name="DQNAgent"):
+    def __init__(self, qmodel, observation_space, action_space, experience="ReplayMemory-10000", exploration="EpsGreedy", gamma=0.99, lr=0.0005,  batch_size=32, tau=1., target_update_freq=1000, name="DQNAgent"):
         super(DQNAgent, self).__init__(qmodel=qmodel, observation_space=observation_space, action_space=action_space, experience=experience, exploration=exploration, gamma=gamma, lr=lr, batch_size=batch_size, target_update_freq=target_update_freq, name=name)
         self.criterion = nn.SmoothL1Loss() # Huber criterion
         self.optimizer = optim.Adam(self.policy.Q.parameters(), lr=self.lr)
+        self.tau = tau     
         if self.off_policy:
             self.target_policy.Q.eval()
             
@@ -203,21 +203,40 @@ class DQNAgent(QAgent):
         loss = self.criterion(curr_value, target_value)
         loss.backward()
         self.optimizer.step()
-        
+    
+    def write_logs(self, t):
+        if t%50 == 0:
+            b = self.experience.sample(self.batch_size)
+        obs_state = torch.FloatTensor(b.observation)
+        with torch.no_grad():
+            q = self.target_policy.Q(obs_state)
+            self.writer.add_scalar('Q-value/q-value', q.mean().item(), t)
+
     def update_target_model(self):
+        if self.tau ==1:
+            self.hard_update()
+        else:
+            self.soft_update(self.tau)
+        
+    def hard_update(self):
         self.target_policy.Q.load_state_dict(self.policy.Q.state_dict())
+
+    def soft_update(self, tau):
+        for target_param, local_param in zip(self.target_policy.Q.parameters(), self.policy.Q.parameters()):
+            target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
+
     
     def target(self, Q, batch):
-        next_obs  = torch.from_numpy(batch.next_observation).float()
+        next_obs  = torch.tensor(batch.next_observation).float()
         next_action_values = Q(next_obs).max(1).values.float()
-        rew = torch.from_numpy(batch.reward).float()
-        not_dones = torch.from_numpy(1.-batch.done_flag).float()
+        rew = torch.tensor(batch.reward).float()
+        not_dones = 1.- torch.tensor(batch.done_flag).float()
         target_value = (rew + not_dones * self.gamma * next_action_values).unsqueeze(1)
         return target_value.detach()
         
     def value(self, observation, action):
-        t_action = torch.from_numpy(action).long().unsqueeze(1)
-        t_observation = torch.from_numpy(observation).float()
+        t_action = torch.tensor(action).long().unsqueeze(1)
+        t_observation = torch.tensor(observation).float()
         return self.policy.Q(t_observation).gather(1, t_action)
     
 class ContinuousDQNAgent(DQNAgent):
@@ -229,10 +248,7 @@ class ContinuousDQNAgent(DQNAgent):
     :param action_space: (gym.Spaces) The action space
     :param experience: (Experience) The experience memory data structure
     :param exploration: (Exploration) The exploration process 
-    :param gamma: (float) The training parameters
-    :param lr: (float) The learning rate
-    :param batch_size: (int) The size of a batch
-    :param target_update_freq: (int) The update frequency of the target model  
+    :param gamma: (float) The training parameterstimestep_initof the target model  
     :param name: (str) The name of the agent      
     """
     
@@ -241,15 +257,15 @@ class ContinuousDQNAgent(DQNAgent):
         self.actor_policy = actor_policy
     
     def target(self, Q, batch):
-        next_obs  = torch.from_numpy(batch.next_observation).float()
-        next_action =  torch.from_numpy(self.actor_policy(next_obs)).float()
+        next_obs  = torch.tensor(batch.next_observation).float()
+        next_action =  torch.tensor(self.actor_policy(next_obs)).float()
         next_state_action_values = Q(next_obs, next_action)
-        rew = torch.from_numpy(batch.reward).float()
-        not_dones = torch.from_numpy(1.-batch.done_flag).float()
+        rew = torch.tensor(batch.reward).float()
+        not_dones = 1.- torch.tensor(batch.done_flag).float()
         target_value = (rew + not_dones * self.gamma * next_state_action_values).unsqueeze(1)
         return target_value.detach()
         
     def value(self, observation, action):
-        obs  = torch.from_numpy(observation).float()
-        action =  torch.from_numpy(action).float()
+        obs  = torch.tensor(observation).float()
+        action =  torch.tensor(action).float()
         return self.policy.Q(obs, action)

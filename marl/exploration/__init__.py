@@ -1,12 +1,62 @@
 from marl.exploration.expl_process import ExplorationProcess, make, available, register
-from marl.exploration.greedy import Greedy
-from marl.exploration.eps_greedy import EpsGreedy
+from marl.exploration.eps_greedy import EpsGreedy, Greedy, EpsExpert, Expert, EpsExpertEpsGreedy, HierarchicalEpsGreedy, EpsSoftmax, Softmax
 from marl.exploration.ou_noise import OUNoise
+from marl.exploration.expls import UCB1
 
     
 register(
     id='Greedy',
-    entry_point='marl.exploration.greedy:Greedy'
+    entry_point='marl.exploration.eps_greedy:Greedy'
+)
+
+register(
+    id='EpsGreedy',
+    entry_point='marl.exploration.eps_greedy:EpsGreedy',
+)
+
+register(
+    id='EpsGreedy-lin',
+    entry_point='marl.exploration.eps_greedy:EpsGreedy',   
+)
+
+register(
+    id='Softmax',
+    entry_point='marl.exploration.eps_greedy:Softmax',
+)
+
+register(
+    id='EpsSoftmax',
+    entry_point='marl.exploration.eps_greedy:EpsSoftmax',
+)
+
+register(
+    id='UCB1',
+    entry_point='marl.exploration.expls:UCB1',
+)
+
+register(
+    id='Expert',
+    entry_point='marl.exploration.eps_greedy:Expert',
+)
+
+register(
+    id='EpsExpert',
+    entry_point='marl.exploration.eps_greedy:EpsExpert',
+)
+
+register(
+    id='HierarchicalEpsGreedy',
+    entry_point='marl.exploration.eps_greedy:HierarchicalEpsGreedy',
+)
+
+register(
+    id='EpsExpertEpsGreedy',
+    entry_point='marl.exploration.eps_greedy:EpsExpertEpsGreedy',
+)
+
+register(
+    id='OUNoise',
+    entry_point='marl.exploration.ou_noise:OUNoise'
 )
 
 register(
@@ -49,19 +99,4 @@ register(
     entry_point='marl.exploration.eps_greedy:EpsGreedy',
     eps_deb=0.01,
     eps_fin=0.01
-)
-
-register(
-    id='EpsGreedy',
-    entry_point='marl.exploration.eps_greedy:EpsGreedy',
-)
-
-register(
-    id='EpsGreedy-lin',
-    entry_point='marl.exploration.eps_greedy:EpsGreedy',   
-)
-
-register(
-    id='OUNoise',
-    entry_point='marl.exploration.ou_noise:OUNoise'
 )

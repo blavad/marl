@@ -1,4 +1,4 @@
-from marl.tools import ClassSpec, _std_repr
+from marl.tools import ClassSpec, _std_repr, _inline_std_repr
         
 class ExplorationProcess(object):
     """
@@ -27,7 +27,7 @@ class ExplorationProcess(object):
         raise NotImplementedError
     
     def __repr__(self):
-        return _std_repr(self)
+        return _inline_std_repr(self)
     
     @classmethod
     def make(cls, id, *args, **kwargs):

@@ -1,8 +1,8 @@
 from .experience import Experience, make, available, register
 from .replay_buffer import ReplayMemory, PrioritizedReplayMemory
-from .replay_buffer import transition
+from .replay_buffer import transition_tuple, transition_type
 
-available_transition = transition.keys()
+available_transition = transition_tuple.keys()
 
 # Replay Memory
 
@@ -81,9 +81,9 @@ register(
 register(
     id='RNNReplayMemory-1',
     entry_point='marl.experience.replay_buffer:ReplayMemory',
-    capacity=1
+    capacity=1,
+    transition_type = 'RNNTransition'
 ),
-transition_type = 'RNNTransition'
 
 register(
     id='RNNReplayMemory-100',

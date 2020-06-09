@@ -1,5 +1,6 @@
 import torch
 import random
+import pickle
 import numpy as np
 from collections import deque
 from collections import namedtuple
@@ -8,33 +9,51 @@ from .sumtree import SumTree
 from . import Experience
 from ..tools import seq2unique_transition
 
-transition = {
+
+transition_type = {
     "FFTransition" : ['observation', 'action', 'reward', 'next_observation', 'done_flag'],
-    "RNNTransition" : ['observation','h0', 'action', 'reward', 'next_observation', 'done_flag']
+    "RNNTransition" : ['observation','h0', 'action', 'reward', 'done_flag', 'seq_len']
+}
+
+transition_tuple = {
+    "FFTransition": namedtuple('FFTransition', field_names=transition_type["FFTransition"]),
+    "RNNTransition": namedtuple('RNNTransition', field_names=transition_type["RNNTransition"])
 }
 
 class ReplayMemory(Experience):
-    def __init__(self, capacity, transition_type="FFTransition"):
+    def __init__(self, capacity, burn_in_frames=None, transition_type="FFTransition"):
+        
+        assert transition_type in transition_tuple.keys(), "Transition type not valid (must be in {})".format(transition_tuple.keys)
+        
         self.capacity = capacity
+        self.burn_in_frames = capacity//12 if burn_in_frames is None else burn_in_frames
+        
+        assert self.burn_in_frames < capacity
+        
         self.memory = []
         self.position = 0
         self.transition_type = transition_type
-        self.transition = namedtuple('Transition', field_names=transition[transition_type])
 
     def push(self, *transition):
-        assert len(self.transition._fields)==len(transition) , "Invalid number of arguments"
+        assert len(transition_tuple[self.transition_type]._fields)==len(transition) , "Invalid number of arguments"
         if len(self.memory) < self.capacity:
             self.memory.append(None)
-        self.memory[self.position] = self.transition(*transition)
+        self.memory[self.position] = transition_tuple[self.transition_type](*transition)
         self.position = (self.position + 1) % self.capacity
+
+
+    def push_tr(self, tr):
+        assert len(transition_tuple[self.transition_type]._fields)==len(tr._fields) , "Invalid number of transition values : {} given instead of {} required".format(len(tr._fields), len(transition_tuple[self.transition_type]._fields))
+        
+        if len(self.memory) < self.capacity:
+            self.memory.append(None)
+        self.memory[self.position] = tr
+        self.position = (self.position + 1) % self.capacity 
 
     def sample(self, batch_size=1):
         assert batch_size <= len(self), "Batch size > Memory length"
         _sample = random.sample(self.memory, batch_size)
-        _sample = list(zip(*_sample))
-        sample_arr = [np.asarray(s) for s in _sample]
-        # sample_arr = [torch.from_numpy(np.asarray(s)).float() for s in _sample]
-        return self.transition(*sample_arr)
+        return seq2unique_transition(_sample)
 
     def __len__(self):
         return len(self.memory)
@@ -49,46 +68,51 @@ class ReplayMemory(Experience):
         _sample = list(zip(*_sample))
         sample_arr = [np.asarray(s) for s in _sample]
         # sample_arr = [torch.from_numpy(np.asarray(s)).float() for s in _sample]
-        return self.transition(*sample_arr)
+        return transition_tuple[self.transition_type](*sample_arr)
     
     def sample_index(self, batch_size):
         assert batch_size <= len(self)
-        return np.random.randint(len(self), size=batch_size)        
+        return np.random.randint(len(self), size=batch_size)
+    
+    def as_dict(self, n=None):
+        tr_dict = []
+        for tr in self.memory:
+            tr_dict.append(dict(tr._asdict()))
+        return tr_dict if n is None else tr_dict[0:-1:len(self)//(n-1)]
+    
+    def save(self, n=None, filename="logs/experience.pickle"):
+        with open(filename, 'wb') as f:
+            pickle.dump(self.as_dict(n), f)
 
 
 class PrioritizedReplayMemory(Experience):
     beta_increment_per_sampling = 0.001
 
-    def __init__(self, capacity, alpha=0.6, beta=0.4, eps=1e-6, transition_type="FFTransition"):
+    def __init__(self, capacity, burn_in_frames=None, alpha=0.6, beta=0.4, eps=1e-6, transition_type="FFTransition"):
+        
+        assert transition_type in transition_tuple.keys(), "Transition type not valid (must be in {})".format(transition_tuple.keys)
         
         self.tree = SumTree(capacity)
+        self.burn_in_frames = capacity//12 if burn_in_frames is None else burn_in_frames
         
+        assert self.burn_in_frames < capacity
+            
         # self.seed = seed
         self.alpha = alpha
         self.beta = beta
         self.eps = eps
         
         self.transition_type = transition_type
-        self.transition = namedtuple('Transition', field_names=transition[transition_type])
         
     @property
     def capacity(self):
         return self.tree.capacity
 
     def _get_priority(self, error):
-        # print("Err : ", error)
         return (np.abs(error) + self.eps) ** self.alpha
-
-    # def push(self, error, *transition):
-    #     assert len(self.transition._fields)==len(transition) , "Invalid number of transition values : {} given instead of {} required".format(len(transition), len(self.transition._fields))
-        
-    #     p = self._get_priority(error)
-    #     self.tree.add(p, transition)
-        
-    #     self.current_transition = self.none_transition_dict()
         
     def push(self, error, transition):
-        assert len(self.transition._fields)==len(transition._fields) , "Invalid number of transition values : {} given instead of {} required".format(len(transition._fields), len(self.transition._fields))
+        assert len(transition_tuple[self.transition_type]._fields)==len(transition._fields) , "Invalid number of transition values : {} given instead of {} required".format(len(transition._fields), len(transition_tuple[self.transition_type]._fields))
         
         p = self._get_priority(error)
         self.tree.add(p, transition)        
@@ -134,8 +158,29 @@ class PrioritizedReplayMemory(Experience):
     def __len__(self):
         return len(self.tree)
     
+    
+    def as_dict(self, n=None):
+        assert n>0
+        n = max(len(self)//4, 1) if n is None else n
+        
+        tr_dict = []
+        segment = self.tree.total() / n
+
+        for i in range(n):
+            a = segment * i
+            b = segment * (i + 1)
+            s = random.uniform(a, b)
+            (idx, p, data) = self.tree.get(s)
+            tr_dict.append({"p":p, "transition":dict(data._asdict()), "index":idx})
+        return tr_dict
+    
+    
+    def save(self, n=None, filename="logs/experience.pickle"):
+        with open(filename, 'wb') as f:
+            pickle.dump(self.as_dict(n), f)
+    
     # def push_error(self, error):
-    #     # assert len(self.transition._fields)==len(transition) , "Invalid number of transition values : {} given instead of {} required".format(len(transition), len(self.transition._fields))
+    #     # assert len(transition_tuple[self.transition_type]._fields)==len(transition) , "Invalid number of transition values : {} given instead of {} required".format(len(transition), len(self.transition._fields))
         
     #     p = self._get_priority(error)
     #     tr = self.get_current_transition()

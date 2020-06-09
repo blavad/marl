@@ -7,8 +7,10 @@ from marl.experience import ReplayMemory, PrioritizedReplayMemory
 
 import os
 import time
+from datetime import datetime
 import torch
 import torch.optim as optim
+from torch.utils.tensorboard import SummaryWriter
 import numpy as np
 
 class Agent(object):
@@ -29,7 +31,7 @@ class Agent(object):
         self.id = Agent.counter
         
         self.name = name
-        self.policy = Policy.make(policy)
+        self.policy = marl.policy.make(policy)
         
     def action(self, observation):
         """
@@ -45,6 +47,15 @@ class Agent(object):
         """
         return Agent.action(self, observation)
     
+    def reset(self):
+        pass
+    
+    def worst_rew(self):
+        return -np.inf
+    
+    def get_best_rew(self, rew1, rew2):
+        return rew2 if rew1 < rew2 else rew1
+        
     def test(self, env, nb_episodes=1, max_num_step=200, render=True, time_laps=0.):
         """
         Test a model.
@@ -58,13 +69,17 @@ class Agent(object):
         sum_rewards = np.array([])
         for episode in range(nb_episodes):
             observation = env.reset()
+            self.reset()
             done = False
             if render:
                 env.render()
                 time.sleep(time_laps)
             for step in range(max_num_step):
                 action = self.greedy_action(observation)
+                if render:
+                    print(action)
                 observation, reward, done, _ = env.step(action)
+                # print(reward)
                 sum_r = np.array(reward) if step==0 else np.add(sum_r, reward)
                 if render:
                     env.render()
@@ -113,7 +128,7 @@ class TrainableAgent(Agent):
     :param name: (str) The name of the agent      
     """
          
-    def __init__(self, policy, observation_space=None, action_space=None, model=None, experience="ReplayMemory-10000", exploration="EpsGreedy", gamma=0.99, lr=0.001, batch_size=32, name="TrainableAgent"):
+    def __init__(self, policy, observation_space=None, action_space=None, model=None, experience="ReplayMemory-10000", exploration="EpsGreedy", gamma=0.99, lr=0.001, batch_size=32, name="TrainableAgent", log_dir='logs'):
         Agent.__init__(self, policy=marl.policy.make(policy, model=model, observation_space=observation_space, action_space=action_space), name=name)
         
         self.lr = lr
@@ -125,6 +140,8 @@ class TrainableAgent(Agent):
         self.exploration = marl.exploration.make(exploration)
         
         assert self.experience.capacity >= self.batch_size
+        
+        self.init_writer(log_dir)    
     
     @property
     def observation_space(self):
@@ -134,6 +151,10 @@ class TrainableAgent(Agent):
     def action_space(self):
         return self.policy.action_space
     
+    
+    def init_writer(self, log_dir):
+        self.writer = SummaryWriter(os.path.join(log_dir, self.name))
+        
     def store_experience(self, *args):
         """
         Store a transition in the experience buffer.
@@ -183,11 +204,19 @@ class TrainableAgent(Agent):
         
         filename_tmp = os.path.join(folder, filename_tmp)
         self.policy.save(filename_tmp)
+    
+    def save_policy_if_best(self, best_rew, rew, folder=".", filename=''):
+        if best_rew < rew:
+            print("#> {} - New Best Score ({}) - Save Model\n".format(self.name, rew))
+            filename_tmp = "{}-{}".format("best", filename) if filename is not '' else "{}".format("best")
+            self.save_policy(folder=folder, filename=filename_tmp)
+            return rew
+        return best_rew
         
     def save_all(self):
         pass
     
-    def learn(self, env, nb_timesteps, max_num_step=100, test_freq=1000, save_freq=1000, save_folder="models", render=False, time_laps=0., verbose=1):
+    def learn(self, env, nb_timesteps, max_num_step=100, test_freq=1000, save_freq=1000, save_folder="models", render=False, time_laps=0., verbose=1, timestep_init=0):
         """
         Start the learning part.
         
@@ -197,9 +226,16 @@ class TrainableAgent(Agent):
         :param test_freq: (int) The frequency of testing model
         :param save_freq: (int) The frequency of saving model
         """
+        assert timestep_init >=0, "Initial timestep must be upper or equal than 0"
+        assert timestep_init < nb_timesteps, "Initial timestep must be lower than the total number of timesteps"
+        
         print("#> Start learning process !")
-        timestep = 0
+        start_time = datetime.now()
+        print("Date : ", start_time.strftime("%d/%m/%Y %H:%M:%S"))
+        timestep = timestep_init
         episode = 0
+        best_rew = self.worst_rew()
+        test = False
         self.reset_exploration(nb_timesteps)
         while timestep < nb_timesteps:
             self.update_exploration(timestep)
@@ -211,9 +247,6 @@ class TrainableAgent(Agent):
                 time.sleep(time_laps)
             for _ in range(timestep, timestep + max_num_step):
                 action = self.action(obs)
-                if verbose == 3:
-                    # print("#> Observation : ", obs)
-                    print("#> Action : ", action)
                 obs2, rew, done, _ = env.step(action)
                 
                 self.store_experience(obs, action, rew, obs2, done)
@@ -228,45 +261,55 @@ class TrainableAgent(Agent):
             
                 # Save the model
                 if timestep % save_freq == 0:
-                    print("#> Step {}/{} --- Save Model".format(timestep, nb_timesteps))
+                    print("#> Step {}/{} --- Save Model\n".format(timestep, nb_timesteps))
                     self.save_policy(timestep=timestep, folder=save_folder)
-                    
+                
                 # Test the model
                 if timestep % test_freq == 0:
-                    res_test = self.test(env, 100, max_num_step=max_num_step, render=False)
-                    _, m_m_rews, m_std_rews = res_test['mean_by_step']
-                    _, s_m_rews, s_std_rews = res_test['mean_by_episode']
-                    if verbose == 2:
-                        log = "#> Step {}/{} (ep {})\n\
-                            |\tMean By Step {} / Dev {}\n\
-                            |\tMean By Episode {} / Dev {}) \n".format(timestep, 
-                                                                nb_timesteps, 
-                                                                episode, 
-                                                                np.around(m_m_rews, decimals=2), 
-                                                                np.around(m_std_rews, decimals=2), 
-                                                                np.around(s_m_rews, decimals=2), 
-                                                                np.around(s_std_rews, decimals=2))
-                        log += self.training_log(verbose)
-                    else:
-                        log = "#> Step {}/{} (ep {})\n\
-                            |\tMean By Step {}\n\
-                            |\tMean By Episode {}\n".format(timestep, 
-                                                                nb_timesteps, 
-                                                                episode, 
-                                                                np.around(m_m_rews, decimals=2), 
-                                                                np.around(s_m_rews, decimals=2))
-                    print(log)
-                    break
+                    test = True
                 
                 if is_done(done):
                     break
+                
+            if test:
+                res_test = self.test(env, 100, max_num_step=max_num_step, render=False)
+                _, m_m_rews, m_std_rews = res_test['mean_by_step']
+                _, s_m_rews, s_std_rews = res_test['mean_by_episode']
+                self.writer.add_scalar("Reward/mean_sum", sum(s_m_rews)/len(s_m_rews) if isinstance(s_m_rews, list) else s_m_rews, timestep)
+                duration = datetime.now() - start_time
+                if verbose == 2:
+                    log = "#> Step {}/{} (ep {}) - {}\n\
+                        |\tMean By Step {} / Dev {}\n\
+                        |\tMean By Episode {} / Dev {}) \n".format(timestep, 
+                                                            nb_timesteps, 
+                                                            episode, 
+                                                            duration,
+                                                            np.around(m_m_rews, decimals=2), 
+                                                            np.around(m_std_rews, decimals=2), 
+                                                            np.around(s_m_rews, decimals=2), 
+                                                            np.around(s_std_rews, decimals=2))
+                    log += self.training_log(verbose)
+                else:
+                    log = "#> Step {}/{} (ep {}) - {}\n\
+                        |\tMean By Step {}\n\
+                        |\tMean By Episode {}\n".format(timestep, 
+                                                            nb_timesteps, 
+                                                            episode, 
+                                                            duration,
+                                                            np.around(m_m_rews, decimals=2), 
+                                                            np.around(s_m_rews, decimals=2))
+                print(log)
+                best_rew = self.save_policy_if_best(best_rew, s_m_rews, folder=save_folder)
+                test = False
+                
         print("#> End of learning process !")
     
     
     def training_log(self, verbose):
         if verbose >= 2:
             log = "#> {}\n\
-                    |\tExperience : {}\n".format(self.name, self.experience,)
+                    |\tExperience : {}\n\
+                    |\tExploration : {}\n".format(self.name, self.experience, self.exploration)
             return log
 
 class MATrainable(object):
