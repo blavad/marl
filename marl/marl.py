@@ -115,6 +115,28 @@ class MARL(TrainableAgent, MAS):
         for ag in self.agents:
             if isinstance(ag, TrainableAgent):
                 ag.save_policy(folder=folder, filename=filename_tmp, timestep=timestep)
+        
+    def get_best_rew(rew1, rew2):
+        for ind, ag in enumerate(self.agents):
+            rew1[ind] = ag.get_best_rew(rew1[ind], rew2[ind])
+        return rew1
+        
+    def save_policy_if_best(self, best_rew, rew, folder='.', filename=''):
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        filename_tmp = "{}-{}".format(filename, self.name) if filename is not '' else "{}".format(self.name)
+        for ind, ag in enumerate(self.agents):
+            if isinstance(ag, TrainableAgent):
+                best_rew[ind] = ag.save_policy_if_best(best_rew[ind], rew[ind], folder=folder, filename=filename_tmp)
+            else:
+                best_rew[ind] = ag.get_best_rew(best_rew[ind], rew[ind])
+        return best_rew
+            
+    def worst_rew(self):
+        best_rew = []
+        for ag in self.agents:
+            best_rew += [ag.worst_rew()]
+        return best_rew
                 
     def load_model(self, filename):
         for ag in self.agents:

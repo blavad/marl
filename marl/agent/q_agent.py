@@ -210,7 +210,7 @@ class DQNAgent(QAgent):
         obs_state = torch.FloatTensor(b.observation)
         with torch.no_grad():
             q = self.target_policy.Q(obs_state)
-            self.writer.add_scalar('Q-value', q.mean().item(), t)
+            self.writer.add_scalar('Q-value/q-value', q.mean().item(), t)
 
     def update_target_model(self):
         if self.tau ==1:

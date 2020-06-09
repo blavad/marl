@@ -50,6 +50,12 @@ class Agent(object):
     def reset(self):
         pass
     
+    def worst_rew(self):
+        return -np.inf
+    
+    def get_best_rew(self, rew1, rew2):
+        return rew2 if rew1 < rew2 else rew1
+        
     def test(self, env, nb_episodes=1, max_num_step=200, render=True, time_laps=0.):
         """
         Test a model.
@@ -149,7 +155,6 @@ class TrainableAgent(Agent):
     def init_writer(self, log_dir):
         self.writer = SummaryWriter(os.path.join(log_dir, self.name))
         
-    
     def store_experience(self, *args):
         """
         Store a transition in the experience buffer.
@@ -199,6 +204,13 @@ class TrainableAgent(Agent):
         
         filename_tmp = os.path.join(folder, filename_tmp)
         self.policy.save(filename_tmp)
+    
+    def save_policy_if_best(self, best_rew, rew, folder=".", filename=''):
+        if best_rew < rew:
+            filename_tmp = "{}-{}".format("best", filename) if filename is not '' else "{}".format("best")
+            self.save_policy(folder=folder, filename=filename_tmp)
+            return rew
+        return best_rew
         
     def save_all(self):
         pass
@@ -221,6 +233,7 @@ class TrainableAgent(Agent):
         print("Date : ", start_time.strftime("%d/%m/%Y %H:%M:%S"))
         timestep = timestep_init
         episode = 0
+        best_rew = self.worst_rew()
         test = False
         self.reset_exploration(nb_timesteps)
         while timestep < nb_timesteps:
@@ -250,7 +263,6 @@ class TrainableAgent(Agent):
                     print("#> Step {}/{} --- Save Model".format(timestep, nb_timesteps))
                     self.save_policy(timestep=timestep, folder=save_folder)
                 
-                
                 # Test the model
                 if timestep % test_freq == 0:
                     test = True
@@ -262,6 +274,7 @@ class TrainableAgent(Agent):
                 res_test = self.test(env, 100, max_num_step=max_num_step, render=False)
                 _, m_m_rews, m_std_rews = res_test['mean_by_step']
                 _, s_m_rews, s_std_rews = res_test['mean_by_episode']
+                best_rew = self.save_policy_if_best(best_rew, s_m_rews, folder=save_folder)
                 self.writer.add_scalar("Reward/mean_sum", sum(s_m_rews)/len(s_m_rews) if isinstance(s_m_rews, list) else s_m_rews, timestep)
                 duration = datetime.now() - start_time
                 if verbose == 2:
