@@ -207,6 +207,7 @@ class TrainableAgent(Agent):
     
     def save_policy_if_best(self, best_rew, rew, folder=".", filename=''):
         if best_rew < rew:
+            "#> {} - Best Score ({}) - Save Model".format(self.name, rew)
             filename_tmp = "{}-{}".format("best", filename) if filename is not '' else "{}".format("best")
             self.save_policy(folder=folder, filename=filename_tmp)
             return rew
