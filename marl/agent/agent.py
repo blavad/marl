@@ -207,7 +207,7 @@ class TrainableAgent(Agent):
     
     def save_policy_if_best(self, best_rew, rew, folder=".", filename=''):
         if best_rew < rew:
-            print("#> {} - Best Score ({}) - Save Model".format(self.name, rew))
+            print("#> {} - New Best Score ({}) - Save Model\n".format(self.name, rew))
             filename_tmp = "{}-{}".format("best", filename) if filename is not '' else "{}".format("best")
             self.save_policy(folder=folder, filename=filename_tmp)
             return rew
@@ -261,7 +261,7 @@ class TrainableAgent(Agent):
             
                 # Save the model
                 if timestep % save_freq == 0:
-                    print("#> Step {}/{} --- Save Model".format(timestep, nb_timesteps))
+                    print("#> Step {}/{} --- Save Model\n".format(timestep, nb_timesteps))
                     self.save_policy(timestep=timestep, folder=save_folder)
                 
                 # Test the model
@@ -275,7 +275,6 @@ class TrainableAgent(Agent):
                 res_test = self.test(env, 100, max_num_step=max_num_step, render=False)
                 _, m_m_rews, m_std_rews = res_test['mean_by_step']
                 _, s_m_rews, s_std_rews = res_test['mean_by_episode']
-                best_rew = self.save_policy_if_best(best_rew, s_m_rews, folder=save_folder)
                 self.writer.add_scalar("Reward/mean_sum", sum(s_m_rews)/len(s_m_rews) if isinstance(s_m_rews, list) else s_m_rews, timestep)
                 duration = datetime.now() - start_time
                 if verbose == 2:
@@ -300,6 +299,7 @@ class TrainableAgent(Agent):
                                                             np.around(m_m_rews, decimals=2), 
                                                             np.around(s_m_rews, decimals=2))
                 print(log)
+                best_rew = self.save_policy_if_best(best_rew, s_m_rews, folder=save_folder)
                 test = False
                 
         print("#> End of learning process !")
