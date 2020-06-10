@@ -1,17 +1,20 @@
 import marl
-from marl.tools import ClassSpec, _std_repr, is_done
 
+from marl.tools import ClassSpec, _std_repr, is_done, reset_logging
 from marl.policy.policy import Policy
 from marl.exploration import ExplorationProcess
 from marl.experience import ReplayMemory, PrioritizedReplayMemory
 
 import os
+import sys
 import time
+import logging
+import numpy as np
 from datetime import datetime
+
 import torch
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
-import numpy as np
 
 class Agent(object):
     """
@@ -77,9 +80,8 @@ class Agent(object):
             for step in range(max_num_step):
                 action = self.greedy_action(observation)
                 if render:
-                    print(action)
+                    print("Step {} - Action {}".format(step, action))
                 observation, reward, done, _ = env.step(action)
-                # print(reward)
                 sum_r = np.array(reward) if step==0 else np.add(sum_r, reward)
                 if render:
                     env.render()
@@ -141,6 +143,7 @@ class TrainableAgent(Agent):
         
         assert self.experience.capacity >= self.batch_size
         
+        self.log_dir = log_dir
         self.init_writer(log_dir)    
     
     @property
@@ -207,7 +210,7 @@ class TrainableAgent(Agent):
     
     def save_policy_if_best(self, best_rew, rew, folder=".", filename=''):
         if best_rew < rew:
-            print("#> {} - New Best Score ({}) - Save Model\n".format(self.name, rew))
+            logging.info("#> {} - New Best Score ({}) - Save Model\n".format(self.name, rew))
             filename_tmp = "{}-{}".format("best", filename) if filename is not '' else "{}".format("best")
             self.save_policy(folder=folder, filename=filename_tmp)
             return rew
@@ -216,7 +219,7 @@ class TrainableAgent(Agent):
     def save_all(self):
         pass
     
-    def learn(self, env, nb_timesteps, max_num_step=100, test_freq=1000, save_freq=1000, save_folder="models", render=False, time_laps=0., verbose=1, timestep_init=0):
+    def learn(self, env, nb_timesteps, max_num_step=100, test_freq=1000, save_freq=1000, save_folder="models", render=False, time_laps=0., verbose=1, timestep_init=0, log_file=None):
         """
         Start the learning part.
         
@@ -229,9 +232,16 @@ class TrainableAgent(Agent):
         assert timestep_init >=0, "Initial timestep must be upper or equal than 0"
         assert timestep_init < nb_timesteps, "Initial timestep must be lower than the total number of timesteps"
         
-        print("#> Start learning process !")
         start_time = datetime.now()
-        print("Date : ", start_time.strftime("%d/%m/%Y %H:%M:%S"))
+        logging.basicConfig()
+        
+        reset_logging()
+        if log_file is None:
+            logging.basicConfig(stream=sys.stdout, format='%(message)s', level=logging.INFO)
+        else:
+            logging.basicConfig(filename=os.path.join(self.log_dir,log_file), format='%(message)s', level=logging.INFO)
+
+        logging.info("#> Start learning process.\n|\tDate : {}".format(start_time.strftime("%d/%m/%Y %H:%M:%S")))
         timestep = timestep_init
         episode = 0
         best_rew = self.worst_rew()
@@ -261,7 +271,7 @@ class TrainableAgent(Agent):
             
                 # Save the model
                 if timestep % save_freq == 0:
-                    print("#> Step {}/{} --- Save Model\n".format(timestep, nb_timesteps))
+                    logging.info("#> Step {}/{} --- Save Model\n".format(timestep, nb_timesteps))
                     self.save_policy(timestep=timestep, folder=save_folder)
                 
                 # Test the model
@@ -298,11 +308,11 @@ class TrainableAgent(Agent):
                                                             duration,
                                                             np.around(m_m_rews, decimals=2), 
                                                             np.around(s_m_rews, decimals=2))
-                print(log)
+                logging.info(log)
                 best_rew = self.save_policy_if_best(best_rew, s_m_rews, folder=save_folder)
                 test = False
                 
-        print("#> End of learning process !")
+        logging.info("#> End of learning process !")
     
     
     def training_log(self, verbose):
