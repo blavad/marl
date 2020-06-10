@@ -57,6 +57,7 @@ class MARL(TrainableAgent, MAS):
         MAS.__init__(self, agents_list=agents_list, name=name)
         # self.experience = marl.experience.make("ReplayMemory", capacity=10000)
         
+        self.log_dir = log_dir
         self.init_writer(log_dir)
         
     def reset(self):

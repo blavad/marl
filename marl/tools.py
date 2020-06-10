@@ -2,6 +2,7 @@ import importlib
 import gym
 import numpy as np
 import torch
+import logging
 
 #### Function for simpler susage ####
 
@@ -82,6 +83,10 @@ class ClassSpec(object):
             expl = cls(**_kwargs)
         return expl
     
+def reset_logging():
+    import logging
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
 
 ##### Tools for data preprocessing ##### 
 
@@ -125,8 +130,8 @@ def seq2unique_transition(seq_transition):
                     dict_transition[field].append(getattr(tr, field))
         return transition_class(**dict_transition)
     except AttributeError:
-        print("\n\n\n!!!!!!! Attribute Error !!!!!!!!!")
-        print(seq_transition)
+        logging.warning("\n\n\n!!!!!!! Attribute Error !!!!!!!!!")
+        logging.warning(seq_transition)
 
 def zeros_like(var):
     zero_var = None
@@ -181,7 +186,6 @@ def pad_like(transition):
     dict_transition = {}
     if transition.__class__.__name__ != "FFTransition":
         raise NotImplementedError
-    # print(transition.observation)
     observation = zeros_like(transition.observation)
     action = zeros_like(transition.action)
     reward = zeros_like(transition.reward)
