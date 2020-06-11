@@ -282,10 +282,10 @@ class TrainableAgent(Agent):
                     break
                 
             if test:
-                res_test = self.test(env, 100, max_num_step=max_num_step, render=False)
+                res_test = self.test(env, 20, max_num_step=max_num_step, render=False)
                 _, m_m_rews, m_std_rews = res_test['mean_by_step']
                 _, s_m_rews, s_std_rews = res_test['mean_by_episode']
-                self.writer.add_scalar("Reward/mean_sum", sum(s_m_rews)/len(s_m_rews) if isinstance(s_m_rews, list) else s_m_rews, timestep)
+                self.writer.add_scalar("Reward/mean_sum", sum(s_m_rews)/len(s_m_rews) if isinstance(s_m_rews, np.ndarray) else s_m_rews, timestep)
                 duration = datetime.now() - start_time
                 if verbose == 2:
                     log = "#> Step {}/{} (ep {}) - {}\n\
